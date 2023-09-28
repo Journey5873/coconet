@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class MemberEntity {
+public class MemberEntity extends BaseEntity{
 
 
     @Id
@@ -31,12 +31,6 @@ public class MemberEntity {
 
     @Column(length = 200)
     private String profileImage;
-
-    @Column(nullable = false)
-    private LocalDateTime registeredAt;
-
-    @Column(nullable = false)
-    private LocalDateTime updatedAt;
 
     @Column(nullable = false)
     private Long providerId;
