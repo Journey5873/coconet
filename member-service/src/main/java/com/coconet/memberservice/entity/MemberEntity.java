@@ -1,10 +1,9 @@
 package com.coconet.memberservice.entity;
 
+import com.coconet.memberservice.security.oauth.model.AuthProvider;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDateTime;
 
@@ -13,6 +12,7 @@ import java.time.LocalDateTime;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@SuperBuilder
 public class MemberEntity extends BaseEntity{
 
 
@@ -33,11 +33,12 @@ public class MemberEntity extends BaseEntity{
     @Column(length = 200)
     private String profileImage;
 
-    @Column(nullable = false)
-    private Long providerId;
+    @Column(length = 255, nullable = false)
+    private String providerId;
 
     @Column(length = 20, nullable = false)
-    private String provider;
+    @Enumerated(EnumType.STRING)
+    private AuthProvider provider;
 
 
 }
