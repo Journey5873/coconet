@@ -4,12 +4,14 @@ import jakarta.persistence.Column;
 import jakarta.persistence.MappedSuperclass;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDateTime;
 
 @MappedSuperclass
 @NoArgsConstructor
 @AllArgsConstructor
+@SuperBuilder
 public class BaseEntity {
 
     @Column(nullable = false)
