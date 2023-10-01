@@ -7,10 +7,12 @@ import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDateTime;
 
+import static lombok.AccessLevel.*;
+
 @Entity
 @Table(name = "member")
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = PROTECTED)
 @AllArgsConstructor
 @SuperBuilder
 public class MemberEntity extends BaseEntity{
@@ -40,5 +42,11 @@ public class MemberEntity extends BaseEntity{
     @Enumerated(EnumType.STRING)
     private AuthProvider provider;
 
+    public void changeName(String name){
+        this.name = name;
+    }
 
+    public void changeCareer(String career){
+        this.career = career;
+    }
 }
