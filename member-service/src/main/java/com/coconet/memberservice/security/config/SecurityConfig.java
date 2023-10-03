@@ -1,9 +1,9 @@
 package com.coconet.memberservice.security.config;
 
 import com.coconet.memberservice.security.entrypoint.AuthenticationEntryPoint;
-import com.coconet.memberservice.security.oauth.HttpCookieOAuth2AuthorizationRequestRepository;
 import com.coconet.memberservice.security.oauth.Oauth2AuthenticationFailureHandler;
 import com.coconet.memberservice.security.oauth.Oauth2AuthenticationSuccessHandler;
+import com.coconet.memberservice.security.oauth.repository.CookieAuthorizationRequestRepository;
 import com.coconet.memberservice.security.oauth.service.Oauth2UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -26,8 +26,7 @@ public class SecurityConfig {
     private final Oauth2UserService oauth2UserService;
     private final Oauth2AuthenticationSuccessHandler oauth2AuthenticationSuccessHandler;
     private final Oauth2AuthenticationFailureHandler oauth2AuthenticationFailureHandler;
-    private final HttpCookieOAuth2AuthorizationRequestRepository oAuth2AuthorizationRequestRepository;
-
+    private final CookieAuthorizationRequestRepository cookieAuthorizationRequestRepository;
     private List<String> SWAGGER = List.of(
             "/swagger-ui.html",
             "/swagger-ui/**",
@@ -59,10 +58,10 @@ public class SecurityConfig {
                 configurer.authorizationEndpoint(cus -> {
                     cus.baseUri("/oauth2/authorize");
                 });
-//                configurer.authorizationEndpoint(cus -> cus.authorizationRequestRepository(oAuth2AuthorizationRequestRepository));
+                configurer.authorizationEndpoint(cus -> cus.authorizationRequestRepository(cookieAuthorizationRequestRepository));
                 configurer.redirectionEndpoint(cus -> cus.baseUri("/oauth2/callback/*"));
-//                configurer.userInfoEndpoint(cus -> cus.userService(oauth2UserService));
-//                configurer.successHandler(oauth2AuthenticationSuccessHandler);
+                configurer.userInfoEndpoint(cus -> cus.userService(oauth2UserService));
+                configurer.successHandler(oauth2AuthenticationSuccessHandler);
 //                configurer.failureHandler(oauth2AuthenticationFailureHandler);
             })
             .build();
