@@ -3,6 +3,7 @@ import Dday from './components/atoms/Dday';
 import Division from './components/atoms/Division';
 import Endline from './components/atoms/EndLine';
 import MobileSelectBox from './components/organisms/MobileSelectBox';
+import GoogleAuth from './components/organisms/GoogleAuth';
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
       <Division username={'사계'} registeredDate={'2023.09.12'} />
       <Endline endline={'2023.09.30'} />
       <MobileSelectBox />
+      <GoogleAuth />
     </div>
   );
 }
