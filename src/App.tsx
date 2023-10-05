@@ -4,6 +4,7 @@ import Division from './components/atoms/Division';
 import Endline from './components/atoms/EndLine';
 import MobileSelectBox from './components/organisms/MobileSelectBox';
 import LoginModal from './components/organisms/LoginModal';
+import SelectBox from './components/organisms/SelectBox';
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
       <MobileSelectBox />
       {/* <GoogleAuth /> */}
       <LoginModal isOpen={false} onClose={() => {}} />
+      <SelectBox xPos={0} yPos={500} />
     </div>
   );
 }
