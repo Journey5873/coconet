@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
-import java.time.LocalDateTime;
+import java.util.List;
 
 import static lombok.AccessLevel.*;
 
@@ -42,11 +42,14 @@ public class MemberEntity extends BaseEntity{
     @Enumerated(EnumType.STRING)
     private AuthProvider provider;
 
+    @OneToMany(mappedBy = "member")
+    private List<MemberStackEntity> memberStacks;
+
     public void changeName(String name){
         this.name = name;
     }
 
-    public void changeCareer(String career){
+    public void changeCareer(String career) {
         this.career = career;
     }
 }

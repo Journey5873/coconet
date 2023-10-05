@@ -1,29 +1,43 @@
 package com.coconet.memberservice.service;
 
+import com.coconet.memberservice.dto.UpdateRequestDto;
 import com.coconet.memberservice.entity.MemberEntity;
 import com.coconet.memberservice.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 @Transactional
 public class MemberService {
-
     private final MemberRepository memberRepository;
 
-    public void updateName(MemberEntity member, String name){
-        member.changeName(name);
-        memberRepository.save(member);
+    public Optional<UpdateRequestDto> updateName(UpdateRequestDto request){
+        Optional<MemberEntity> optionalMember = memberRepository.findById(request.getId());
+        if (optionalMember.isPresent()) {
+            MemberEntity member = optionalMember.get();
+            member.changeName(request.getName());
+            MemberEntity updatedMember = memberRepository.save(member);
+            UpdateRequestDto updateRequestDto = new UpdateRequestDto(updatedMember.getName());
+            return Optional.of(updateRequestDto);
+        } else {
+            return Optional.empty();
+        }
     }
 
-    public void updateCareer(MemberEntity member, String career){
-        member.changeCareer(career);
-        memberRepository.save(member);
+    public Optional<UpdateRequestDto> updateCareer(UpdateRequestDto request){
+        Optional<MemberEntity> optionalMember = memberRepository.findById(request.getId());
+        if (optionalMember.isPresent()) {
+            MemberEntity member = optionalMember.get();
+            member.changeCareer(request.getCareer());
+            MemberEntity updatedMember = memberRepository.save(member);
+            UpdateRequestDto updateRequestDto = new UpdateRequestDto(updatedMember.getCareer());
+            return Optional.of(updateRequestDto);
+        } else {
+            return Optional.empty();
+        }
     }
-
 }
