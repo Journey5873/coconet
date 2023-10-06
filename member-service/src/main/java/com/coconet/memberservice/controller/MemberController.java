@@ -6,22 +6,16 @@ import com.coconet.memberservice.dto.UpdateRequestDto;
 import com.coconet.memberservice.dto.UpdateStackRequestDto;
 import com.coconet.memberservice.entity.MemberEntity;
 import com.coconet.memberservice.entity.MemberRoleEntity;
-<<<<<<< HEAD
 import com.coconet.memberservice.entity.RoleEntity;
-=======
 import com.coconet.memberservice.entity.MemberStackEntity;
 import com.coconet.memberservice.entity.TechStackEntity;
->>>>>>> ca693336ea3548b825ba83818cc6d5f31fb6004b
 import com.coconet.memberservice.service.MemberService;
 import com.coconet.memberservice.service.MemberStackService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-<<<<<<< HEAD
 import org.springframework.web.multipart.MultipartFile;
-=======
 import com.coconet.common.response.*;
->>>>>>> ca693336ea3548b825ba83818cc6d5f31fb6004b
 
 import java.util.List;
 import java.util.Optional;
@@ -40,7 +34,6 @@ public class MemberController {
         return "successfully deleted";
     }
 
-<<<<<<< HEAD
     @GetMapping("/role/")
     public List<RoleEntity> getUserAndRole(Long id) {
         return memberService.viewAllRoles(id);
@@ -54,14 +47,6 @@ public class MemberController {
     @PostMapping("/role/")
     public List<Long> updateRoles(Long id, @RequestBody List<Long> rolesIds) {
         return memberService.updateRoles(id, rolesIds);
-    }
-
-
-=======
-    @GetMapping("/role/{id}")
-    public Optional<MemberRoleEntity> getUserAndRole(@PathVariable Long id) {
-        return memberService.viewAllRoles(id, 1L);
-        return null;
     }
 
     @PutMapping("/update/username")
@@ -100,5 +85,4 @@ public class MemberController {
             return "Failed to update member stacks";
         }
     }
->>>>>>> ca693336ea3548b825ba83818cc6d5f31fb6004b
 }
