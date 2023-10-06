@@ -1,14 +1,17 @@
-import React, { useState } from 'react';
+import React, {useState } from 'react';
 import styled from 'styled-components';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
+import MobileCategoryButtonList from './MobileCategoryButtonList';
 import MobileStackButton from '../atoms/Button/MobileSelectStackButton';
-import MobileCategoryButtonList from '../molecules/MobileCategoryButtonList';
 import GreenButton from '../atoms/Button/GreenButton';
 import GrayButton from '../atoms/Button/GrayButton';
 
+interface Props {
+  handleStackModalVisible: () => void;
+}
 
 function a11yProps(index: number) {
   return {
@@ -17,7 +20,7 @@ function a11yProps(index: number) {
   };
 }
 
-const MobileSelectBox = () => {
+const MobileSelectBox = ({handleStackModalVisible}:Props) => {
 
   const [value, setValue] = React.useState(0);
   const tabs = [
@@ -30,20 +33,20 @@ const MobileSelectBox = () => {
   
   // 기술 스택 리스트
   const skillList = [
-    { skillName: 'javascript', id: 0 },
-    { skillName: 'typescript', id: 1 },
-    { skillName: 'react', id: 2 },
-    { skillName: 'vue', id: 3 },
-    { skillName: 'nodejs', id: 4 },
-    { skillName: 'java', id: 5 },
-    { skillName: 'spring', id: 6 },
-    { skillName: 'kotlin', id: 7 },
-    { skillName: 'c++', id: 8 },
-    { skillName: 'go', id: 9 },
-    { skillName: 'python', id: 10 },
-    { skillName: 'django', id: 11 },
-    { skillName: 'flutter', id: 12 },
-    { skillName: 'swift', id: 13 },
+    { skillName: 'JavaScript', id: 0 },
+    { skillName: 'TypeScript', id: 1 },
+    { skillName: 'React', id: 2 },
+    { skillName: 'Vue', id: 3 },
+    { skillName: 'Nodejs', id: 4 },
+    { skillName: 'Java', id: 5 },
+    { skillName: 'Spring', id: 6 },
+    { skillName: 'Kotlin', id: 7 },
+    { skillName: 'C++', id: 8 },
+    { skillName: 'Go', id: 9 },
+    { skillName: 'Python', id: 10 },
+    { skillName: 'Django', id: 11 },
+    { skillName: 'Flutter', id: 12 },
+    { skillName: 'Swift', id: 13 },
     { skillName: 'ReactNative', id: 14 },
     { skillName: 'Unity', id: 15 },
     { skillName: 'AWS', id: 16 },
@@ -74,9 +77,11 @@ const MobileSelectBox = () => {
   const handleChangeOption = (option: string) => {
     setCategoryOption(option);
   }
-  
-  
-    return(
+
+  return (
+    <React.Fragment>
+      <StyledModalBg onClick={handleStackModalVisible} />
+    <StyledWrapper>
       <StyledBox>
         <Box sx={{ borderBottom: 1, borderColor: 'divider',marginBottom : 3 }}>
           <Tabs 
@@ -131,18 +136,48 @@ const MobileSelectBox = () => {
         </StyledBottomButtons>
         
       </StyledBox>
+      </StyledWrapper>
+      </React.Fragment>
     )
 }
 
 
 export default MobileSelectBox;
 
+const StyledModalBg = styled.div`
+      top: -60px;
+    bottom: -60px;
+    background-color: rgba(0,0,0,.6);
+    will-change: opacity;
+    cursor: pointer;
+    z-index: 3;
+    -ms-scroll-chaining: none;
+    overscroll-behavior: none;
+    touch-action: none;
+    position: fixed;
+    right: 0;
+    width: 100%;
+`
+
+const StyledWrapper = styled.div`
+    z-index: 3;
+    -ms-scroll-chaining: none;
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    border-radius: 16px 16px 0 0;
+    padding-top: 16px;
+    background: white;
+`
+
 const StyledBox = styled(Box)`
-  position: relative;
+    position: relative;
     margin-top: 10px;
     display: flex;
     flex-direction: column;
     padding: 8px 20px 30px;
+    box-sizing:border-box;
 
     @media screen and (max-width: 500px) {
       height: 430px;
