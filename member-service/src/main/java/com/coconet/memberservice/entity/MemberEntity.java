@@ -49,4 +49,7 @@ public class MemberEntity extends BaseEntity{
     public void changeCareer(String career){
         this.career = career;
     }
+
+    public void setProfileImage(String profileImage) {
+        this.profileImage = profileImage;}
 }
