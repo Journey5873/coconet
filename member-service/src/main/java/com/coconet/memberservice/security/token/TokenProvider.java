@@ -1,5 +1,6 @@
 package com.coconet.memberservice.security.token;
 
+import com.coconet.common.errorcode.ErrorCode;
 import com.coconet.common.errorcode.TokenErrorCode;
 import com.coconet.common.exception.ApiException;
 import com.coconet.memberservice.security.auth.MemberPrincipal;
@@ -17,6 +18,7 @@ import java.time.ZoneId;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 @Component
 @Slf4j
@@ -118,5 +120,15 @@ public class TokenProvider {
                 throw new ApiException(TokenErrorCode.TOKEN_EXCEPTION, e);
             }
         }
+    }
+
+    public String validationTokenWithUserEmail(String authorizationToken) {
+
+        Map<String, Object> data = validationTokenWithThrow(authorizationToken);
+        Object userEmail = data.get("email");
+        Objects.requireNonNull(userEmail, () -> {
+            throw new ApiException(ErrorCode.NULL_POINT);
+        });
+        return userEmail.toString();
     }
 }

@@ -1,5 +1,6 @@
 package com.coconet.memberservice.service;
 
+import com.coconet.memberservice.dto.UpdateRequestDto;
 import com.coconet.memberservice.entity.MemberEntity;
 import com.coconet.memberservice.entity.MemberRoleEntity;
 import com.coconet.memberservice.entity.RoleEntity;
@@ -14,30 +15,20 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 @Transactional
 public class MemberService {
-
     private final MemberRepository memberRepository;
     private final MemberRoleRepository memberRoleRepository;
     private final RoleRepository roleRepository;
-
-    public void updateName(MemberEntity member, String name) {
-        member.changeName(name);
-        memberRepository.save(member);
-    }
-
-    public void updateCareer(MemberEntity member, String career) {
-        member.changeCareer(career);
-        memberRepository.save(member);
-    }
 
     public void deleteUser(Long id) {
         memberRepository.deleteById(id);
@@ -163,6 +154,32 @@ public class MemberService {
 
         memberRoleRepository.deleteAllInBatch(removeArr);
         return "Successfully added";
+    }
+
+    public Optional<UpdateRequestDto> updateName(UpdateRequestDto request){
+        Optional<MemberEntity> optionalMember = memberRepository.findById(request.getId());
+        if (optionalMember.isPresent()) {
+            MemberEntity member = optionalMember.get();
+            member.changeName(request.getName());
+            MemberEntity updatedMember = memberRepository.save(member);
+            UpdateRequestDto updateRequestDto = new UpdateRequestDto(updatedMember.getName());
+            return Optional.of(updateRequestDto);
+        } else {
+            return Optional.empty();
+        }
+    }
+
+    public Optional<UpdateRequestDto> updateCareer(UpdateRequestDto request){
+        Optional<MemberEntity> optionalMember = memberRepository.findById(request.getId());
+        if (optionalMember.isPresent()) {
+            MemberEntity member = optionalMember.get();
+            member.changeCareer(request.getCareer());
+            MemberEntity updatedMember = memberRepository.save(member);
+            UpdateRequestDto updateRequestDto = new UpdateRequestDto(updatedMember.getCareer());
+            return Optional.of(updateRequestDto);
+        } else {
+            return Optional.empty();
+        }
     }
 }
 
