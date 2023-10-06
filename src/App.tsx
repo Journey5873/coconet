@@ -8,6 +8,9 @@ import SelectBox from './components/organisms/SelectBox';
 import styled from 'styled-components';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import SocialKakao from './utils/SosialKakao';
+import RegisterImage from './components/atoms/RegisterImage';
+import SingleSelect from './components/atoms/Select/SingleSelect';
+import MultipleSelect from './components/atoms/Select/MultipleSelect';
 
 function App() {
   const [stackModalVisible, setStackModalVisible] = useState(false);
@@ -23,6 +26,10 @@ function App() {
   return (
     <div className="App">
       <h1>코코넷</h1>
+      <RegisterImage />
+      <SingleSelect label={'직무'} />
+      <SingleSelect label={'경력'} />
+      <MultipleSelect label={'관심스택'} />
       <Dday dDay={7} />
       <Division username={'사계'} registeredDate={'2023.09.12'} />
       <Endline endline={'2023.09.30'} />
@@ -34,7 +41,7 @@ function App() {
       <BrowserRouter>
         <Routes><Route path='/oauth2/authorize/kakao' element={<SocialKakao />} /> </Routes>
       </BrowserRouter>
-      <SelectBox xPos={0} yPos={500} />
+      {/* <SelectBox xPos={0} yPos={500} /> */}
 
     </div>
   );
