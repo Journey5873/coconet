@@ -2,8 +2,10 @@ package com.coconet.memberservice.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDateTime;
 
@@ -12,16 +14,19 @@ import java.time.LocalDateTime;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class MemberRoleEntity {
+@SuperBuilder
+public class MemberRoleEntity extends BaseEntity{
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "member_role_id")
+    private Long id;
+
     @ManyToOne
     @JoinColumn(name = "member_id")
     private MemberEntity member;
 
-    @Id
     @ManyToOne
     @JoinColumn(name = "role_id")
     private RoleEntity role;
-
 }
