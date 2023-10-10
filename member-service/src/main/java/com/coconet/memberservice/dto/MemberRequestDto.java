@@ -1,12 +1,23 @@
 package com.coconet.memberservice.dto;
 
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @AllArgsConstructor
-@NoArgsConstructor
 @Getter
 public class MemberRequestDto {
-    private Long id;
+    @Size(min = 2, max = 8)
+    private String name;
+    @Min(0)
+    @Max(10)
+    private int career;
+    private MultipartFile profileImg;
+    @NotNull
+    private List<String> roles;
+    @NotNull
+    private List<String> stacks;
 }
