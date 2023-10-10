@@ -1,22 +1,16 @@
 package com.coconet.memberservice.service;
 
-import com.coconet.memberservice.dto.UpdateRequestDto;
-import com.coconet.memberservice.entity.MemberEntity;
-import com.coconet.memberservice.entity.MemberRoleEntity;
-import com.coconet.memberservice.entity.RoleEntity;
-import com.coconet.memberservice.repository.MemberRepository;
-import com.coconet.memberservice.repository.MemberRoleRepository;
-import com.coconet.memberservice.repository.RoleRepository;
+import com.coconet.memberservice.dto.MemberRequestDto;
+import com.coconet.memberservice.dto.MemberResponseDto;
+import com.coconet.memberservice.entity.*;
+import com.coconet.memberservice.repository.*;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.multipart.MultipartFile;
+
 import java.io.File;
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +23,52 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final MemberRoleRepository memberRoleRepository;
     private final RoleRepository roleRepository;
+    private final TechStackRepository techStackRepository;
+    private final MemberStackRepository memberStackRepository;
+
+
+    public MemberResponseDto getUserInfo(Long id){
+        MemberEntity member = memberRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("No member found"));
+
+        List<String> returnRoles = getAllRoles(id);
+        List<String> returnStacks = getAllStacks(id);
+        return MemberResponseDto.builder()
+                .name(member.getName())
+                .career(Integer.parseInt(member.getCareer()))
+                .profileImg(member.getProfileImage())
+                .roles(returnRoles)
+                .stacks(returnStacks)
+                .build();
+    }
+
+    public MemberResponseDto updateUserInfo(Long id, MemberRequestDto requestDto, MultipartFile imageFile) {
+
+        MemberEntity member = memberRepository.findById(id)
+                                                    .orElseThrow(() -> new IllegalArgumentException("No member found"));
+
+        try {
+            member.changeName(requestDto.getName());
+            member.changeCareer(String.valueOf(requestDto.getCareer()));
+            member.changeProfileImage(updateProfilePic(id, imageFile));
+
+            MemberEntity returnMember = memberRepository.save(member);
+
+            List<String> returnStacks = updateStacks(id, requestDto.getStacks());
+            List<String> returnRoles = updateRoles(id, requestDto.getRoles());
+            return MemberResponseDto.builder()
+                    .name(returnMember.getName())
+                    .career(Integer.parseInt(returnMember.getCareer()))
+                    .profileImg(returnMember.getProfileImage())
+                    .roles(returnRoles)
+                    .stacks(returnStacks)
+                    .build();
+        }
+        catch(Exception e) {
+            new IllegalArgumentException("Update fails");
+            return null;
+        }
+    }
 
     public void deleteUser(Long id) {
         memberRepository.deleteById(id);
@@ -39,18 +79,30 @@ public class MemberService {
         //
     }
 
-    public List<RoleEntity> viewAllRoles(Long memberId) {
-        Optional<MemberEntity> member = memberRepository.findById(memberId);
-
-        if (member.isPresent()) {
-            List<MemberRoleEntity> ids = memberRoleRepository.findByMemberId(memberId);
-            List<RoleEntity> roleEntities = new ArrayList<>();
-            for (MemberRoleEntity memberRoleEntity : ids) {
-                roleEntities.add(memberRoleEntity.getRole());
-            }
-            return roleEntities;
+    public List<String> getAllRoles(Long memberId) {
+        List<MemberRoleEntity> ids = memberRoleRepository.findAllByMemberId(memberId);
+        if(ids.size() == 0) {
+            throw new IllegalArgumentException("");
         }
-        return null;
+
+        List<String> returnRoles = new ArrayList<>();
+        for (MemberRoleEntity memberRoleEntity : ids) {
+            returnRoles.add(memberRoleEntity.getRole().getName());
+        }
+        return returnRoles;
+    }
+
+    public List<String> getAllStacks(Long memberId){
+        List<MemberStackEntity> ids = memberStackRepository.findByMemberId(memberId);
+        if(ids.size() == 0) {
+            throw new IllegalArgumentException("");
+        }
+
+        List<String> returnStacks = new ArrayList<>();
+        for (MemberStackEntity memberStack : ids) {
+            returnStacks.add(memberStack.getTechStack().getName());
+        }
+        return returnStacks;
     }
 
     public String updateProfilePic(Long id, MultipartFile image) throws Exception {
@@ -82,7 +134,7 @@ public class MemberService {
             image.transferTo(file);
 
             MemberEntity memberEntity = member.get();
-            memberEntity.setProfileImage(imagePath);
+            memberEntity.changeProfileImage(imagePath);
             memberRepository.save(memberEntity);
         } else {
             throw new Exception("이미지 파일이 비어있습니다.");
@@ -91,95 +143,86 @@ public class MemberService {
         return imagePath;
     }
 
-    public List<Long> updateRoles(Long id, List<Long> rolesIds) {
-        Optional<MemberEntity> member = memberRepository.findById(id);
+    public List<String> updateRoles(Long id, List<String> roles) {
+        MemberEntity member = memberRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Member not found"));
 
-        if (member.isPresent()) {
-            List<MemberRoleEntity> memberRoleEntities = memberRoleRepository.findByMemberId(id);
-            List<Long> currentRoles = new ArrayList<>();
-            List<Long> duplicatedIds;
-
-            for (MemberRoleEntity memberRoleEntity : memberRoleEntities) {
-                currentRoles.add(memberRoleEntity.getRole().getId());
-            }
-            duplicatedIds = new ArrayList<>(currentRoles);
-
-            duplicatedIds.retainAll(rolesIds);
-            currentRoles.removeAll(duplicatedIds);
-            rolesIds.removeAll(duplicatedIds);
-
-            addRoles(id, rolesIds);
-            removeRoles(id, currentRoles);
+        List<Long> rolesId = new ArrayList<>();
+        for(String role :roles) {
+            RoleEntity roleEntity = roleRepository.findByName(role)
+                    .orElseThrow(() -> new IllegalArgumentException("Role not found"));
+            rolesId.add(roleEntity.getId());
         }
+        List<MemberRoleEntity> memberRoleEntities = memberRoleRepository.findByMemberId(id);
+        List<Long> currentRoles = new ArrayList<>();
+        List<Long> duplicatedIds;
 
-        return rolesIds;
-    }
-
-    public String addRoles(Long id, List<Long> roleId) {
-        List<MemberRoleEntity> memberRoleEntities = new ArrayList<>();
-        Optional<MemberEntity> member = memberRepository.findById(id);
-        if (member.isPresent()) {
-            for (int i = 0; i < roleId.size(); i++) {
-                Optional<RoleEntity> role = roleRepository.findById(roleId.get(i));
-                if (role.isPresent()) {
-                    memberRoleEntities.add(MemberRoleEntity.builder()
-                            .member(member.get())
-                            .role(role.get())
-                            .createdAt(LocalDateTime.now())
-                            .updatedAt(LocalDateTime.now())
-                            .build());
-                } else return "Error no role";
-            }
-        } else {
-            return "error no member";
+        for (MemberRoleEntity memberRoleEntity : memberRoleEntities) {
+            currentRoles.add(memberRoleEntity.getRole().getId());
         }
+        duplicatedIds = new ArrayList<>(currentRoles);
 
-        memberRoleRepository.saveAll(memberRoleEntities);
-        return "Successfully added";
-    }
+        duplicatedIds.retainAll(roles);
+        currentRoles.removeAll(duplicatedIds);
+        roles.removeAll(duplicatedIds);
 
-    public String removeRoles(Long id, List<Long> roleId) {
+        // Add roles
+        List<MemberRoleEntity> memberRoleEntityList = new ArrayList<>();
+        for (int i = 0; i < rolesId.size(); i++) {
+            RoleEntity role = roleRepository.findById(rolesId.get(i))
+                    .orElseThrow(() -> new IllegalArgumentException("No Role exists"));
+            memberRoleEntityList.add(MemberRoleEntity.builder()
+                    .member(member)
+                    .role(role)
+                    .createdAt(LocalDateTime.now())
+                    .updatedAt(LocalDateTime.now())
+                    .build());
+        }
+        memberRoleRepository.saveAll(memberRoleEntityList);
+
+        //Remove roles
         List<MemberRoleEntity> removeArr = new ArrayList<>();
-        Optional<MemberEntity> member = memberRepository.findById(id);
-        if (member.isPresent()) {
-            for (int i = 0; i < roleId.size(); i++) {
-                Optional<RoleEntity> role = roleRepository.findById(roleId.get(i));
-                if (role.isPresent()) {
-                    removeArr.add(memberRoleRepository.findByMemberIdAndRoleId(id, roleId.get(i)).get());
-                } else return "Error no role";
+        for (int i = 0; i < currentRoles.size(); i++) {
+            RoleEntity role = roleRepository.findById(currentRoles.get(i))
+                    .orElseThrow(() -> new IllegalArgumentException("no role"));
+                removeArr.add(memberRoleRepository.findByMemberIdAndRoleId(id, currentRoles.get(i)).get());
             }
-        } else {
-            return "error no member";
-        }
-
         memberRoleRepository.deleteAllInBatch(removeArr);
-        return "Successfully added";
+
+        //retrieve roles from db
+        List<MemberRoleEntity> ids = memberRoleRepository.findByMemberId(id);
+        List<String> returnRoles = new ArrayList<>();
+        for(MemberRoleEntity memberRole : ids) {
+            returnRoles.add(memberRole.getRole().getName());
+        }
+        return returnRoles;
     }
 
-    public Optional<UpdateRequestDto> updateName(UpdateRequestDto request){
-        Optional<MemberEntity> optionalMember = memberRepository.findById(request.getId());
-        if (optionalMember.isPresent()) {
-            MemberEntity member = optionalMember.get();
-            member.changeName(request.getName());
-            MemberEntity updatedMember = memberRepository.save(member);
-            UpdateRequestDto updateRequestDto = new UpdateRequestDto(updatedMember.getName());
-            return Optional.of(updateRequestDto);
-        } else {
-            return Optional.empty();
-        }
-    }
+    public List<String> updateStacks(Long memberId, List<String> stacks) {
+        MemberEntity member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new IllegalArgumentException("Member not found"));
 
-    public Optional<UpdateRequestDto> updateCareer(UpdateRequestDto request){
-        Optional<MemberEntity> optionalMember = memberRepository.findById(request.getId());
-        if (optionalMember.isPresent()) {
-            MemberEntity member = optionalMember.get();
-            member.changeCareer(request.getCareer());
-            MemberEntity updatedMember = memberRepository.save(member);
-            UpdateRequestDto updateRequestDto = new UpdateRequestDto(updatedMember.getCareer());
-            return Optional.of(updateRequestDto);
-        } else {
-            return Optional.empty();
+        List<TechStackEntity> techStacks = new ArrayList<>();
+        for(String stack : stacks) {
+            TechStackEntity techStack = techStackRepository.findByName(stack)
+                    .orElseThrow(() -> new IllegalArgumentException("Stack not found"));
+            techStacks.add(techStack);
         }
+        List<MemberStackEntity> memberStacks = new ArrayList<>();
+        for (TechStackEntity techStack : techStacks) {
+            MemberStackEntity memberStack = new MemberStackEntity(member, techStack);
+            memberStacks.add(memberStack);
+        }
+        memberStackRepository.deleteByMember(member);
+        memberStackRepository.saveAll(memberStacks);
+
+        //Retrieve stacks from DB
+        List<MemberStackEntity> memberStackEntities = memberStackRepository.findByMemberId(memberId);
+        List<String> returnStacks = new ArrayList<>();
+        for (MemberStackEntity memberStack : memberStackEntities) {
+            returnStacks.add(memberStack.getTechStack().getName());
+        }
+        return returnStacks;
     }
 }
 
