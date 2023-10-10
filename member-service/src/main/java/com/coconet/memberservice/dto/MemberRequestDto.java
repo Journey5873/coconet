@@ -15,7 +15,6 @@ public class MemberRequestDto {
     @Min(0)
     @Max(10)
     private int career;
-    private MultipartFile profileImg;
     @NotNull
     private List<String> roles;
     @NotNull
