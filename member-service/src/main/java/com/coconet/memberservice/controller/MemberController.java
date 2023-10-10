@@ -1,21 +1,10 @@
 package com.coconet.memberservice.controller;
 
 import com.coconet.memberservice.dto.*;
-import com.coconet.memberservice.entity.MemberEntity;
-import com.coconet.memberservice.entity.MemberRoleEntity;
-import com.coconet.memberservice.entity.RoleEntity;
-import com.coconet.memberservice.entity.MemberStackEntity;
-import com.coconet.memberservice.entity.TechStackEntity;
 import com.coconet.memberservice.service.MemberService;
-import com.coconet.memberservice.service.MemberStackService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import com.coconet.common.response.*;
-
-import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor

@@ -1,6 +1,5 @@
 package com.coconet.memberservice.entity;
 
-import com.coconet.memberservice.dto.UpdateStackRequestDto;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
