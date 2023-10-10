@@ -45,6 +45,9 @@ public class MemberEntity extends BaseEntity{
     @OneToMany(mappedBy = "member")
     private List<MemberStackEntity> memberStacks;
 
+    @OneToMany(mappedBy = "member")
+    private List<MemberRoleEntity> memberRoles;
+
     public void changeName(String name){
         this.name = name;
     }
@@ -53,6 +56,5 @@ public class MemberEntity extends BaseEntity{
         this.career = career;
     }
 
-    public void setProfileImage(String profileImage) {
-        this.profileImage = profileImage;}
+    public void changeProfileImage(String profileImage) { this.profileImage = profileImage;}
 }

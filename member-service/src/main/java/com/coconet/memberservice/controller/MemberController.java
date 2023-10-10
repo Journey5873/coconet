@@ -1,9 +1,6 @@
 package com.coconet.memberservice.controller;
 
-import com.coconet.memberservice.dto.MemberRequestDto;
-import com.coconet.memberservice.dto.MemberStackResponseDto;
-import com.coconet.memberservice.dto.UpdateRequestDto;
-import com.coconet.memberservice.dto.UpdateStackRequestDto;
+import com.coconet.memberservice.dto.*;
 import com.coconet.memberservice.entity.MemberEntity;
 import com.coconet.memberservice.entity.MemberRoleEntity;
 import com.coconet.memberservice.entity.RoleEntity;
@@ -22,67 +19,36 @@ import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/open-api/member-service/")
+@RequestMapping("/member-service/open-api")
 public class MemberController {
 
     private final MemberService memberService;
-    private final MemberStackService memberStackService;
 
-    @DeleteMapping("/delete/")
+
+    @GetMapping("/my-profile")
+    public MemberResponseDto getUserInfo(){
+        long id = 2L;
+
+        return memberService.getUserInfo(id);
+    }
+
+
+    @PutMapping("/my-profile")
+    public MemberResponseDto updateUserInfo(@RequestPart MemberRequestDto requestDto, @RequestPart MultipartFile imageFile) {
+        long id = 2L;
+
+        return memberService.updateUserInfo(id, requestDto, imageFile);
+    }
+
+    @DeleteMapping("/delete")
     public String deleteUser(Long id) {
         memberService.deleteUser(id);
         return "successfully deleted";
     }
 
-    @GetMapping("/role/")
-    public List<RoleEntity> getUserAndRole(Long id) {
-        return memberService.viewAllRoles(id);
+    @GetMapping("/health")
+    public String healthCheck() {
+        return "Hello world";
     }
 
-    @PostMapping("/profilePic/")
-    public String updateProfile(Long id, MultipartFile image) throws Exception {
-        return memberService.updateProfilePic(id, image);
-    }
-
-    @PostMapping("/role/")
-    public List<Long> updateRoles(Long id, @RequestBody List<Long> rolesIds) {
-        return memberService.updateRoles(id, rolesIds);
-    }
-
-    @PutMapping("/update/username")
-    public String updateMemberUsername(@RequestBody UpdateRequestDto request){
-        Optional<UpdateRequestDto> updatedMember = memberService.updateName(request);
-        if (updatedMember.isPresent()) {
-            return "Successfully updated";
-        } else {
-            return "Member not found";
-        }
-    }
-
-    @PutMapping("/update/career")
-    public String updateMemberCareer(@RequestBody UpdateRequestDto request){
-        Optional<UpdateRequestDto> updatedMember = memberService.updateCareer(request);
-        if (updatedMember.isPresent()) {
-            return "Successfully updated";
-        } else {
-            return "Member not found";
-        }
-    }
-
-    @GetMapping("/member-stacks")
-    public List<MemberStackResponseDto> getStacks(@RequestBody MemberRequestDto request){
-        return memberStackService.getAllStacks(request.getId());
-    }
-
-    @PutMapping("/update/member-stack")
-    public String updateMemberStacks(@RequestBody UpdateStackRequestDto request) {
-        try {
-            memberStackService.updateMemberStacks(request.getMemberId(), request.getStackIds());
-            return "Successfully updated";
-        } catch (IllegalArgumentException e) {
-            return "Member not found";
-        } catch (Exception e) {
-            return "Failed to update member stacks";
-        }
-    }
 }
