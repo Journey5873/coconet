@@ -5,10 +5,20 @@ import {ReactComponent as GoogleLogo} from '../assets/images/googleLogo.svg';
 import {ReactComponent as GithubLogo} from '../assets/images/githubLogo.svg'
 import { ReactComponent as KakaoLogo } from '../assets/images/kakaoLogo.svg';
 
+
 interface Props {
   handleLoginModalVisible: () => void;
 }
 
+// 깃헙 로그인
+  const clientId = '3e638ae1e9bacaed52ec';
+  const redirectUrl = 'http://localhost:3000'
+  const githubURL = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUrl}`
+  const handleLogin = ()=>{
+    window.location.href = githubURL
+  }
+
+// 카카오 로그인
 const loginWithKakao = () => {
    const KAKAO_API_KEY = `${process.env.REACT_APP_KAKAO_API_KEY}`;
   const KAKAO_REDIRECT_URL = `${process.env.REACT_APP_KAKAO_REDIRECT_URL}`; //Redirect URI
@@ -38,7 +48,7 @@ export default function LoginModal({handleLoginModalVisible}:Props) {
               </StyledBottonWrapper>
               <StyledBottonWrapper>
                 <StyledButton style={{backgroundColor:'#272e33'}}>
-                  <GithubLogo />
+                  <GithubLogo onClick={handleLogin} />
                 </StyledButton>
                 <StyledButtonDescription>Github 로그인</StyledButtonDescription>
               </StyledBottonWrapper>

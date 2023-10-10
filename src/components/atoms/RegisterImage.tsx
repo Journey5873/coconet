@@ -1,11 +1,10 @@
 import axios from "axios";
 import { useRef, useState } from "react";
 import styled from "styled-components";
-import ProfileEdit from '../assets/images/profile_edit.svg'
 export default function RegisterImage() {
     const [fileURL, setFileURL] = useState<string>("");
-  const [file, setFile] = useState<FileList | null>();
-  const imgUploadInput = useRef<HTMLInputElement | null>(null);
+    const [file, setFile] = useState<FileList | null>();
+    const imgUploadInput = useRef<HTMLInputElement | null>(null);
 
   const onImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
@@ -15,11 +14,7 @@ export default function RegisterImage() {
       setFileURL(newFileURL);
     }
   };
-  const onImageRemove = (): void => {
-    URL.revokeObjectURL(fileURL);
-    setFileURL(""); // 렌더링 이미지 초기화
-    setFile(null);
-  };
+
   const submitHandler = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
 
@@ -64,22 +59,6 @@ export default function RegisterImage() {
       ></StyledImageInput>
         </StyledImageWrapper>
       <label htmlFor="img">이미지 업로드</label>
-      
-      {/* <button
-        type="button"
-        onClick={(event) => {
-          event.preventDefault();
-          if (imgUploadInput.current) {
-            imgUploadInput.current.click();
-          }
-        }}
-      >
-        이미지 변경 버튼
-      </button>
-      <button type="button" onClick={onImageRemove}>
-        제거 버튼
-      </button>
-      <button onClick={submitHandler}>submit</button> */}
     </>
     )
 }

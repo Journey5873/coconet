@@ -55,8 +55,6 @@ export default function MultipleSelect({label}:MultipleProp) {
 
 const StyledMultipleSelectWapprer = styled.div`
     max-width : 500px;
-
-
 `
 
 const StyledInputLabel = styled.label`

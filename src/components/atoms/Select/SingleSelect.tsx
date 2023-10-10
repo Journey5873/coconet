@@ -28,11 +28,11 @@ export default function SingleSelect({label} : LabelProps) {
             <MenuItem value={10}>프론트엔드</MenuItem>
             <MenuItem value={20}>백엔드</MenuItem>
             <MenuItem value={30}>디자이너</MenuItem>
-            <MenuItem value={30}>IOS</MenuItem>
-            <MenuItem value={30}>안드로이드</MenuItem>
-            <MenuItem value={30}>데브옵스</MenuItem>
-            <MenuItem value={30}>PM</MenuItem>
-            <MenuItem value={30}>기획자</MenuItem>
+            <MenuItem value={40}>IOS</MenuItem>
+            <MenuItem value={50}>안드로이드</MenuItem>
+            <MenuItem value={60}>데브옵스</MenuItem>
+            <MenuItem value={70}>PM</MenuItem>
+            <MenuItem value={80}>기획자</MenuItem>
             </StyledSelect>
         </StyledSelectWrapper>
     )
