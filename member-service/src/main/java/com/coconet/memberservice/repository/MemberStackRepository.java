@@ -14,4 +14,6 @@ public interface MemberStackRepository extends JpaRepository<MemberStackEntity, 
 
     void deleteByMember(MemberEntity member);
     List<MemberStackEntity> getAllByMember(MemberEntity member);
+
+    List<MemberStackEntity> findByMemberId(Long memberId);
 }

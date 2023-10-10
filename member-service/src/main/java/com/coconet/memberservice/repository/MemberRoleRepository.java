@@ -11,4 +11,6 @@ public interface MemberRoleRepository extends JpaRepository<MemberRoleEntity, Lo
     List<MemberRoleEntity> findByMemberId(Long memberId);
 
     Optional<MemberRoleEntity> findByMemberIdAndRoleId(Long memberId, Long roleId);
+
+    List<MemberRoleEntity> findAllByMemberId(Long memberId);
 }
