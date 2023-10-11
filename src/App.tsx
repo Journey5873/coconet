@@ -12,6 +12,8 @@ import RegisterImage from './components/atoms/RegisterImage';
 import SingleSelect from './components/atoms/Select/SingleSelect';
 import MultipleSelect from './components/atoms/Select/MultipleSelect';
 
+import CustomCarousel from './components/organisms/Carousel';
+
 function App() {
   const [stackModalVisible, setStackModalVisible] = useState(false);
   const handleStackModalVisible = () => {
@@ -26,10 +28,10 @@ function App() {
   return (
     <div className="App">
       <h1>코코넷</h1>
-      <RegisterImage />
+      {/* <RegisterImage />
       <SingleSelect label={'직무'} />
       <SingleSelect label={'경력'} />
-      <MultipleSelect label={'관심스택'} />
+      <MultipleSelect label={'관심스택'} /> */}
       <Dday dDay={7} />
       <Division username={'사계'} registeredDate={'2023.09.12'} />
       <Endline endline={'2023.09.30'} />
@@ -54,6 +56,8 @@ function App() {
         </Routes>
       </BrowserRouter>
       {/* <SelectBox xPos={0} yPos={500} /> */}
+
+      <CustomCarousel />
     </div>
   );
 }
