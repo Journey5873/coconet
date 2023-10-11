@@ -14,6 +14,7 @@ import MultipleSelect from './components/atoms/Select/MultipleSelect';
 
 import CustomCarousel from './components/organisms/Carousel';
 import CustomInput from './components/atoms/Input';
+import Label from './components/atoms/Label';
 
 function App() {
   const [stackModalVisible, setStackModalVisible] = useState(false);
@@ -60,6 +61,7 @@ function App() {
 
       <CustomCarousel />
       <CustomInput />
+      <Label isRequired={true} text="안녕" />
     </div>
   );
 }
