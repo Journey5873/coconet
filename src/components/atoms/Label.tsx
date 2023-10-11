@@ -4,7 +4,7 @@ import { LabelHTMLAttributes, DetailedHTMLProps } from 'react';
 
 import styled from 'styled-components';
 
-interface Props
+export interface LabelProps
   extends DetailedHTMLProps<
     LabelHTMLAttributes<HTMLLabelElement>,
     HTMLLabelElement
@@ -13,11 +13,11 @@ interface Props
   text: string;
 }
 
-const Label: React.FC<Props> = ({ isRequired, text, ...rest }) => {
+const Label: React.FC<LabelProps> = ({ isRequired, text, ...rest }) => {
   return (
     <label {...rest}>
       <StyledLabel>
-        <span>{text}</span>
+        <StyledSpan>{text}</StyledSpan>
         {isRequired && <StyledRequired>*</StyledRequired>}
       </StyledLabel>
     </label>
@@ -29,14 +29,17 @@ export default Label;
 const StyledLabel = styled.div`
   display: flex;
   flex-direction: row;
-  column-gap: 3px;
+  column-gap: 4px;
   justify-content: center;
   align-items: center;
 `;
 
-const StyledRequired = styled.span`
-  color: red;
-  font-size: 14px;
+const StyledSpan = styled.span`
   font-weight: 700;
   line-height: 20px;
+`;
+
+const StyledRequired = styled(StyledSpan)`
+  color: red;
+  font-size: 14px;
 `;

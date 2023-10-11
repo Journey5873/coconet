@@ -15,6 +15,8 @@ import MultipleSelect from './components/atoms/Select/MultipleSelect';
 import CustomCarousel from './components/organisms/Carousel';
 import CustomInput from './components/atoms/Input';
 import Label from './components/atoms/Label';
+import Labelnput from './components/molecules/Labelnput';
+import { Box } from '@mui/material';
 
 function App() {
   const [stackModalVisible, setStackModalVisible] = useState(false);
@@ -60,8 +62,10 @@ function App() {
       {/* <SelectBox xPos={0} yPos={500} /> */}
 
       <CustomCarousel />
-      <CustomInput />
-      <Label isRequired={true} text="안녕" />
+
+      <Box sx={{ width: '300px' }}>
+        <Labelnput isRequired={true} text="안녕" />
+      </Box>
     </div>
   );
 }
