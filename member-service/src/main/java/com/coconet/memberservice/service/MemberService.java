@@ -107,11 +107,8 @@ public class MemberService {
     }
 
     public String updateProfilePic(Long id, MultipartFile image) throws Exception {
-        Optional<MemberEntity> member = memberRepository.findById(id);
-        if (!member.isPresent()) {
-            System.out.println("error");
-            return "Error";
-        }
+        MemberEntity member = memberRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("No member found"));
 
         String imagePath = null;
         String absolutePath = new File("").getAbsolutePath() + "/";
@@ -134,9 +131,8 @@ public class MemberService {
             file = new File(absolutePath + imagePath);
             image.transferTo(file);
 
-            MemberEntity memberEntity = member.get();
-            memberEntity.changeProfileImage(imagePath);
-            memberRepository.save(memberEntity);
+            member.changeProfileImage(imagePath);
+            memberRepository.save(member);
         } else {
             throw new Exception("이미지 파일이 비어있습니다.");
         }
@@ -148,28 +144,28 @@ public class MemberService {
         MemberEntity member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new IllegalArgumentException("Member not found"));
 
-        List<Long> rolesId = roles.stream()
+        List<Long> inputRoles = roles.stream()
                 .map(roleName -> roleRepository.findByName(roleName)
                         .orElseThrow(() -> new IllegalArgumentException("Role not found: " + roleName))
                 )
                 .map(RoleEntity::getId)
-                .collect(Collectors.toList());
+                .toList();
 
         // Get current roles
         List<Long> currentRoles = memberRoleRepository.findByMemberId(memberId)
                 .stream()
                 .map(MemberRoleEntity -> MemberRoleEntity.getRole().getId())
-                .collect(Collectors.toList());
+                .toList();
 
         // Identify new roles to add
-        List<Long> rolesToAdd = rolesId.stream()
+        List<Long> rolesToAdd = inputRoles.stream()
                 .filter(roleId -> !currentRoles.contains(roleId))
-                .collect(Collectors.toList());
+                .toList();
 
         // Identify roles to remove
         List<Long> rolesToRemove = currentRoles.stream()
-                .filter(currRoleId -> !rolesId.contains(currRoleId))
-                .collect(Collectors.toList());
+                .filter(currRoleId -> !inputRoles.contains(currRoleId))
+                .toList();
 
         // Create MemberRoleEntity to add
         List<MemberRoleEntity> memberRoleEntitiesToAdd = rolesToAdd.stream()
@@ -193,7 +189,7 @@ public class MemberService {
 
         return memberRoleRepository.findByMemberId(memberId).stream()
                 .map(memberRoleEntity -> memberRoleEntity.getRole().getName())
-                .collect(Collectors.toList());
+                .toList();
     }
 
     List<String> updateStacks(Long memberId, List<String> stacks){
@@ -205,23 +201,23 @@ public class MemberService {
                         .orElseThrow(() -> new IllegalArgumentException("Stack not found: " + stackName))
                 )
                 .map(TechStackEntity::getId)
-                .collect(Collectors.toList());
+                .toList();
 
         // Get current stacks
         List<Long> currentStacks = memberStackRepository.findByMemberId(memberId)
                 .stream()
                 .map(MemberStackEntity -> MemberStackEntity.getTechStack().getId())
-                .collect(Collectors.toList());
+                .toList();
 
         // Identify new stacks to add
         List<Long> stacksToAdd = stacksId.stream()
                 .filter(stackId -> !currentStacks.contains(stackId))
-                .collect(Collectors.toList());
+                .toList();
 
         // Identify stacks to remove
-        List<Long> stacksToRemove  = currentStacks.stream()
+        List<Long> stacksToRemove = currentStacks.stream()
                 .filter(currStackId -> !stacksId.contains(currStackId))
-                .collect(Collectors.toList());
+                .toList();
 
         // Create MemberStackEntity to add
         List<MemberStackEntity> memberStackEntitiesToAdd = stacksToAdd.stream()
@@ -247,7 +243,7 @@ public class MemberService {
 
         return memberStackRepository.findByMemberId(memberId).stream()
                 .map(memberStackEntity -> memberStackEntity.getTechStack().getName())
-                .collect(Collectors.toList());
+                .toList();
     }
 }
 
