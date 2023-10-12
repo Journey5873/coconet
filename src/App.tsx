@@ -17,6 +17,7 @@ import CustomInput from './components/atoms/Input';
 import Label from './components/atoms/Label';
 import Labelnput from './components/molecules/Labelnput';
 import { Box } from '@mui/material';
+import LinkList from './components/organisms/LinkList';
 
 function App() {
   const [stackModalVisible, setStackModalVisible] = useState(false);
@@ -32,6 +33,7 @@ function App() {
   return (
     <div className="App">
       <h1>코코넷</h1>
+      <LinkList onSubmit={() => {}} />
       <RegisterImage />
       <SingleSelect label={'직무'} />
       <SingleSelect label={'경력'} />
