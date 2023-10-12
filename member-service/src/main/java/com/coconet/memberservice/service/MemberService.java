@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -54,8 +55,8 @@ public class MemberService {
 
             MemberEntity returnMember = memberRepository.save(member);
 
-            List<String> returnStacks = updateStacks(id, requestDto.getStacks());
             List<String> returnRoles = updateRoles(id, requestDto.getRoles());
+            List<String> returnStacks = updateStacks(id, requestDto.getStacks());
             return MemberResponseDto.builder()
                     .name(returnMember.getName())
                     .career(Integer.parseInt(returnMember.getCareer()))
@@ -198,31 +199,60 @@ public class MemberService {
         return returnRoles;
     }
 
-    public List<String> updateStacks(Long memberId, List<String> stacks) {
-        MemberEntity member = memberRepository.findById(memberId)
+    List<String> updateStacks(Long id, List<String> stacks){
+        MemberEntity member = memberRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Member not found"));
 
-        List<TechStackEntity> techStacks = new ArrayList<>();
-        for(String stack : stacks) {
-            TechStackEntity techStack = techStackRepository.findByName(stack)
-                    .orElseThrow(() -> new IllegalArgumentException("Stack not found"));
-            techStacks.add(techStack);
-        }
-        List<MemberStackEntity> memberStacks = new ArrayList<>();
-        for (TechStackEntity techStack : techStacks) {
-            MemberStackEntity memberStack = new MemberStackEntity(member, techStack);
-            memberStacks.add(memberStack);
-        }
-        memberStackRepository.deleteByMember(member);
-        memberStackRepository.saveAll(memberStacks);
+        List<Long> stacksId = stacks.stream()
+                .map(stackName -> techStackRepository.findByName(stackName)
+                        .orElseThrow(() -> new IllegalArgumentException("Stack not found: " + stackName))
+                )
+                .map(TechStackEntity::getId)
+                .collect(Collectors.toList());
 
-        //Retrieve stacks from DB
-        List<MemberStackEntity> memberStackEntities = memberStackRepository.findByMemberId(memberId);
-        List<String> returnStacks = new ArrayList<>();
-        for (MemberStackEntity memberStack : memberStackEntities) {
-            returnStacks.add(memberStack.getTechStack().getName());
-        }
-        return returnStacks;
+        // Get current stacks
+        List<Long> currentStacks = memberStackRepository.findByMemberId(id)
+                .stream()
+                .map(MemberStackEntity -> MemberStackEntity.getTechStack().getId())
+                .collect(Collectors.toList());
+
+        // Identify new stacks to add
+        List<Long> stacksToAdd = stacksId.stream()
+                .filter(stackId -> !currentStacks.contains(stackId))
+                .collect(Collectors.toList());
+
+        // Identify stacks to remove
+        List<Long> stacksToRemove  = currentStacks.stream()
+                .filter(stackId -> !stacksId.contains(stackId))
+                .collect(Collectors.toList());
+
+        // Get MemberStackEntity to add
+        List<MemberStackEntity> memberStackEntitiesToAdd = stacksToAdd.stream()
+                .map(stackId -> MemberStackEntity.builder()
+                        .member(member)
+                        .techStack(techStackRepository.findById(stackId)
+                                .orElseThrow(() -> new IllegalArgumentException("No stack exists"))
+                        )
+                        .build()
+                )
+                .collect(Collectors.toList());
+        // Save new stacks
+        memberStackRepository.saveAll(memberStackEntitiesToAdd);
+
+        // get MemberStackEntity to remove
+        List<MemberStackEntity> memberStackEntitiesToRemove = stacksToRemove.stream()
+                .map(stackId -> memberStackRepository.findByMemberIdAndTechStackId(id, stackId)
+                        .orElseThrow(() -> new IllegalArgumentException("No stack"))
+                )
+                .collect(Collectors.toList());
+        // Delete stacks
+        memberStackRepository.deleteAllInBatch(memberStackEntitiesToRemove);
+
+        List<String> updatedStacks = memberStackRepository.findByMemberId(id).stream()
+                .map(memberStackEntity -> memberStackEntity.getTechStack().getName())
+                .collect(Collectors.toList());
+
+        return updatedStacks;
     }
 }
 
