@@ -144,63 +144,60 @@ public class MemberService {
         return imagePath;
     }
 
-    public List<String> updateRoles(Long id, List<String> roles) {
-        MemberEntity member = memberRepository.findById(id)
+    public List<String> updateRoles(Long memberId, List<String> roles) {
+        MemberEntity member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new IllegalArgumentException("Member not found"));
 
-        List<Long> rolesId = new ArrayList<>();
-        for(String role :roles) {
-            RoleEntity roleEntity = roleRepository.findByName(role)
-                    .orElseThrow(() -> new IllegalArgumentException("Role not found"));
-            rolesId.add(roleEntity.getId());
-        }
-        List<MemberRoleEntity> memberRoleEntities = memberRoleRepository.findByMemberId(id);
-        List<Long> currentRoles = new ArrayList<>();
-        List<Long> duplicatedIds;
+        List<Long> rolesId = roles.stream()
+                .map(roleName -> roleRepository.findByName(roleName)
+                        .orElseThrow(() -> new IllegalArgumentException("Role not found: " + roleName))
+                )
+                .map(RoleEntity::getId)
+                .collect(Collectors.toList());
 
-        for (MemberRoleEntity memberRoleEntity : memberRoleEntities) {
-            currentRoles.add(memberRoleEntity.getRole().getId());
-        }
-        duplicatedIds = new ArrayList<>(currentRoles);
+        // Get current roles
+        List<Long> currentRoles = memberRoleRepository.findByMemberId(memberId)
+                .stream()
+                .map(MemberRoleEntity -> MemberRoleEntity.getRole().getId())
+                .collect(Collectors.toList());
 
-        duplicatedIds.retainAll(roles);
-        currentRoles.removeAll(duplicatedIds);
-        roles.removeAll(duplicatedIds);
+        // Identify new roles to add
+        List<Long> rolesToAdd = rolesId.stream()
+                .filter(roleId -> !currentRoles.contains(roleId))
+                .collect(Collectors.toList());
 
-        // Add roles
-        List<MemberRoleEntity> memberRoleEntityList = new ArrayList<>();
-        for (int i = 0; i < rolesId.size(); i++) {
-            RoleEntity role = roleRepository.findById(rolesId.get(i))
-                    .orElseThrow(() -> new IllegalArgumentException("No Role exists"));
-            memberRoleEntityList.add(MemberRoleEntity.builder()
-                    .member(member)
-                    .role(role)
-                    .createdAt(LocalDateTime.now())
-                    .updatedAt(LocalDateTime.now())
-                    .build());
-        }
-        memberRoleRepository.saveAll(memberRoleEntityList);
+        // Identify roles to remove
+        List<Long> rolesToRemove = currentRoles.stream()
+                .filter(currRoleId -> !rolesId.contains(currRoleId))
+                .collect(Collectors.toList());
 
-        //Remove roles
-        List<MemberRoleEntity> removeArr = new ArrayList<>();
-        for (int i = 0; i < currentRoles.size(); i++) {
-            RoleEntity role = roleRepository.findById(currentRoles.get(i))
-                    .orElseThrow(() -> new IllegalArgumentException("no role"));
-                removeArr.add(memberRoleRepository.findByMemberIdAndRoleId(id, currentRoles.get(i)).get());
-            }
-        memberRoleRepository.deleteAllInBatch(removeArr);
+        // Create MemberRoleEntity to add
+        List<MemberRoleEntity> memberRoleEntitiesToAdd = rolesToAdd.stream()
+                .map(roleId -> MemberRoleEntity.builder()
+                        .member(member)
+                        .role(roleRepository.findById(roleId)
+                                .orElseThrow(() -> new IllegalArgumentException("No role exists"))
+                        )
+                        .build()
+                )
+                .collect(Collectors.toList());
+        memberRoleRepository.saveAll(memberRoleEntitiesToAdd);
 
-        //retrieve roles from db
-        List<MemberRoleEntity> ids = memberRoleRepository.findByMemberId(id);
-        List<String> returnRoles = new ArrayList<>();
-        for(MemberRoleEntity memberRole : ids) {
-            returnRoles.add(memberRole.getRole().getName());
-        }
-        return returnRoles;
+        // Get MemberRoleEntity to remove
+        List<MemberRoleEntity> memberRoleEntitiesToRemove = rolesToRemove.stream()
+                .map(roleId -> memberRoleRepository.findByMemberIdAndRoleId(memberId, roleId)
+                        .orElseThrow(() -> new IllegalArgumentException("No Role"))
+                )
+                .collect(Collectors.toList());
+        memberRoleRepository.deleteAllInBatch(memberRoleEntitiesToRemove);
+
+        return memberRoleRepository.findByMemberId(memberId).stream()
+                .map(memberRoleEntity -> memberRoleEntity.getRole().getName())
+                .collect(Collectors.toList());
     }
 
-    List<String> updateStacks(Long id, List<String> stacks){
-        MemberEntity member = memberRepository.findById(id)
+    List<String> updateStacks(Long memberId, List<String> stacks){
+        MemberEntity member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new IllegalArgumentException("Member not found"));
 
         List<Long> stacksId = stacks.stream()
@@ -211,7 +208,7 @@ public class MemberService {
                 .collect(Collectors.toList());
 
         // Get current stacks
-        List<Long> currentStacks = memberStackRepository.findByMemberId(id)
+        List<Long> currentStacks = memberStackRepository.findByMemberId(memberId)
                 .stream()
                 .map(MemberStackEntity -> MemberStackEntity.getTechStack().getId())
                 .collect(Collectors.toList());
@@ -223,10 +220,10 @@ public class MemberService {
 
         // Identify stacks to remove
         List<Long> stacksToRemove  = currentStacks.stream()
-                .filter(stackId -> !stacksId.contains(stackId))
+                .filter(currStackId -> !stacksId.contains(currStackId))
                 .collect(Collectors.toList());
 
-        // Get MemberStackEntity to add
+        // Create MemberStackEntity to add
         List<MemberStackEntity> memberStackEntitiesToAdd = stacksToAdd.stream()
                 .map(stackId -> MemberStackEntity.builder()
                         .member(member)
@@ -239,20 +236,18 @@ public class MemberService {
         // Save new stacks
         memberStackRepository.saveAll(memberStackEntitiesToAdd);
 
-        // get MemberStackEntity to remove
+        // Get MemberStackEntity to remove
         List<MemberStackEntity> memberStackEntitiesToRemove = stacksToRemove.stream()
-                .map(stackId -> memberStackRepository.findByMemberIdAndTechStackId(id, stackId)
+                .map(stackId -> memberStackRepository.findByMemberIdAndTechStackId(memberId, stackId)
                         .orElseThrow(() -> new IllegalArgumentException("No stack"))
                 )
                 .collect(Collectors.toList());
         // Delete stacks
         memberStackRepository.deleteAllInBatch(memberStackEntitiesToRemove);
 
-        List<String> updatedStacks = memberStackRepository.findByMemberId(id).stream()
+        return memberStackRepository.findByMemberId(memberId).stream()
                 .map(memberStackEntity -> memberStackEntity.getTechStack().getName())
                 .collect(Collectors.toList());
-
-        return updatedStacks;
     }
 }
 
