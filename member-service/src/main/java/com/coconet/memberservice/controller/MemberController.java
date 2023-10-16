@@ -30,9 +30,10 @@ public class MemberController {
     }
 
     @DeleteMapping("/delete")
-    public String deleteUser(Long id) {
-        memberService.deleteUser(id);
-        return "successfully deleted";
+    public MemberResponseDto deleteUser() {
+        long id = 2L;
+
+        return memberService.deleteUser(id);
     }
 
     @GetMapping("/health")
