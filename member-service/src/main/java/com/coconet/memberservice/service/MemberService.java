@@ -5,6 +5,8 @@ import com.coconet.memberservice.dto.MemberResponseDto;
 import com.coconet.memberservice.entity.*;
 import com.coconet.memberservice.repository.*;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
@@ -52,32 +54,54 @@ public class MemberService {
             member.changeName(requestDto.getName());
             member.changeCareer(String.valueOf(requestDto.getCareer()));
             member.changeProfileImage(updateProfilePic(id, imageFile));
+            member.changeGithubLink(requestDto.getGithubLink());
+            member.changeBlogLink(requestDto.getBlogLink());
+            member.changeNotionLink(requestDto.getNotionLink());
 
             MemberEntity returnMember = memberRepository.save(member);
 
             List<String> returnRoles = updateRoles(id, requestDto.getRoles());
             List<String> returnStacks = updateStacks(id, requestDto.getStacks());
+
             return MemberResponseDto.builder()
                     .name(returnMember.getName())
                     .career(Integer.parseInt(returnMember.getCareer()))
                     .profileImg(returnMember.getProfileImage())
                     .roles(returnRoles)
                     .stacks(returnStacks)
+                    .githubLink(returnMember.getGithubLink())
+                    .blogLink(returnMember.getBlogLink())
+                    .notionLink(returnMember.getNotionLink())
                     .build();
         }
         catch(Exception e) {
+            System.out.println(e);
             new IllegalArgumentException("Update fails");
             return null;
         }
     }
 
-    public void deleteUser(Long id) {
-        memberRepository.deleteById(id);
-        // 제거 => DB 제거가 아니라 값만 활성화 인지 아닌지 .
-        // User status 0 (deleted)
-        // login X ..
-        // 활성화된 애들만 => 비활성화된 애들은 새로운 유저로.
-        //
+    public MemberResponseDto deleteUser(Long id) {
+        MemberEntity member = memberRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("No member found"));
+
+        member.deleteUser();
+
+        MemberEntity returnMember = memberRepository.save(member);
+
+        List<String> returnRoles = getAllRoles(id);
+        List<String> returnStacks = getAllStacks(id);
+
+        return MemberResponseDto.builder()
+                .name(returnMember.getName())
+                .career(Integer.parseInt(returnMember.getCareer()))
+                .profileImg(returnMember.getProfileImage())
+                .roles(returnRoles)
+                .stacks(returnStacks)
+                .githubLink(returnMember.getGithubLink())
+                .blogLink(returnMember.getBlogLink())
+                .notionLink(returnMember.getNotionLink())
+                .build();
     }
 
     public List<String> getAllRoles(Long memberId) {
@@ -114,27 +138,18 @@ public class MemberService {
         String absolutePath = new File("").getAbsolutePath() + "/";
         String path = "member-service/src/main/resources/memberProfilePics";
 
-        File file = new File(path);
         if (!image.isEmpty()) {
-            String contentType = image.getContentType();
-            String originalFileExtension;
-            if (ObjectUtils.isEmpty(contentType)) {
-                throw new Exception("이미지 파일은 jpg, png 만 가능합니다.");
-            } else {
-                if (contentType.contains("image/jpeg") || contentType.contains("image/png")) {
-                    originalFileExtension = ".png";
-                } else {
-                    throw new Exception("이미지 파일은 jpg, png 만 가능합니다.");
-                }
-            }
-            imagePath = path + "/" + id + originalFileExtension;
-            file = new File(absolutePath + imagePath);
+            imagePath = path + "/" + id + ".png";
+            File file = new File(absolutePath + imagePath);
             image.transferTo(file);
 
             member.changeProfileImage(imagePath);
             memberRepository.save(member);
         } else {
-            throw new Exception("이미지 파일이 비어있습니다.");
+            File previousFile = new File(absolutePath + path + "/" + id + ".png");
+            if(previousFile.exists())
+                previousFile.delete();
+            return path + "/basic_image.png";
         }
 
         return imagePath;

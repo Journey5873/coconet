@@ -42,6 +42,15 @@ public class MemberEntity extends BaseEntity{
     @Enumerated(EnumType.STRING)
     private AuthProvider provider;
 
+    private Byte isActivated;
+
+    @Column(length = 200)
+    private String githubLink;
+    @Column(length = 200)
+    private String blogLink;
+    @Column(length = 200)
+    private String notionLink;
+
     @OneToMany(mappedBy = "member")
     private List<MemberStackEntity> memberStacks;
 
@@ -57,4 +66,13 @@ public class MemberEntity extends BaseEntity{
     }
 
     public void changeProfileImage(String profileImage) { this.profileImage = profileImage;}
+
+    public void deleteUser() { this.isActivated = 0;}
+
+    public void changeGithubLink(String githubLink) { this.githubLink = githubLink;}
+
+    public void changeBlogLink(String blogLink) { this.blogLink = blogLink;}
+
+    public void changeNotionLink(String notionLink) { this.notionLink = notionLink;}
+
 }

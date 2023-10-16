@@ -19,4 +19,11 @@ public class MemberRequestDto {
     private List<String> roles;
     @NotNull
     private List<String> stacks;
+
+    @Max(200)
+    private String githubLink;
+    @Max(200)
+    private String blogLink;
+    @Max(200)
+    private String notionLink;
 }

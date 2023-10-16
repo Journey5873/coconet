@@ -15,6 +15,9 @@ public class MemberResponseDto {
     private String name;
     private int career;
     private String profileImg;
+    private String githubLink;
+    private String blogLink;
+    private String notionLink;
     private List<String> roles;
     private List<String> stacks;
 }
