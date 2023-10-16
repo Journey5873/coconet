@@ -1,4 +1,4 @@
-package com.coconet.gateway;
+package com.coconet.gatewayservice;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
