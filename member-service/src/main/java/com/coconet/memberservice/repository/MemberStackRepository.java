@@ -9,4 +9,6 @@ import java.util.Optional;
 public interface MemberStackRepository extends JpaRepository<MemberStackEntity, Long> {
     List<MemberStackEntity> findByMemberId(Long memberId);
     Optional<MemberStackEntity> findByMemberIdAndTechStackId(Long memberId, Long stackId);
+
+    void deleteByMemberIdAndTechStackIdIn(Long memberId, List<Long> stackIds);
 }
