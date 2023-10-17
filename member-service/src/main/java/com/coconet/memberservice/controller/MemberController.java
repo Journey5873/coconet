@@ -1,8 +1,10 @@
 package com.coconet.memberservice.controller;
 
+import com.coconet.memberservice.common.response.Response;
 import com.coconet.memberservice.dto.*;
 import com.coconet.memberservice.service.MemberService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -14,26 +16,26 @@ public class MemberController {
     private final MemberService memberService;
 
 
-    @GetMapping("/my-profile")
-    public MemberResponseDto getUserInfo(){
-        long id = 2L;
-
-        return memberService.getUserInfo(id);
+    @GetMapping("/my-profile/{id}")
+    public Response<MemberResponseDto> getUserInfo(@PathVariable("id") Long id){
+        //Testing 용이라 무시하셔도 됩니다..
+    //        long id = 2L;
+        MemberResponseDto memberResponseDto = memberService.getUserInfo(id);
+        return Response.OK(memberResponseDto);
     }
 
-
     @PutMapping("/my-profile")
-    public MemberResponseDto updateUserInfo(@RequestPart MemberRequestDto requestDto, @RequestPart MultipartFile imageFile) {
+    public Response<MemberResponseDto> updateUserInfo(@RequestPart("requestDto") MemberRequestDto requestDto, @RequestPart("imageFile") MultipartFile imageFile) {
         long id = 2L;
-
-        return memberService.updateUserInfo(id, requestDto, imageFile);
+        MemberResponseDto memberResponseDto = memberService.updateUserInfo(id, requestDto, imageFile);
+        return Response.OK(memberResponseDto);
     }
 
     @DeleteMapping("/delete")
-    public MemberResponseDto deleteUser() {
+    public Response<MemberResponseDto> deleteUser() {
         long id = 2L;
-
-        return memberService.deleteUser(id);
+        MemberResponseDto memberResponseDto = memberService.deleteUser(id);
+        return Response.OK(memberResponseDto);
     }
 
     @GetMapping("/health")
