@@ -142,16 +142,14 @@ public class MemberService {
             } catch (IOException e) {
                 throw new ApiException(ErrorCode.SERVER_ERROR);
             }
+            return imagePath;
 
-            member.changeProfileImage(imagePath);
-            memberRepository.save(member);
         } else {
             File previousFile = new File(absolutePath + path + "/" + member.getId() + ".png");
             if(previousFile.exists())
                 previousFile.delete();
             return path + "/basic_image.png";
         }
-        return imagePath;
     }
 
     public List<String> updateRoles(MemberEntity member, List<String> roles) {
