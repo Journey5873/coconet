@@ -18,6 +18,7 @@ import Label from "./components/atoms/Label";
 import Labelnput from "./components/molecules/Labelnput";
 import { Box } from "@mui/material";
 import LinkList from "./components/organisms/LinkList";
+import Loader from "./components/atoms/Loader";
 
 import { useRoutes } from "react-router-dom";
 
@@ -25,6 +26,7 @@ import { routes } from "./routes";
 
 function App() {
     const elem = useRoutes(routes);
+    
     return elem;
 }
 

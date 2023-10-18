@@ -19,7 +19,7 @@ export default function useFetch<T extends any[]>(fetchFn: () => Promise<T>, nam
     const [lastPage, setLastPage] = useState<number>(0);
 
     const handlePage = (value: number) => {
-        if (value == 1) getState(0);
+        if (value === 1) getState(0);
 
         if (value !== 1) getState(value * 10);
 
