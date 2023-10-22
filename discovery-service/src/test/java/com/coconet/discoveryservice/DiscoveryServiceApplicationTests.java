@@ -1,13 +1,13 @@
-package com.coconet.articleservice;
+package com.coconet.discoveryservice;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class ArticleServiceApplicationTests {
+class DiscoveryServiceApplicationTests {
 
-    @Test
-    void contextLoads() {
-    }
+	@Test
+	void contextLoads() {
+	}
 
 }

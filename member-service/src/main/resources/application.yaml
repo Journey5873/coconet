@@ -1,0 +1,56 @@
+server:
+  port: 0
+
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: 943606947940-n859fi64068gqahiqbq9lu2tvbhb4hjr.apps.googleusercontent.com
+            client-secret: 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
+            redirect-uri: http://localhost:9091/oauth2/callback/google
+            scope:
+              - email
+              - profile
+  datasource:
+    url: jdbc:mysql://coconet.cvmfdihkqonw.ap-southeast-2.rds.amazonaws.com:3306/coconet
+    username: admin
+    password: coconetadmin
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+  application:
+    name: Member-service
+
+
+
+#Token
+token:
+  secret:
+    key: SpringBootJWTHelperTokenSecretKeyValue123!@#
+  access-token:
+    plus-hour: 1
+  refresh-token:
+    plus-hour: 12
+
+
+# Swagger
+springdoc:
+  packages-to-scan: com.coconet.memberservice.controller
+  default-consumes-media-type: application/json;charset=UTF-8
+  default-produces-media-type: application/json;charset=UTF-8
+  swagger-ui:
+    path: /api-docs
+    disable-swagger-default-url: true
+    display-request-duration: true
+    operations-sorter: alpha
+
+# Eureka
+eureka:
+  client:
+    service-url:
+      default_zone: http://localhost:8761/eureka
+  instance:
+    hostname: localhost
