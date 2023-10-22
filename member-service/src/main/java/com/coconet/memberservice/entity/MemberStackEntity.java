@@ -19,10 +19,10 @@ public class MemberStackEntity extends BaseEntity{
     @Column(name = "member_stack_id")
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private MemberEntity member;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tech_stack_id")
     private TechStackEntity techStack;
 

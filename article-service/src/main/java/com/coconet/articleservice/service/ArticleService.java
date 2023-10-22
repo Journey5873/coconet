@@ -18,7 +18,7 @@ public class ArticleService {
     public ArticleResponseDto updateArticleInfo(Long userId, Long articleId, ArticleRequestDto articleRequestDto) {
         ArticleEntity article = articleRepository.findById(articleId)
                 .orElseThrow(() -> new IllegalArgumentException("No article"));
-
-
+    
+        return new ArticleResponseDto();
     }
 }
