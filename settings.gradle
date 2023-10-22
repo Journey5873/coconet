@@ -1,4 +1,2 @@
 rootProject.name = 'coconet'
-include 'member-service'
-include 'common'
 
