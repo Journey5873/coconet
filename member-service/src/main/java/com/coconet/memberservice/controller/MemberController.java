@@ -4,14 +4,11 @@ import com.coconet.memberservice.common.response.Response;
 import com.coconet.memberservice.dto.*;
 import com.coconet.memberservice.security.auth.MemberPrincipal;
 import com.coconet.memberservice.service.MemberService;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-@Tag(name = "Member")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/member-service/open-api")

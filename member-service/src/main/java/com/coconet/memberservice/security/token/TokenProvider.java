@@ -1,8 +1,8 @@
 package com.coconet.memberservice.security.token;
 
-import com.coconet.common.errorcode.ErrorCode;
-import com.coconet.common.errorcode.TokenErrorCode;
-import com.coconet.common.exception.ApiException;
+import com.coconet.memberservice.common.errorcode.ErrorCode;
+import com.coconet.memberservice.common.errorcode.TokenErrorCode;
+import com.coconet.memberservice.common.exception.ApiException;
 import com.coconet.memberservice.security.auth.MemberPrincipal;
 import com.coconet.memberservice.security.token.dto.TokenDto;
 import io.jsonwebtoken.*;
@@ -111,13 +111,13 @@ public class TokenProvider {
         } catch (Exception e) {
 
             if (e instanceof SignatureException) {
-                throw new ApiException(TokenErrorCode.INVALID_TOKEN, e);
+                throw new ApiException(TokenErrorCode.INVALID_TOKEN, "");
             }
             else if (e instanceof ExpiredJwtException) {
-                throw new ApiException(TokenErrorCode.EXPIRED_TOKEN, e);
+                throw new ApiException(TokenErrorCode.EXPIRED_TOKEN, "");
             }
             else {
-                throw new ApiException(TokenErrorCode.TOKEN_EXCEPTION, e);
+                throw new ApiException(TokenErrorCode.TOKEN_EXCEPTION, "");
             }
         }
     }
@@ -127,7 +127,7 @@ public class TokenProvider {
         Map<String, Object> data = validationTokenWithThrow(authorizationToken);
         Object userEmail = data.get("email");
         Objects.requireNonNull(userEmail, () -> {
-            throw new ApiException(ErrorCode.NULL_POINT);
+            throw new ApiException(ErrorCode.NULL_POINT, "");
         });
         return userEmail.toString();
     }

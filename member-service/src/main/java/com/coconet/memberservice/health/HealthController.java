@@ -1,6 +1,6 @@
 package com.coconet.memberservice.health;
 
-import com.coconet.common.response.Response;
+import com.coconet.memberservice.common.response.Response;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

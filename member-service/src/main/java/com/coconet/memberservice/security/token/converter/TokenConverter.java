@@ -1,7 +1,7 @@
 package com.coconet.memberservice.security.token.converter;
 
-import com.coconet.common.errorcode.ErrorCode;
-import com.coconet.common.exception.ApiException;
+import com.coconet.memberservice.common.errorcode.ErrorCode;
+import com.coconet.memberservice.common.exception.ApiException;
 import com.coconet.memberservice.security.token.dto.TokenDto;
 import com.coconet.memberservice.security.token.dto.TokenResponse;
 import org.springframework.stereotype.Component;
@@ -15,8 +15,8 @@ public class TokenConverter {
             TokenDto accessToken,
             TokenDto refreshToken
     ){
-        Objects.requireNonNull(accessToken, ()->{throw new ApiException(ErrorCode.NULL_POINT);});
-        Objects.requireNonNull(refreshToken, ()->{throw new ApiException(ErrorCode.NULL_POINT);});
+        Objects.requireNonNull(accessToken, ()->{throw new ApiException(ErrorCode.NULL_POINT, "");});
+        Objects.requireNonNull(refreshToken, ()->{throw new ApiException(ErrorCode.NULL_POINT, "");});
 
         return TokenResponse.builder()
                 .accessToken(accessToken.getToken())

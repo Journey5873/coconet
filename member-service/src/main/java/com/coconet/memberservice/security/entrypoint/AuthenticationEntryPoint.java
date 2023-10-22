@@ -1,8 +1,8 @@
 package com.coconet.memberservice.security.entrypoint;
 
-import com.coconet.common.errorcode.AuthorizationErrorCode;
-import com.coconet.common.exception.ApiException;
-import com.coconet.common.response.Response;
+import com.coconet.memberservice.common.errorcode.AuthorizationErrorCode;
+import com.coconet.memberservice.common.exception.ApiException;
+import com.coconet.memberservice.common.response.Response;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -30,7 +30,7 @@ public class AuthenticationEntryPoint implements org.springframework.security.we
     ) throws IOException, ServletException {
         log.info("AuthenticationEntryPoint 진입");
 
-        ApiException apiException = new ApiException(AuthorizationErrorCode.UNAUTHORIZED_ERROR);
+        ApiException apiException = new ApiException(AuthorizationErrorCode.UNAUTHORIZED_ERROR, "");
 
         Response apiResponse = Response.ERROR(AuthorizationErrorCode.UNAUTHORIZED_ERROR);
 

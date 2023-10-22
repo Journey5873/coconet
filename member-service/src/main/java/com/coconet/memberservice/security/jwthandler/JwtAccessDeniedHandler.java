@@ -1,8 +1,8 @@
 package com.coconet.memberservice.security.jwthandler;
 
-import com.coconet.common.errorcode.ErrorCode;
-import com.coconet.common.exception.ApiException;
-import com.coconet.common.response.Response;
+import com.coconet.memberservice.common.errorcode.ErrorCode;
+import com.coconet.memberservice.common.exception.ApiException;
+import com.coconet.memberservice.common.response.Response;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -27,7 +27,7 @@ public class JwtAccessDeniedHandler implements AccessDeniedHandler {
     public void handle(HttpServletRequest request, HttpServletResponse response, org.springframework.security.access.AccessDeniedException accessDeniedException) throws IOException, ServletException {
         log.info("JwtAuthenticationEntryPoint 진입");
 
-        ApiException apiException = new ApiException(ErrorCode.FORBIDDEN_ERROR);
+        ApiException apiException = new ApiException(ErrorCode.FORBIDDEN_ERROR, "");
 
         Response apiResponse = Response.ERROR(ErrorCode.FORBIDDEN_ERROR);
 
