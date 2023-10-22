@@ -39,4 +39,4 @@ out/
 ### gradle
 /.gradle
 /gradle
-/**/.yaml
+*.yaml
