@@ -21,7 +21,7 @@ public class Result {
         return Result.builder()
                 .resultCode(ErrorCode.OK.getErrorCode())
                 .resultMessage(ErrorCode.OK.getErrorDescription())
-                .resultDescription("성공")
+                .resultDescription("OK")
                 .build();
     }
 
@@ -29,11 +29,10 @@ public class Result {
         return Result.builder()
                 .resultCode(errorCodeIfs.getErrorCode())
                 .resultMessage(errorCodeIfs.getErrorDescription())
-                .resultDescription("에러 발생")
+                .resultDescription("Error")
                 .build()
                 ;
     }
-
 
     // validation용 ERROR
     public static Result ERROR(

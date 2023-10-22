@@ -27,7 +27,7 @@ public class MemberService {
 
     public MemberResponseDto getUserInfo(Long id){
         MemberEntity member = memberRepository.findById(id)
-                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND));
+                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "No user found"));
 
         List<String> returnRoles = getAllRoles(member).stream()
                 .map(RoleEntity::getName)
@@ -50,7 +50,7 @@ public class MemberService {
 
     public MemberResponseDto updateUserInfo(Long id, MemberRequestDto requestDto, MultipartFile imageFile) {
         MemberEntity member = memberRepository.findById(id)
-                                                    .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND));
+                                                    .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "No user found"));
 
         member.changeName(requestDto.getName());
         member.changeCareer(String.valueOf(requestDto.getCareer()));
@@ -78,7 +78,7 @@ public class MemberService {
 
     public MemberResponseDto deleteUser(Long id) {
         MemberEntity member = memberRepository.findById(id)
-                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND));
+                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "No user found"));
 
         member.deleteUser();
 
@@ -107,7 +107,7 @@ public class MemberService {
         List<MemberRoleEntity> roleEntities = memberRoleRepository.findAllByMemberId(member.getId());
 
         if(roleEntities.size() == 0) {
-            throw new ApiException(ErrorCode.BAD_REQUEST);
+            throw new ApiException(ErrorCode.BAD_REQUEST, "Member must at least have one role");
         }
 
         return roleEntities.stream()
@@ -119,7 +119,7 @@ public class MemberService {
         List<MemberStackEntity> stackEntities = memberStackRepository.findByMemberId(member.getId());
 
         if(stackEntities.size() == 0) {
-            throw new ApiException(ErrorCode.BAD_REQUEST);
+            throw new ApiException(ErrorCode.BAD_REQUEST, "Member must at least have one stack");
         }
 
         return stackEntities.stream()
@@ -140,7 +140,7 @@ public class MemberService {
             try {
                 image.transferTo(file);
             } catch (IOException e) {
-                throw new ApiException(ErrorCode.SERVER_ERROR);
+                throw new ApiException(ErrorCode.SERVER_ERROR, "Error happened when file is created");
             }
             return imagePath;
 
@@ -156,7 +156,7 @@ public class MemberService {
 
         List<RoleEntity> inputRoles = roles.stream()
                 .map(roleName -> roleRepository.findByName(roleName)
-                        .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND))
+                        .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "No role found"))
                 )
                 .toList();
 
@@ -192,7 +192,7 @@ public class MemberService {
     List<String> updateStacks(MemberEntity member, List<String> stacks){
         List<TechStackEntity> inputStacks = stacks.stream()
                 .map(stackName -> techStackRepository.findByName(stackName)
-                        .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND))
+                        .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "No stack found"))
                 )
                 .toList();
 
