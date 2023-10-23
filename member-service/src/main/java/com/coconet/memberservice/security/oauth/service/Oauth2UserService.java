@@ -67,6 +67,7 @@ public class Oauth2UserService extends DefaultOAuth2UserService {
                 .updatedAt(LocalDateTime.now())
                 .providerId(oAuth2UserInfo.getId())
                 .provider(authProvider)
+                .isActivated((byte) 1)
                 .build();
 
         return memberRepository.save(user);

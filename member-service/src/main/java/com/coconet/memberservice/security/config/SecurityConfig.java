@@ -12,6 +12,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -64,10 +65,14 @@ public class SecurityConfig {
             //oauth2 관련 설정입니다.
             .oauth2Login(configurer -> {
                 configurer.authorizationEndpoint(cus -> {
-                    cus.baseUri("/oauth2/authorize");
+                    // 소셜 로그인 url
+                    cus.baseUri("/member-service/oauth2/authorize");
                 });
+                // 인증 요청을 cookie 에 저장
                 configurer.authorizationEndpoint(cus -> cus.authorizationRequestRepository(cookieAuthorizationRequestRepository));
-                configurer.redirectionEndpoint(cus -> cus.baseUri("/oauth2/callback/*"));
+                // 소셜 인증 후 redirect url
+                configurer.redirectionEndpoint(cus -> cus.baseUri("/member-service/oauth2/callback/**"));
+                // 소셜 인증 후 redirect url
                 configurer.userInfoEndpoint(cus -> cus.userService(oauth2UserService));
                 configurer.successHandler(oauth2AuthenticationSuccessHandler);
 //                configurer.failureHandler(oauth2AuthenticationFailureHandler);
