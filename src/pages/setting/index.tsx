@@ -1,7 +1,13 @@
 import React from "react";
+import Header from "../../components/atoms/Header";
 
 const SettingPage = () => {
-    return <div>setting page</div>;
+    return (
+        <>
+            <Header />
+            <div>setting page</div>
+        </>
+    );
 };
 
 export default SettingPage;

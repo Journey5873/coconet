@@ -24,6 +24,7 @@ import Loader from "./components/atoms/Loader";
 import { useRoutes } from "react-router-dom";
 
 import { routes } from "./routes";
+import SettingPage from "./pages/setting";
 
 
 
@@ -32,10 +33,7 @@ function App() {
     
     return (
         <>
-        <SingleSelect label="직무" />
-        <SingleSelect label="경력" />
-        <MultipleSelect label={"관심스택"} />
-            
+            <SettingPage />
         </>
     ); 
 }
