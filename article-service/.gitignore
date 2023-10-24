@@ -39,3 +39,4 @@ out/
 *.yaml
 /gradle
 /.gradle
+src/generated
