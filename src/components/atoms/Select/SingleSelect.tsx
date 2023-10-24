@@ -1,39 +1,36 @@
-import Select, { SelectChangeEvent } from '@mui/material/Select';
-// import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import Select from 'react-select';
 import styled from 'styled-components';
+import { PositionOptions, PositonProps } from '../../assets/data/data';
+import { CareerOptions } from '../../assets/data/data';
 
-interface LabelProps {
+export interface LabelProps {
     label: string;
 }
 
-export default function SingleSelect({label} : LabelProps) {
- const [value, setValue] = React.useState('');
 
-  const handleChange = (event: SelectChangeEvent<unknown>) => {
-    setValue(event.target.value as string);
-  };
+
+export default function SingleSelect({label} : LabelProps) {
+    const [value, setValue] = useState<PositonProps | any>([]);
+    
+    useEffect(() => {
+        if (label === "직무") {
+            setValue(PositionOptions);
+        } else if (label === "경력") {
+            setValue(CareerOptions);
+        }
+    }, [label]);
 
     return (
         <StyledSelectWrapper>
             <StyledInputLabel id="demo-simple-select-label">{label}<StyledRequired>*</StyledRequired></StyledInputLabel>
             <StyledSelect
-            labelId="demo-simple-select-label"
-            id="demo-simple-select"
-            value={value}
-            label="Age"
-            onChange={handleChange}
-        >
-            <MenuItem value={10}>프론트엔드</MenuItem>
-            <MenuItem value={20}>백엔드</MenuItem>
-            <MenuItem value={30}>디자이너</MenuItem>
-            <MenuItem value={40}>IOS</MenuItem>
-            <MenuItem value={50}>안드로이드</MenuItem>
-            <MenuItem value={60}>데브옵스</MenuItem>
-            <MenuItem value={70}>PM</MenuItem>
-            <MenuItem value={80}>기획자</MenuItem>
-            </StyledSelect>
+                aria-labelledby="aria-label"
+                defaultValue={[value[0]]}
+                inputId="aria-example-input"
+                options={value}
+                className='singleSelect'
+                />
         </StyledSelectWrapper>
     )
 }
@@ -62,20 +59,7 @@ const StyledRequired = styled.span`
 `
 
 const StyledSelect = styled(Select)`
-    align-items: center;
-    background-color: rgb(255, 255, 255);
-    border-color: rgb(204, 204, 204);
-    border-radius: 4px;
-    border-style: solid;
-    border-width: 1px;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    min-height: 48px;
-    position: relative;
-    transition: all 100ms ease 0s;
-    box-sizing: border-box;
-    max-width: 500px;
-    width: 100%;
-    outline: 0px !important;
+    &.singleSelect .css-1fdsijx-ValueContainer {
+       min-height : 48px;  
+    }
 `

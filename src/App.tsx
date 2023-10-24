@@ -10,6 +10,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import SocialKakao from "./utils/SosialKakao";
 import RegisterImage from "./components/atoms/RegisterImage";
 import SingleSelect from "./components/atoms/Select/SingleSelect";
+import MultipleSelectWithCount from "./components/atoms/Select/MultipleSelectWithCount";
 import MultipleSelect from "./components/atoms/Select/MultipleSelect";
 
 import CustomCarousel from "./components/organisms/Carousel";
@@ -24,10 +25,19 @@ import { useRoutes } from "react-router-dom";
 
 import { routes } from "./routes";
 
+
+
 function App() {
     const elem = useRoutes(routes);
     
-    return elem;
+    return (
+        <>
+        <SingleSelect label="직무" />
+        <SingleSelect label="경력" />
+        <MultipleSelect label={"관심스택"} />
+            
+        </>
+    ); 
 }
 
 export default App;
