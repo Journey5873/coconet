@@ -1,26 +1,25 @@
-import styled from "styled-components"
-import Logo from '../assets/images/Logo.svg';
+import styled from "styled-components";
+import Logo from "../assets/images/Logo.svg";
 import chatIcon from "../assets/images/chatIcon.svg";
 import notificationIcon from "../assets/images/notificationIcon.svg";
-import coconutIcon from "../assets/images/coconutIcon.svg"
-import { ReactComponent as Polygon } from '../assets/images/polygon.svg';
+import coconutIcon from "../assets/images/coconutIcon.svg";
+import { ReactComponent as Polygon } from "../assets/images/polygon.svg";
 import { Link } from "react-router-dom";
 import { useState } from "react";
-
 
 export default function Header() {
     const [openDropdownbar, setOpenDropdownbar] = useState(false);
 
     const handleDropdownbar = () => {
-        setOpenDropdownbar(openDropdownbar => !openDropdownbar);
-        console.log(openDropdownbar)
-    }
+        setOpenDropdownbar((openDropdownbar) => !openDropdownbar);
+        console.log(openDropdownbar);
+    };
 
     const dropdownbarItem = [
-        { link: '/', content: '내 작성글' },
-        { link: '/', content: '내 관심글' },
-        { link: '/my-profile', content: '설정' },
-        { link: '/', content: '로그아웃' },
+        { link: "/", content: "내 작성글" },
+        { link: "/", content: "내 관심글" },
+        { link: "/setting", content: "설정" },
+        { link: "/", content: "로그아웃" },
     ];
     return (
         <StyledHeaderWrapper>
@@ -40,21 +39,21 @@ export default function Header() {
                     <StyledPolygon />
                     <StyledDropdownBar openDropdownbar={openDropdownbar}>
                         <StyledDropDownBarMenu>
-                                {dropdownbarItem.map((item, i) => {
-                                    return (
+                            {dropdownbarItem.map((item, i) => {
+                                return (
                                     <StyledDropDownBarMenuItem key={i}>
-                                        <Link to={item.link} onClick={() => console.log('페이지 이동')}>
-                                        {item.content}
+                                        <Link to={item.link} onClick={() => console.log("페이지 이동")}>
+                                            {item.content}
                                         </Link>
                                     </StyledDropDownBarMenuItem>
-                                    );
-                                })}
+                                );
+                            })}
                         </StyledDropDownBarMenu>
                     </StyledDropdownBar>
                 </StyledLoginUser>
             </StyledMenuWrapper>
         </StyledHeaderWrapper>
-    )
+    );
 }
 
 const StyledHeaderWrapper = styled.nav`
@@ -65,19 +64,19 @@ const StyledHeaderWrapper = styled.nav`
     align-items: center;
     height: 85px;
     padding: 0 10px;
-`
+`;
 
 const StyledLogoImg = styled.img`
     width: 105px;
     height: 32px;
-`
+`;
 
 const StyledMenuWrapper = styled.div`
     display: flex;
     grid-gap: 30px;
     gap: 30px;
     align-items: center;
-`
+`;
 
 const StyledPostRegister = styled.button`
     font-weight: 600;
@@ -86,20 +85,20 @@ const StyledPostRegister = styled.button`
     border: none;
     background-color: #fff;
     cursor: pointer;
-`
+`;
 
 const StyledMenuImage = styled.div`
-    width : 25px;
-    height : 25px;
-    cursor : pointer;
-`
+    width: 25px;
+    height: 25px;
+    cursor: pointer;
+`;
 
 const StyledLoginUser = styled.div`
     cursor: pointer;
     display: flex;
     align-items: center;
     position: relative;
-`
+`;
 
 const StyledLoginUserImg = styled.img`
     display: block;
@@ -108,33 +107,33 @@ const StyledLoginUserImg = styled.img`
     margin-right: 12px;
     border-radius: 50%;
     object-fit: cover;
-    transition: all .125s ease-in 0s;
-`
+    transition: all 0.125s ease-in 0s;
+`;
 
 const StyledPolygon = styled(Polygon)`
     fill: #868e96;
     position: absolute;
     top: 15px;
     right: -4px;
-`
-const StyledDropdownBar = styled.div<{openDropdownbar:boolean}>`
+`;
+const StyledDropdownBar = styled.div<{ openDropdownbar: boolean }>`
     position: absolute;
     top: 100%;
     margin-top: 1rem;
     right: 0;
-    display : ${({openDropdownbar}) => openDropdownbar ? 'block' : 'none'}
-`
+    display: ${({ openDropdownbar }) => (openDropdownbar ? "block" : "none")};
+`;
 
 const StyledDropDownBarMenu = styled.ul`
     position: relative;
     z-index: 5;
     width: 12rem;
     background: #fff;
-    border: 0.5px solid rgba(37,53,98,.1);
+    border: 0.5px solid rgba(37, 53, 98, 0.1);
     border-radius: 2px;
-    box-shadow: 0 2px 10px rgba(0,0,0,.08);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
     list-style: none;
-`
+`;
 
 const StyledDropDownBarMenuItem = styled.li`
     padding: 0.75rem 1rem;
@@ -145,7 +144,7 @@ const StyledDropDownBarMenuItem = styled.li`
 
     a {
         text-decoration: none;
-        color : inherit;
-        font-weight : 550;
+        color: inherit;
+        font-weight: 550;
     }
-`
+`;

@@ -24,18 +24,11 @@ import Loader from "./components/atoms/Loader";
 import { useRoutes } from "react-router-dom";
 
 import { routes } from "./routes";
-import SettingPage from "./pages/setting";
-
-
 
 function App() {
     const elem = useRoutes(routes);
-    
-    return (
-        <>
-            <SettingPage />
-        </>
-    ); 
+
+    return elem;
 }
 
 export default App;
