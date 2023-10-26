@@ -3,6 +3,7 @@ import GlobalLayout from "./pages/layout";
 import Index from "./pages/index";
 import SettingPage from "./pages/setting";
 import MyPosts from "./pages/myPosts";
+import MyLikes from "./pages/myLikes";
 
 export const routes = [
     {
@@ -15,15 +16,14 @@ export const routes = [
                 element: <SettingPage />,
                 index: true,
             },
-        ],
-    },
-    {
-        path: "/myPosts",
-        element: <GlobalLayout />,
-        children: [
             {
                 path: "/myPosts",
                 element: <MyPosts />,
+                index: true,
+            },
+            {
+                path: "/myLikes",
+                element: <MyLikes />,
                 index: true,
             },
         ],
