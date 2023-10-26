@@ -110,6 +110,7 @@ const StyledForm = styled.form`
     flex-direction: column;
     row-gap: 16px;
     align-items: flex-start;
+    width : 100%;
 `;
 
 const StyledLinkListContainer = styled.div`

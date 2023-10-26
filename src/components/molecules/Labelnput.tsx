@@ -24,4 +24,6 @@ const LabelInputContainer = styled.div`
     flex-direction: column;
     align-items: flex-start;
     row-gap: 4px;
+    width : 100%;
+    gap : 8px;
 `;

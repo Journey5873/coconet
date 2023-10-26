@@ -5,7 +5,7 @@ import { PositionOptions, PositonProps } from "../../assets/data/data";
 import { CareerOptions } from "../../assets/data/data";
 
 export interface LabelProps {
-    label: "직무" | "경력";
+    label: "직무" | "경력" | "관심스택";
 }
 
 export default function SingleSelect({ label }: LabelProps) {
@@ -41,6 +41,7 @@ const StyledSelectWrapper = styled.div`
     flex-direction: column;
     gap: 8px;
     margin-bottom: 20px;
+    width : 100%;
 `;
 
 const StyledInputLabel = styled.label`

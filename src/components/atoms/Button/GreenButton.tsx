@@ -13,7 +13,7 @@ export default function GreenButton({buttonName }:Props) {
 const StyledGreenButton = styled.div`
     box-sizing : border-box;
     display: flex;
-    width: 60%;
+    width: 100%;
     height: 44px;
     padding: 10px;
     justify-content: center;

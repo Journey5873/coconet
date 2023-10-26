@@ -1,6 +1,8 @@
 import axios from "axios";
 import { useRef, useState } from "react";
 import styled from "styled-components";
+import CoconutIcon from '../assets/images/coconutIcon.svg';
+
 export default function RegisterImage() {
     const [fileURL, setFileURL] = useState<string>("");
     const [file, setFile] = useState<FileList | null>();
@@ -44,7 +46,7 @@ export default function RegisterImage() {
             src={
             fileURL
                 ? fileURL
-                : "https://hola-post-image.s3.ap-northeast-2.amazonaws.com/default.PNG"
+                : CoconutIcon
             }
             alt=""
                 ></StyledImage>
@@ -58,7 +60,6 @@ export default function RegisterImage() {
         onChange={onImageChange}
       ></StyledImageInput>
         </StyledImageWrapper>
-      <label htmlFor="img">이미지 업로드</label>
     </>
     )
 }
