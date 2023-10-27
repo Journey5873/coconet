@@ -21,9 +21,9 @@ export default function Header() {
     }
 
     const dropdownbarItem = [
-        { link: '/', content: '내 작성글' },
-        { link: '/', content: '내 관심글' },
-        { link: '/my-profile', content: '설정' },
+        { link: '/myPosts', content: '내 작성글' },
+        { link: '/myLikes', content: '내 관심글' },
+        { link: '/setting', content: '설정' },
         { link: '/', content: '로그아웃' },
     ];
     return (
