@@ -6,20 +6,24 @@ import coconutIcon from "../assets/images/coconutIcon.svg"
 import { ReactComponent as Polygon } from '../assets/images/polygon.svg';
 import { Link } from "react-router-dom";
 import { useState } from "react";
+import LoginModal from "./LoginModal";
 
 
 export default function Header() {
     const [openDropdownbar, setOpenDropdownbar] = useState(false);
+    const [openLoginModal, setOpenLoginModal] = useState(false);
 
     const handleDropdownbar = () => {
         setOpenDropdownbar(openDropdownbar => !openDropdownbar);
-        console.log(openDropdownbar)
+    }
+    const handleOpenLoginModal = () => {
+        setOpenLoginModal(openLoginModal => !openLoginModal);
     }
 
     const dropdownbarItem = [
-        { link: '/myPosts', content: '내 작성글' },
-        { link: '/myLikes', content: '내 관심글' },
-        { link: '/setting', content: '설정' },
+        { link: '/', content: '내 작성글' },
+        { link: '/', content: '내 관심글' },
+        { link: '/my-profile', content: '설정' },
         { link: '/', content: '로그아웃' },
     ];
     return (
@@ -28,7 +32,8 @@ export default function Header() {
                 <StyledLogoImg src={Logo} />
             </Link>
             <StyledMenuWrapper>
-                <StyledPostRegister>새 글 쓰기</StyledPostRegister>
+                <StyledPostRegister onClick={() => handleOpenLoginModal()}>새 글 쓰기</StyledPostRegister>
+                {openLoginModal && <LoginModal handleLoginModalVisible={handleOpenLoginModal} />}
                 <StyledMenuImage>
                     <img src={chatIcon} alt="chatIcon" />
                 </StyledMenuImage>

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import styled, { keyframes } from "styled-components";
-
+import { ReactComponent as CoconutIcon } from '../assets/images/coconutIcon.svg';
 
 export default function Loader()  {
     const [isActive, setIsActive] = useState<boolean>(true);
@@ -12,8 +12,6 @@ export default function Loader()  {
                     <StyledLoading>
                         <StyledLoadingSpinner>
                             <StyledLoadingImage
-                                src="https://main-pdf2-aspose-app.s3.us-west-2.amazonaws.com/f9745d48-bafd-4840-8425-2c69b4495361/free-icon-coconut-4469199.svg?X-Amz-Expires=86400&response-content-disposition=attachment%3B%20filename%3D%22free-icon-coconut-4469199.svg%22&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA4XIV7DNDPELHCB2Q/20231018/us-west-2/s3/aws4_request&X-Amz-Date=20231018T121012Z&X-Amz-SignedHeaders=host&X-Amz-Signature=5f4e74e1934de364b4c3d068d11a9aa373a8f9a3d8178eb2e29bbaa6143cd89c"
-                                alt="loading spinner"
                             />
                         </StyledLoadingSpinner>
                     </StyledLoading>
@@ -80,7 +78,7 @@ const StyledLoadingSpinner = styled.div`
     }
 `
 
-const StyledLoadingImage = styled.img`
+const StyledLoadingImage = styled(CoconutIcon)`
     width: 100%;
     height: 100%;
     animation: ${rotateImage} 1.2s linear infinite;

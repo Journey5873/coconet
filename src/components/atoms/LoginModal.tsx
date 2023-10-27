@@ -1,9 +1,10 @@
 import React from "react";
-import styled from "styled-components"
+import styled, { keyframes } from "styled-components"
 import CloseIcon from '@mui/icons-material/Close';
 import {ReactComponent as GoogleLogo} from '../assets/images/googleLogo.svg';
 import {ReactComponent as GithubLogo} from '../assets/images/githubLogo.svg'
-import { ReactComponent as KakaoLogo } from '../assets/images/kakaoLogo.svg';
+import { ReactComponent as CoconetLogo } from '../assets/images/Logo.svg';
+import KakaoAuth from "../organisms/KaKaoAuth";
 
 
 interface Props {
@@ -18,16 +19,6 @@ interface Props {
     window.location.href = githubURL
   }
 
-// 카카오 로그인
-const loginWithKakao = () => {
-   const KAKAO_API_KEY = `${process.env.REACT_APP_KAKAO_API_KEY}`;
-  const KAKAO_REDIRECT_URL = `${process.env.REACT_APP_KAKAO_REDIRECT_URL}`; //Redirect URI
-
-  // oauth 요청 URL
-  const kakaoURL = `https://kauth.kakao.com/oauth/authorize?client_id=${KAKAO_API_KEY}&redirect_uri=${KAKAO_REDIRECT_URL}&response_type=code`;
-  window.location.href = kakaoURL;
-  
-}
 export default function LoginModal({handleLoginModalVisible}:Props) {
   return (
     <React.Fragment>
@@ -35,6 +26,7 @@ export default function LoginModal({handleLoginModalVisible}:Props) {
       <StyledLoginModalBg >
         <StyledLoginModalWrapper>
           <StyledLoginModalHeader>
+            <CoconetLogo style={{width : "10rem"}} />
             <CloseIcon style={{color: '#868e96',cursor:'pointer'}} onClick={() => handleLoginModalVisible()} />
           </StyledLoginModalHeader>
           <StyledLoginModalContent>
@@ -53,10 +45,8 @@ export default function LoginModal({handleLoginModalVisible}:Props) {
                 <StyledButtonDescription>Github 로그인</StyledButtonDescription>
               </StyledBottonWrapper>
               <StyledBottonWrapper>
-                <StyledButton onClick={() => loginWithKakao()} style={{backgroundColor:'#fae100'}}>
-                  <KakaoLogo />
-                </StyledButton>
-                <StyledButtonDescription>Kakao 로그인</StyledButtonDescription>
+              <KakaoAuth />
+              <StyledButtonDescription>Kakao 로그인</StyledButtonDescription>
               </StyledBottonWrapper>
             </StyledLoginWrapper>
           </StyledLoginModalContent>
@@ -66,8 +56,20 @@ export default function LoginModal({handleLoginModalVisible}:Props) {
     )
 }
 
+const loginModalAnimation = keyframes`
+  0% {
+      opacity: 0;
+      top: -100%;
+    }
+    
+    100% {
+      opacity: 1;
+      top: 50%;
+  }
+`  
+
 const Login = styled.div`
-box-sizing: border-box;
+    box-sizing: border-box;
     display: block;
     position: fixed;
     inset: 0px;
@@ -76,7 +78,6 @@ box-sizing: border-box;
 `
 
 const StyledLoginModalBg = styled.div`
-    margin : 0 auto;
     box-sizing: border-box;
     display: block;
     position: fixed;
@@ -84,8 +85,6 @@ const StyledLoginModalBg = styled.div`
     z-index: 1000;
     overflow: auto;
     outline: 0px;
-    width: 800px;
-    height: 550px;
 
     @media (max-width: 768px) {
       width : 100%;
@@ -95,13 +94,16 @@ const StyledLoginModalBg = styled.div`
 `;
 
 const StyledLoginModalWrapper = styled.div`
-  width:100%;
-  height : 100%;
+    width: 800px;
+    height: 550px;
     box-shadow: 0 2px 12px 0 rgb(0 0 0/9%);
     position: relative;
     display: flex;
     flex-direction: column;
+    top: -200%;
     margin: 0 auto;
+    transform: translateY(-50%);
+    animation: ${loginModalAnimation} .5s ease 0s 1 normal forwards running;
   `
 
 const StyledLoginModalHeader = styled.div`
@@ -186,3 +188,4 @@ const StyledButtonDescription = styled.p`
     letter-spacing: -.005em;
     color: #565656;
 `
+
