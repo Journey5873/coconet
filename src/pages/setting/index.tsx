@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ChangeEvent, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import RegisterImage from '../../components/atoms/RegisterImage';
 import styled from 'styled-components';
@@ -19,26 +19,45 @@ export interface SettingFormType {
   notionLink?: string;
 }
 
-const SettingPage = () => {
-  const {
-    register,
-    formState: { errors },
-    handleSubmit,
-    getValues,
-    watch,
-  } = useForm<SettingFormType>({
-    defaultValues: {
-      name: 'bk',
-      career: 1,
-      stacks: ['React'],
-      roles: ['frontend'],
-    },
-  });
+interface SelectValue {
+  value: string;
+  label: string;
+}
 
-  const onSubmit = async (value: SettingFormType) => {
+const SettingPage = () => {
+  const [name, setName] = useState('');
+  const [job, setJob] = useState<SelectValue>({
+    label: '',
+    value: '',
+  });
+  const [carrer, setCarrer] = useState<SelectValue>({
+    label: '',
+    value: '',
+  });
+  const [stack, setStack] = useState<SelectValue[]>([]);
+
+  const handleName = (e: any) => {
+    const target = e.target as HTMLInputElement;
+    setName(target.value);
+  };
+
+  const handleJob = (value: SelectValue) => setJob(value);
+
+  const handleCarrer = (value: SelectValue) => setCarrer(value);
+
+  const handleStack = (value: SelectValue[]) => setStack(value);
+
+  const onSave = async () => {
     try {
+      const DTO = {
+        name,
+        roles: [job.value],
+        statks: [...stack].map((item) => item.value),
+        carrer: +carrer.value,
+      };
+
       const response = await fetch('/member-service/open-api/my-profile', {
-        body: JSON.stringify(value),
+        body: JSON.stringify(DTO),
         method: 'PUT',
       });
 
@@ -51,25 +70,22 @@ const SettingPage = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <Container>
-        <div style={{ margin: '0 auto' }}>
-          <RegisterImage />
-        </div>
-        <Labelnput text="닉네임" isRequired {...register('name')} />
-        <SingleSelect label="직무" />
-        <Labelnput text="소속" />
-        <SingleSelect label="경력" {...register('career')} />
-        <Labelnput text="자기소개" onChange={() => {}} />
-        <MultipleSelect label={'관심스택'} {...register('stacks')} />
-        <LinkList onSubmit={() => {}} />
-        <StyledButtonWrapper>
-          <GreenButton buttonName="저장" />
-          <button>임시</button>
-          <DeleteUserButton>회원탈퇴</DeleteUserButton>
-        </StyledButtonWrapper>
-      </Container>
-    </form>
+    <Container>
+      <div style={{ margin: '0 auto' }}>
+        <RegisterImage />
+      </div>
+      <Labelnput text="닉네임" isRequired value={name} onChange={handleName} />
+      <SingleSelect label="직무" onChange={handleJob} value={job} />
+      <Labelnput text="소속" />
+      <SingleSelect label="경력" onChange={handleCarrer} value={carrer} />
+      <Labelnput text="자기소개" onChange={() => {}} />
+      <MultipleSelect label={'관심스택'} onChange={handleStack} value={stack} />
+      <LinkList onSubmit={() => {}} />
+      <StyledButtonWrapper>
+        <GreenButton buttonName="저장" onClick={() => onSave()} />
+        <DeleteUserButton>회원탈퇴</DeleteUserButton>
+      </StyledButtonWrapper>
+    </Container>
   );
 };
 
