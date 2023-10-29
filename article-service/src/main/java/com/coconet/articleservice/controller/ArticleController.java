@@ -2,13 +2,13 @@ package com.coconet.articleservice.controller;
 
 import com.coconet.articleservice.dto.ArticleRequestDto;
 import com.coconet.articleservice.dto.ArticleResponseDto;
+import com.coconet.articleservice.dto.ArticleSearchCondition;
 import com.coconet.articleservice.service.ArticleService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/article-service/open-api")
@@ -17,12 +17,26 @@ public class ArticleController {
 
     private final ArticleService articleService;
 
+    @GetMapping("/article/{id}")
+    public ArticleResponseDto getArticle(@PathVariable String id){
+        ArticleResponseDto article = articleService.getArticle(Long.valueOf(id));
+        return article;
+    }
+
+    @GetMapping("/articles")
+    public Page<ArticleResponseDto> getArticles(ArticleSearchCondition condition, Pageable pageable){
+        return articleService.getArticles(condition, pageable);
+    }
+
     @PostMapping("/article")
     public ResponseEntity<ArticleResponseDto> updateArticleInfo(@RequestBody() ArticleRequestDto articleRequestDto) {
-
-
         ArticleResponseDto articleResponseDto = null;
         return ResponseEntity.status(200).body(articleResponseDto);
     }
 
+    @DeleteMapping("/delete/{id}")
+    public String deleteArticle(@PathVariable String id){
+        Long memberId = 2L;
+        return articleService.deleteArticle(Long.valueOf(id), memberId);
+    }
 }

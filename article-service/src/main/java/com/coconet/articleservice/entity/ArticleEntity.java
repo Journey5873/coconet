@@ -47,5 +47,7 @@ public class ArticleEntity extends BaseEntity{
     private String meetingType;
 
     // MemberID ..
-
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    private MemberEntity member;
 }
