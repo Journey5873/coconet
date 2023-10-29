@@ -2,30 +2,31 @@ import React, { useEffect, useState } from 'react';
 import { GoogleLogin, GoogleOAuthProvider } from '@react-oauth/google';
 
 const GoogleAuth = () => {
-    const [clientId, setClientId] = useState<string>('');
+  const [clientId, setClientId] = useState<string>('');
 
-    useEffect(() => {
-        const clientId = process.env.REACT_APP_GOOGLE_CLIENT_KEY;
+  useEffect(() => {
+    const clientId = process.env.REACT_APP_GOOGLE_CLIENT_KEY;
 
-        if (clientId) {
-            setClientId(clientId);
-        }
-    }, []);
+    if (clientId) {
+      setClientId(clientId);
+    }
+  }, []);
 
-    return (
-        <div style={{ width: '100px' }}>
-            <GoogleOAuthProvider clientId={clientId}>
-                <GoogleLogin
-                    onSuccess={(credentialResponse) => {
-                        console.log(credentialResponse);
-                    }}
-                    onError={() => {
-                        console.log('Login Failed');
-                    }}
-                />
-            </GoogleOAuthProvider>
-        </div>
-    );
+  return (
+    <div style={{ width: '100px' }}>
+      <GoogleOAuthProvider clientId={clientId}>
+        <GoogleLogin
+          onSuccess={(credentialResponse) => {
+            console.log(credentialResponse);
+          }}
+          onError={() => {
+            console.log('Login Failed');
+          }}
+          login_uri="http://localhost:9091/oauth2/authorize/google"
+        />
+      </GoogleOAuthProvider>
+    </div>
+  );
 };
 
 export default GoogleAuth;
