@@ -55,7 +55,7 @@ const StyledTabContainer = styled.div`
 
 const StyledTabNav = styled.nav`
     display: flex;
-    border-bottom: 1px solid lightgray;
+    /* border-bottom: 1px solid lightgray; */
 `;
 
 const StyledTabNavBtn = styled.button<{
@@ -68,7 +68,7 @@ const StyledTabNavBtn = styled.button<{
     background-color: transparent;
     font-size: 1.5rem;
     font-weight: ${(props) => (props.isActive ? "800" : "500")};
-    border-bottom: ${(props) => (props.isActive ? "2px solid black" : "none")};
+    /* border-bottom: ${(props) => (props.isActive ? "2px solid black" : "none")}; */
 `;
 
 const StyledTabContent = styled.section`
