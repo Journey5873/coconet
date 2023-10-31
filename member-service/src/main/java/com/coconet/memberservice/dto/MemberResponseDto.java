@@ -12,6 +12,7 @@ public class MemberResponseDto {
     private String name;
     private int career;
     private String profileImg;
+    private String bio;
     private String githubLink;
     private String blogLink;
     private String notionLink;

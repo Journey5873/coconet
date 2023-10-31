@@ -14,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -42,6 +43,7 @@ public class MemberService {
                 .profileImg(member.getProfileImage())
                 .roles(returnRoles)
                 .stacks(returnStacks)
+                .bio(member.getBio())
                 .githubLink(member.getGithubLink())
                 .blogLink(member.getBlogLink())
                 .notionLink(member.getNotionLink())
@@ -52,9 +54,14 @@ public class MemberService {
         MemberEntity member = memberRepository.findById(id)
                                                     .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "No user found"));
 
+
+        if (isDuplicateUsername(requestDto.getName()) && !member.getName().equals(requestDto.getName())){
+            throw new ApiException(ErrorCode.BAD_REQUEST, "Nickname is already in use");
+        }
         member.changeName(requestDto.getName());
         member.changeCareer(String.valueOf(requestDto.getCareer()));
         member.changeProfileImage(updateProfilePic(member, imageFile));
+        member.changeBio(requestDto.getBio());
         member.changeGithubLink(requestDto.getGithubLink());
         member.changeBlogLink(requestDto.getBlogLink());
         member.changeNotionLink(requestDto.getNotionLink());
@@ -70,6 +77,7 @@ public class MemberService {
                 .profileImg(returnMember.getProfileImage())
                 .roles(returnRoles)
                 .stacks(returnStacks)
+                .bio(returnMember.getBio())
                 .githubLink(returnMember.getGithubLink())
                 .blogLink(returnMember.getBlogLink())
                 .notionLink(returnMember.getNotionLink())
@@ -101,6 +109,11 @@ public class MemberService {
                 .blogLink(returnMember.getBlogLink())
                 .notionLink(returnMember.getNotionLink())
                 .build();
+    }
+
+    public boolean isDuplicateUsername(String username){
+        Optional<MemberEntity> existingMember = memberRepository.findByName(username);
+        return existingMember.isPresent();
     }
 
     public List<RoleEntity> getAllRoles(MemberEntity member) {
