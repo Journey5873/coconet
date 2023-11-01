@@ -13,8 +13,8 @@ const KaKaoAuth = () => {
 
     return (
         <StyledButton style={{backgroundColor:'#fae100'}}>
-                  <KakaoLogo onClick={handleLogin} />
-      </StyledButton>
+          <KakaoLogo onClick={handleLogin} />
+        </StyledButton>
     );
 };
 

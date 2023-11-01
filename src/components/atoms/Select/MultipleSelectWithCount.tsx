@@ -50,11 +50,15 @@ export default function MultipleSelectWithCount() {
 
     const {
       target: { value }
-      } = event;
-      setPersonName(
-      // On autofill we get a stringified value.
-      typeof value === "string" ? value.split(",") : value
+    } = event;
+    // console.log(item.)
+    if (count > 0) {
+        setPersonName(
+        // On autofill we get a stringified value.
+        typeof value === "string" ? value.split(",") : value
     );
+      }
+      
   };
 
   return (
@@ -64,16 +68,18 @@ export default function MultipleSelectWithCount() {
         <Select
           labelId="demo-multiple-chip-label"
           id="demo-multiple-chip"
-          multiple
-          value={personName}
+                  multiple
+                  value={personName}
           onChange={handleChange}
-          input={<OutlinedInput id="select-multiple-chip" label="Chip" />}
-                  renderValue={(selected) => (
-                    <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
-                          {selected.map((value) => {
-                              const isSelected = item.find((item => item.value === value))?.count;
-                              return (
-                               isSelected as number > 0 &&  <Chip key={value} label={ value + " (" +item.find((item => item.value === value))?.count + ")"}></Chip>
+          input={<OutlinedInput id="select-multiple-chip"/>}
+          renderValue={(slslsl) => (
+            <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
+                {slslsl.map((value) => {
+                    const isSelected = item.find((item => item.value === value))?.count;
+                    if (isSelected) setCount(isSelected);
+                    console.log(isSelected)
+                        return (
+                            isSelected as number > 0 &&  <Chip key={value} label={ value + " (" +item.find((item => item.value === value))?.count + ")"}></Chip>
                         )
                     })}
             </Box>
@@ -92,9 +98,11 @@ export default function MultipleSelectWithCount() {
                       dispatch(decrease(item[i].id));
                   }}>-</RemoveCircleOutlineIcon>
               {name.count}
-                  <AddCircleOutlineIcon onClick={(e) => {
-                      e.stopPropagation();
-                      dispatch(increase(item[i].id));
+              <AddCircleOutlineIcon onClick={(e) => {
+                // e.stopPropagation();
+                dispatch(increase(item[i].id));
+                console.log(item[i].count)
+                
                   }}>+</AddCircleOutlineIcon>
             </MenuItem>
           ))}

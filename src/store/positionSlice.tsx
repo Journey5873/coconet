@@ -33,12 +33,12 @@ let positionList = createSlice({
 
     increase(state, action) {
       const index = state.findIndex((item) => item.id === action.payload)
-      state[index].count++;
+      state[index].count += 1;;
     },
     decrease(state, action) {
       const index = state.findIndex((item) => item.id === action.payload)
       if (state[index].count > 0) {
-        state[index].count--;
+        state[index].count -= 1;
       }
     },
   }
