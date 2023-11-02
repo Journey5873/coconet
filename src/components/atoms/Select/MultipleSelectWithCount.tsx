@@ -25,6 +25,12 @@ const MenuProps = {
   }
 };
 
+interface StackListProps {
+    value: string;
+    label: string;
+    count: number;
+    id: number;
+}
 
 function getStyles(name: string, personName: readonly string[], theme: Theme) {
   return {
@@ -37,15 +43,15 @@ function getStyles(name: string, personName: readonly string[], theme: Theme) {
 
 export default function MultipleSelectWithCount() {
     const theme = useTheme();
-    const [personName, setPersonName] = React.useState<string[]>([]);
+    const [stackLists, setStackLists] = React.useState<string[]>([]);
     
-    const item = useSelector((state : RootState) => state.positionList);
+    const items = useSelector((state : RootState) => state.positionList);
 
     let dispatch = useDispatch();
 
     const handleChange = (label: string) => {
-        setPersonName(
-       personName.includes(label) ? [...personName] : [...personName,label]
+        setStackLists(
+       stackLists.includes(label) ? [...stackLists] : [...stackLists,label]
     );
       
   };
@@ -55,38 +61,38 @@ export default function MultipleSelectWithCount() {
       <FormControl sx={{ m: 1, width: 300 }}>
         <Select
             multiple
-            value={personName}
+            value={stackLists}
             input={<OutlinedInput id="select-multiple-chip"/>}
             renderValue={(selected) => (
                 <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
                     {selected.map((value) => {
-                        const isSelected = item.find((item => item.value === value))?.count;
+                        const isSelected = items.find((item => item.value === value))?.count;
                             return (
-                                isSelected as number > 0 &&  <Chip key={value} label={ value + " (" +item.find((item => item.value === value))?.count + ")"}></Chip>
+                                isSelected as number > 0 &&  <Chip key={value} label={ value + " (" +items.find((item => item.value === value))?.count + ")"}></Chip>
                             )
                         })}
                 </Box>
           ) }
           MenuProps={MenuProps}
         >
-          {item.map((name:any,i:number) => (
+          {items.map((item:StackListProps,i:number) => (
               <MenuItem
-                key={name.value}
-                value={name.value}
+                key={item.value}
+                value={item.value}
                 style={{display: "flex", justifyContent : "space-between"}}
                 >
-                    <div>{name.value}</div>
+                    <div>{item.value}</div>
                     <StyledButtonWrapper>
                     <RemoveCircleOutlineIcon onClick={(e) => {
                         e.stopPropagation();
-                        dispatch(decrease(item[i].id));
-                        handleChange(item[i].label)
+                        dispatch(decrease(items[i].id));
+                        handleChange(items[i].label)
                     }}>-</RemoveCircleOutlineIcon>
-                {name.count}
+                {item.count}
                 <AddCircleOutlineIcon onClick={(e) => {
                     e.stopPropagation();
-                    dispatch(increase(item[i].id));
-                    handleChange(item[i].label)
+                    dispatch(increase(items[i].id));
+                    handleChange(items[i].label)
                     }}>+</AddCircleOutlineIcon>
                 </StyledButtonWrapper>
             </MenuItem>
