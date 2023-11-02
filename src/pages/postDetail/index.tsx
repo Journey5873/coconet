@@ -283,9 +283,7 @@ const StyledLinkIcon = styled(LinkIcon)`
 const StyledViewAndBookmarkCount = styled.section`
     margin-top: 20px;
     display: flex;
-    -webkit-box-pack: end;
     justify-content: flex-end;
-    -webkit-box-align: center;
     align-items: center;
     gap: 10px;
     height: 20px;

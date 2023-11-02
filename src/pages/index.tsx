@@ -1,8 +1,6 @@
 import React, { useState } from "react";
 
 import useFetch from "../hooks/useFetch";
-import { useDispatch, useSelector } from "react-redux";
-import { decrease, increase } from "../store/positionSlice";
 
 interface Dummy {
     count: number;
@@ -52,23 +50,10 @@ const Index = () => {
     };
     const { data } = useFetch<Dummy[]>(getData, "dummy", []);
 
-    // MultiSelectorWithcount state와 함수
-    let dispatch = useDispatch();
-    
-    const [count, setCount] = useState(0);
-    
-    const optionAdd = (option: any) => {
-        dispatch(increase(option.id));
-        setCount(option.count);
-    } 
-    const optionDelete = (option: any) => {
-        dispatch(decrease(option.id));
-        setCount(option.count);
-    } 
 
     return (
         <>
-        <div>hello world</div>   
+            <div>hello world</div>  
         </>
     ) 
 };
