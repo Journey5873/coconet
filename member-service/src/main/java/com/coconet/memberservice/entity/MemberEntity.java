@@ -48,6 +48,9 @@ public class MemberEntity extends BaseEntity{
     private String bio;
 
     @Column(length = 200)
+    private String bio;
+
+    @Column(length = 200)
     private String githubLink;
     @Column(length = 200)
     private String blogLink;
@@ -72,13 +75,11 @@ public class MemberEntity extends BaseEntity{
         this.name = name;
     }
 
-    public void changeCareer(String career) {
-        this.career = career;
-    }
+    public void changeCareer(String career) {this.career = career;}
 
     public void changeProfileImage(String profileImage) { this.profileImage = profileImage;}
 
-    public void deleteUser() { this.isActivated = 0;}
+    public void changeBio(String bio){this.bio = bio;}
 
     public void changeGithubLink(String githubLink) { this.githubLink = githubLink;}
 
@@ -86,4 +87,5 @@ public class MemberEntity extends BaseEntity{
 
     public void changeNotionLink(String notionLink) { this.notionLink = notionLink;}
 
+    public void deleteUser() { this.isActivated = 0;}
 }

@@ -20,7 +20,8 @@ public class MemberRequestDto {
     private List<String> roles;
     @NotNull
     private List<String> stacks;
-
+    @Size(max = 50)
+    private String bio;
     @Max(200)
     private String githubLink;
     @Max(200)
