@@ -20,7 +20,7 @@ public class MemberEntity extends BaseEntity{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "member_id")
+    @Column(name = "id")
     private Long id;
 
     @Column(length = 50, nullable = false)
@@ -35,14 +35,17 @@ public class MemberEntity extends BaseEntity{
     @Column(length = 200)
     private String profileImage;
 
-    @Column(length = 255, nullable = false)
-    private String providerId;
-
     @Column(length = 20, nullable = false)
     @Enumerated(EnumType.STRING)
     private AuthProvider provider;
 
+    @Column(nullable = false)
     private Byte isActivated;
+
+    @Column(nullable = false, unique = true, length = 45)
+    private String memberId;
+
+    private String bio;
 
     @Column(length = 200)
     private String githubLink;
@@ -57,6 +60,14 @@ public class MemberEntity extends BaseEntity{
     @OneToMany(mappedBy = "member")
     private List<MemberRoleEntity> memberRoles;
 
+    public void register(String name, String career, String github, String blog, String notion, String bio) {
+        this.name = name;
+        this.career = career;
+        this.githubLink = github;
+        this.blogLink = blog;
+        this.notionLink = notion;
+        this.bio = bio;
+    }
     public void changeName(String name){
         this.name = name;
     }

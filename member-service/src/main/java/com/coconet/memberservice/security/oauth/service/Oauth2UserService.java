@@ -16,8 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @Slf4j
@@ -28,9 +27,6 @@ public class Oauth2UserService extends DefaultOAuth2UserService {
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
-
-        log.info("Oauth2UserService 진입");
-        log.info("getRegistrationId : {}", userRequest.getClientRegistration().getRegistrationId());
         OAuth2User oAuth2User = super.loadUser(userRequest);
 
         AuthProvider authProvider = AuthProvider.valueOf(userRequest.getClientRegistration().getRegistrationId());
@@ -44,32 +40,27 @@ public class Oauth2UserService extends DefaultOAuth2UserService {
             throw new RuntimeException("Email not found from Oauth2 provider");
         }
 
-        //이미 가입된 경우
         MemberEntity member = memberRepository.findByEmail(oauth2MemberInfo.getEmail()).orElse(null);
-        if (member != null) {
-            if (!member.getProvider().equals(authProvider)) {
-                throw new RuntimeException("Email already singed up");
-            }
-        // 가입되지 않은 경우
-        }else {
+
+        //register
+        if (member == null) {
             member = registerUser(authProvider, oauth2MemberInfo);
-            log.info("registerUser : {}", member);
         }
+
         return MemberPrincipal.create(member, oauth2MemberInfo.getAttributes());
     }
 
     private MemberEntity registerUser(AuthProvider authProvider, Oauth2MemberInfo oAuth2UserInfo) {
         MemberEntity user = MemberEntity.builder()
                 .email(oAuth2UserInfo.getEmail())
-                .name(oAuth2UserInfo.getName())
-                .career("초기값")
+                .name("Undefined")
+                .career("Undefined")
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
-                .providerId(oAuth2UserInfo.getId())
                 .provider(authProvider)
                 .isActivated((byte) 1)
+                .memberId(UUID.randomUUID().toString())
                 .build();
-
         return memberRepository.save(user);
     }
 

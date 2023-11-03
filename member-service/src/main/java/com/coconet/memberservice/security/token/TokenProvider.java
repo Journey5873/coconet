@@ -35,9 +35,8 @@ public class TokenProvider {
 
 
 
-    public TokenDto issueAccessToken(Authentication authentication) {
+    public TokenDto issueAccessToken(MemberPrincipal principal) {
 
-        MemberPrincipal principal = (MemberPrincipal) authentication.getPrincipal();
         Map<String, Object> data = new HashMap<>();
         data.put("memeberId", principal.getMember().getId());
         data.put("email", principal.getMember().getEmail());
@@ -65,9 +64,8 @@ public class TokenProvider {
 
     }
 
-    public TokenDto issueRefreshToken(Authentication authentication) {
+    public TokenDto issueRefreshToken(MemberPrincipal principal) {
 
-        MemberPrincipal principal = (MemberPrincipal) authentication.getPrincipal();
         Map<String, Object> data = new HashMap<>();
         data.put("memeberId", principal.getMember().getId());
         data.put("email", principal.getMember().getEmail());

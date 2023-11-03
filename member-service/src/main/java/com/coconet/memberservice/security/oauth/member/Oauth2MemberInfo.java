@@ -18,8 +18,5 @@ public abstract class Oauth2MemberInfo {
     public abstract String getName();
 
     public abstract String getEmail();
-
-    //소셜 로그인한 provider의 프로필 이미지 url입니다.
-    public abstract String getImage();
 }
 

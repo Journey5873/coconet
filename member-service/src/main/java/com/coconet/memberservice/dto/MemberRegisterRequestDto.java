@@ -1,18 +1,23 @@
 package com.coconet.memberservice.dto;
 
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.Getter;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
 @AllArgsConstructor
 @Getter
-public class MemberRequestDto {
+public class MemberRegisterRequestDto {
+
+    @NotNull
+    private String memberId;
     @Size(min = 2, max = 8)
     private String name;
+    private String bio;
     @Min(0)
     @Max(10)
     private int career;

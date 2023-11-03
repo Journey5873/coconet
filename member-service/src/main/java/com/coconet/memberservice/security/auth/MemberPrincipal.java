@@ -24,30 +24,21 @@ public class MemberPrincipal implements UserDetails, OAuth2User{
         this.member = member;
     }
 
-    public static MemberPrincipal create(MemberEntity member){
-        List<GrantedAuthority> authorities = Collections
-                .singletonList(new SimpleGrantedAuthority("ROLE_USER"));
-
-        return new MemberPrincipal(member);
-    }
-
     public static MemberPrincipal create(MemberEntity member, Map<String, Object> attribute) {
-        MemberPrincipal memberPrincipal = MemberPrincipal.create(member);
+        MemberPrincipal memberPrincipal = new MemberPrincipal(member);
         memberPrincipal.setAttribute(attribute);
         return memberPrincipal;
     }
 
     @Override
     public String getName() {
-        return null;
+        return member.getMemberId();
     }
 
     @Override
     public Map<String, Object> getAttributes() {
         return attribute;
     }
-
-
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

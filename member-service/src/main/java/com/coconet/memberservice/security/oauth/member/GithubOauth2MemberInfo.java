@@ -2,9 +2,8 @@ package com.coconet.memberservice.security.oauth.member;
 
 import java.util.Map;
 
-public class GoogleOauth2MemberInfo extends Oauth2MemberInfo{
-
-    public GoogleOauth2MemberInfo(Map<String, Object> attributes) {
+public class GithubOauth2MemberInfo extends Oauth2MemberInfo{
+    public GithubOauth2MemberInfo(Map<String, Object> attributes) {
         super(attributes);
     }
 
@@ -15,7 +14,7 @@ public class GoogleOauth2MemberInfo extends Oauth2MemberInfo{
 
     @Override
     public String getName() {
-        return "google";
+        return "github";
     }
 
     @Override
