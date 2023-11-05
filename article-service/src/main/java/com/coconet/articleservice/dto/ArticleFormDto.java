@@ -10,10 +10,12 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import static lombok.AccessLevel.PROTECTED;
+
 @Getter
-@NoArgsConstructor
-@AllArgsConstructor
 @Builder
+@NoArgsConstructor(access = PROTECTED)
+@AllArgsConstructor
 public class ArticleFormDto {
     private String title;
     private String content;

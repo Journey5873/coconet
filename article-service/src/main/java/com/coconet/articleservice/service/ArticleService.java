@@ -19,13 +19,6 @@ public class ArticleService {
 
     private final ArticleRepository articleRepository;
 
-    public ArticleResponseDto updateArticleInfo(Long userId, Long articleId, ArticleRequestDto articleRequestDto) {
-        ArticleEntity article = articleRepository.findById(articleId)
-                .orElseThrow(() -> new IllegalArgumentException("No article"));
-    
-        return new ArticleResponseDto();
-    }
-
     public ArticleResponseDto getArticle(Long articleId){
         ArticleFormDto articleFormDto = articleRepository.getArticle(articleId);
         return ArticleResponseDto.builder()

@@ -6,12 +6,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
+import static lombok.AccessLevel.PROTECTED;
+
 @Entity
 @Table(name = "article_role")
 @Getter
-@NoArgsConstructor
-@AllArgsConstructor
 @SuperBuilder
+@NoArgsConstructor(access = PROTECTED)
+@AllArgsConstructor
 public class ArticleRoleEntity extends BaseEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

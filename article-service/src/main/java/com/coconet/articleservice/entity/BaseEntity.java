@@ -13,12 +13,14 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 
-@SuperBuilder
+import static lombok.AccessLevel.PROTECTED;
+
 @MappedSuperclass
-@AllArgsConstructor
-@NoArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
 @Getter
+@SuperBuilder
+@NoArgsConstructor(access = PROTECTED)
+@AllArgsConstructor
 public class BaseEntity {
     @CreatedDate
     @Column(nullable = false, updatable = false)

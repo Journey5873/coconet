@@ -10,11 +10,13 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import static lombok.AccessLevel.PROTECTED;
+
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Getter
-@AllArgsConstructor
-@NoArgsConstructor
 @Builder
+@NoArgsConstructor(access = PROTECTED)
+@AllArgsConstructor
 public class ArticleResponseDto {
 
     private String title;

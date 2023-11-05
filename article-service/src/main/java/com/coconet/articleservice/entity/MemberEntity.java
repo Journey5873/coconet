@@ -11,9 +11,9 @@ import static lombok.AccessLevel.*;
 @Entity
 @Table(name = "member")
 @Getter
+@SuperBuilder
 @NoArgsConstructor(access = PROTECTED)
 @AllArgsConstructor
-@SuperBuilder
 public class MemberEntity extends BaseEntity{
 
 

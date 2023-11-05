@@ -6,12 +6,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
+import static lombok.AccessLevel.PROTECTED;
+
 @Entity
 @Table(name = "role")
 @Getter
-@NoArgsConstructor
-@AllArgsConstructor
 @SuperBuilder
+@NoArgsConstructor(access = PROTECTED)
+@AllArgsConstructor
 public class RoleEntity extends BaseEntity{
 
     @Id
