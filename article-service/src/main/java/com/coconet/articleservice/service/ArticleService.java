@@ -12,8 +12,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
-
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -30,33 +28,42 @@ public class ArticleService {
 
     public ArticleResponseDto getArticle(Long articleId){
         ArticleFormDto articleFormDto = articleRepository.getArticle(articleId);
-        return new ArticleResponseDto(articleFormDto.getTitle(),
-                articleFormDto.getContent(),
-                articleFormDto.getCreatedAt(),
-                articleFormDto.getUpdateAt(),
-                articleFormDto.getExpiredAt(),
-                articleFormDto.getViewCount(),
-                articleFormDto.getBookmarkCount(),
-                articleFormDto.getArticleType(),
-                articleFormDto.getStatus(),
-                articleFormDto.getMeetingType(),
-                articleFormDto.getAuthor()
-        );
+        return ArticleResponseDto.builder()
+                .title(articleFormDto.getTitle())
+                .content(articleFormDto.getContent())
+                .createdAt(articleFormDto.getCreatedAt())
+                .updateAt(articleFormDto.getUpdateAt())
+                .expiredAt(articleFormDto.getExpiredAt())
+                .viewCount(articleFormDto.getViewCount())
+                .bookmarkCount(articleFormDto.getBookmarkCount())
+                .articleType(articleFormDto.getArticleType())
+                .status(articleFormDto.getStatus())
+                .meetingType(articleFormDto.getMeetingType())
+                .author(articleFormDto.getAuthor())
+                .articleRoleDtos(articleFormDto.getArticleRoleDtos())
+                .articleStackDtos(articleFormDto.getArticleStackDtos())
+                .build();
     }
 
     public Page<ArticleResponseDto> getArticles(ArticleSearchCondition condition, Pageable pageable){
         Page<ArticleFormDto> articleFormDtos = articleRepository.getArticles(condition, pageable);
-        Page<ArticleResponseDto> articleResponseDtos = articleFormDtos.map(articleFormDto -> new ArticleResponseDto(articleFormDto.getTitle(),
-                articleFormDto.getContent(),
-                articleFormDto.getCreatedAt(),
-                articleFormDto.getUpdateAt(),
-                articleFormDto.getExpiredAt(),
-                articleFormDto.getViewCount(),
-                articleFormDto.getBookmarkCount(),
-                articleFormDto.getArticleType(),
-                articleFormDto.getStatus(),
-                articleFormDto.getMeetingType(),
-                articleFormDto.getAuthor()));
+        Page<ArticleResponseDto> articleResponseDtos = articleFormDtos.map(articleFormDto ->
+                    ArticleResponseDto.builder()
+                            .title(articleFormDto.getTitle())
+                            .content(articleFormDto.getContent())
+                            .createdAt(articleFormDto.getCreatedAt())
+                            .updateAt(articleFormDto.getUpdateAt())
+                            .expiredAt(articleFormDto.getExpiredAt())
+                            .viewCount(articleFormDto.getViewCount())
+                            .bookmarkCount(articleFormDto.getBookmarkCount())
+                            .articleType(articleFormDto.getArticleType())
+                            .status(articleFormDto.getStatus())
+                            .meetingType(articleFormDto.getMeetingType())
+                            .author(articleFormDto.getAuthor())
+                            .articleRoleDtos(articleFormDto.getArticleRoleDtos())
+                            .articleStackDtos(articleFormDto.getArticleStackDtos())
+                            .build()
+                );
         return  articleResponseDtos;
     }
 

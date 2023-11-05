@@ -2,13 +2,14 @@ package com.coconet.articleservice.entity;
 
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import static lombok.AccessLevel.*;
 
@@ -46,6 +47,11 @@ public class ArticleEntity extends BaseEntity{
     @Column(nullable = false)
     private String meetingType;
 
+    @OneToMany(mappedBy = "article",  cascade = CascadeType.ALL)
+    private List<ArticleRoleEntity> articleRoles = new ArrayList<>();
+
+    @OneToMany(mappedBy = "article",  cascade = CascadeType.ALL)
+    private List<ArticleStackEntity> articleStacks = new ArrayList<>();
     // MemberID ..
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
