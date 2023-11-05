@@ -18,11 +18,13 @@ import static lombok.AccessLevel.PROTECTED;
 @NoArgsConstructor(access = PROTECTED)
 @AllArgsConstructor
 public class ArticleRequestDto {
+    private Long articleId;
     private String title;
     private String content;
     private LocalDateTime createdAt;
     private LocalDateTime updateAt;
     private LocalDateTime expiredAt;
+    private String estimatedDuration;
     private int viewCount;
     private int bookmarkCount;
     private String articleType;
@@ -30,6 +32,6 @@ public class ArticleRequestDto {
     private String meetingType;
     private String author;
 
-    private List<ArticleRoleDto> articleRoleDtos = new ArrayList<>();
-    private List<ArticleStackDto> articleStackDtos = new ArrayList<>();
+    private List<ArticleRoleDto> articleRoleDtos;
+    private List<ArticleStackDto> articleStackDtos;
 }

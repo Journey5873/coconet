@@ -1,9 +1,6 @@
 package com.coconet.articleservice.repository;
 
-import com.coconet.articleservice.dto.ArticleFormDto;
-import com.coconet.articleservice.dto.ArticleRoleDto;
-import com.coconet.articleservice.dto.ArticleSearchCondition;
-import com.coconet.articleservice.dto.ArticleStackDto;
+import com.coconet.articleservice.dto.*;
 import com.coconet.articleservice.entity.ArticleEntity;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -38,22 +35,8 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
                 .fetchOne();
 
         if (article != null) {
-            List<ArticleRoleDto> articleRoleDtos = queryFactory
-                    .select(Projections.constructor(ArticleRoleDto.class,
-                            articleRoleEntity.role.name,
-                            articleRoleEntity.participant))
-                    .from(articleRoleEntity)
-                    .where(articleRoleEntity.article.eq(article))
-                    .fetch();
-
-            List<ArticleStackDto> articleStackDtos = queryFactory
-                    .select(Projections.constructor(ArticleStackDto.class,
-                            articleStackEntity.techStack.name,
-                            articleStackEntity.techStack.category,
-                            articleStackEntity.techStack.image))
-                    .from(articleStackEntity)
-                    .where(articleStackEntity.article.eq(article))
-                    .fetch();
+            List<ArticleRoleDto> articleRoleDtos = getArticleRoles(article);
+            List<ArticleStackDto> articleStackDtos = getArticleStacks(article);
 
             return ArticleFormDto.builder()
                     .title(article.getTitle())
@@ -61,6 +44,7 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
                     .createdAt(article.getCreatedAt())
                     .updateAt(article.getUpdatedAt())
                     .expiredAt(article.getExpiredAt())
+                    .estimatedDuration(article.getEstimatedDuration())
                     .viewCount(article.getViewCount())
                     .bookmarkCount(article.getBookmarkCount())
                     .articleType(article.getArticleType())
@@ -93,22 +77,8 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
         List<ArticleFormDto> contents = new ArrayList<>();
 
         for (ArticleEntity article : articles){
-            List<ArticleRoleDto> articleRoleDtos = queryFactory
-                    .select(Projections.constructor(ArticleRoleDto.class,
-                            articleRoleEntity.role.name,
-                            articleRoleEntity.participant))
-                    .from(articleRoleEntity)
-                    .where(articleRoleEntity.article.eq(article))
-                    .fetch();
-
-            List<ArticleStackDto> articleStackDtos = queryFactory
-                    .select(Projections.constructor(ArticleStackDto.class,
-                            articleStackEntity.techStack.name,
-                            articleStackEntity.techStack.category,
-                            articleStackEntity.techStack.image))
-                    .from(articleStackEntity)
-                    .where(articleStackEntity.article.eq(article))
-                    .fetch();
+            List<ArticleRoleDto> articleRoleDtos = getArticleRoles(article);
+            List<ArticleStackDto> articleStackDtos = getArticleStacks(article);
 
             contents.add(
                     ArticleFormDto.builder()
@@ -117,6 +87,7 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
                             .createdAt(article.getCreatedAt())
                             .updateAt(article.getUpdatedAt())
                             .expiredAt(article.getExpiredAt())
+                            .estimatedDuration(article.getEstimatedDuration())
                             .viewCount(article.getViewCount())
                             .bookmarkCount(article.getBookmarkCount())
                             .articleType(article.getArticleType())
@@ -134,6 +105,27 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
                 .where(titleContains(condition.getTitle()), contentContains(condition.getContent()));
 
         return PageableExecutionUtils.getPage(contents, pageable, () -> countQuery.fetchCount());
+    }
+
+    private List<ArticleRoleDto> getArticleRoles(ArticleEntity article){
+        return queryFactory
+                .select(Projections.constructor(ArticleRoleDto.class,
+                        articleRoleEntity.role.name,
+                        articleRoleEntity.participant))
+                .from(articleRoleEntity)
+                .where(articleRoleEntity.article.eq(article))
+                .fetch();
+    }
+
+    private List<ArticleStackDto> getArticleStacks(ArticleEntity article){
+        return queryFactory
+                .select(Projections.constructor(ArticleStackDto.class,
+                        articleStackEntity.techStack.name,
+                        articleStackEntity.techStack.category,
+                        articleStackEntity.techStack.image))
+                .from(articleStackEntity)
+                .where(articleStackEntity.article.eq(article))
+                .fetch();
     }
 
     private BooleanExpression titleContains(String title){

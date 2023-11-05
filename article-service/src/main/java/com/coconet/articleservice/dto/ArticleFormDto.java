@@ -22,6 +22,7 @@ public class ArticleFormDto {
     private LocalDateTime createdAt;
     private LocalDateTime updateAt;
     private LocalDateTime expiredAt;
+    private String estimatedDuration;
     private int viewCount;
     private int bookmarkCount;
     private String articleType;
@@ -34,7 +35,7 @@ public class ArticleFormDto {
     @QueryProjection
     public ArticleFormDto(String title, String content, LocalDateTime createdAt,
                           LocalDateTime updateAt, LocalDateTime expiredAt,
-                          int viewCount, int bookmarkCount,
+                          String estimatedDuration, int viewCount, int bookmarkCount,
                           String articleType, Byte status,
                           String meetingType, String author) {
         this.title = title;
@@ -42,6 +43,7 @@ public class ArticleFormDto {
         this.createdAt = createdAt;
         this.updateAt = updateAt;
         this.expiredAt = expiredAt;
+        this.estimatedDuration = estimatedDuration;
         this.viewCount = viewCount;
         this.bookmarkCount = bookmarkCount;
         this.articleType = articleType;

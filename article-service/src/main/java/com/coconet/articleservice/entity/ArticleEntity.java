@@ -35,6 +35,9 @@ public class ArticleEntity extends BaseEntity{
     @Column(nullable = false)
     private LocalDateTime expiredAt;
 
+    @Column(nullable = false)
+    private String estimatedDuration;
+
     private int viewCount;
 
     private int bookmarkCount;
@@ -52,8 +55,22 @@ public class ArticleEntity extends BaseEntity{
 
     @OneToMany(mappedBy = "article",  cascade = CascadeType.ALL)
     private List<ArticleStackEntity> articleStacks = new ArrayList<>();
-    // MemberID ..
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private MemberEntity member;
+
+    public void changeTitle(String name) { this.title = title; }
+
+    public void changeContent(String content) { this.content = content; }
+
+    public void changeExpiredAt(LocalDateTime expiredAt) { this.expiredAt = expiredAt; }
+
+    public void changeEstDuration(String estimatedDuration) { this.estimatedDuration = estimatedDuration; }
+
+    public void changeArticleType(String articleType) { this.articleType = articleType; }
+
+    public void changeStatus(Byte status) { this.status = status; }
+
+    public void changeMeetingType(String meetingType) { this.meetingType = meetingType; }
 }
