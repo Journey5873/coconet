@@ -31,6 +31,8 @@ public class ArticleEntity extends BaseEntity{
 
     @Column(nullable = false)
     private String content;
+    @Column(nullable = false)
+    private LocalDateTime plannedStartAt;
 
     @Column(nullable = false)
     private LocalDateTime expiredAt;

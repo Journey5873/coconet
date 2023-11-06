@@ -23,6 +23,7 @@ public class ArticleResponseDto {
     private String content;
     private LocalDateTime createdAt;
     private LocalDateTime updateAt;
+    private LocalDateTime plannedStartAt;
     private LocalDateTime expiredAt;
     private String estimatedDuration;
     private int viewCount;

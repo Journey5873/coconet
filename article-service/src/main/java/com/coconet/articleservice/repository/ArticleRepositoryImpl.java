@@ -38,22 +38,7 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
             List<ArticleRoleDto> articleRoleDtos = getArticleRoles(article);
             List<ArticleStackDto> articleStackDtos = getArticleStacks(article);
 
-            return ArticleFormDto.builder()
-                    .title(article.getTitle())
-                    .content(article.getContent())
-                    .createdAt(article.getCreatedAt())
-                    .updateAt(article.getUpdatedAt())
-                    .expiredAt(article.getExpiredAt())
-                    .estimatedDuration(article.getEstimatedDuration())
-                    .viewCount(article.getViewCount())
-                    .bookmarkCount(article.getBookmarkCount())
-                    .articleType(article.getArticleType())
-                    .status(article.getStatus())
-                    .meetingType(article.getMeetingType())
-                    .author(article.getMember().getName())
-                    .articleRoleDtos(articleRoleDtos)
-                    .articleStackDtos(articleStackDtos)
-                    .build();
+            return buildArticleFormDto(article, articleRoleDtos, articleStackDtos);
         }
         return null;
     }
@@ -75,36 +60,28 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
                 .fetch();
 
         List<ArticleFormDto> contents = new ArrayList<>();
-
         for (ArticleEntity article : articles){
             List<ArticleRoleDto> articleRoleDtos = getArticleRoles(article);
             List<ArticleStackDto> articleStackDtos = getArticleStacks(article);
-
-            contents.add(
-                    ArticleFormDto.builder()
-                            .title(article.getTitle())
-                            .content(article.getContent())
-                            .createdAt(article.getCreatedAt())
-                            .updateAt(article.getUpdatedAt())
-                            .expiredAt(article.getExpiredAt())
-                            .estimatedDuration(article.getEstimatedDuration())
-                            .viewCount(article.getViewCount())
-                            .bookmarkCount(article.getBookmarkCount())
-                            .articleType(article.getArticleType())
-                            .status(article.getStatus())
-                            .meetingType(article.getMeetingType())
-                            .author(article.getMember().getName())
-                            .articleRoleDtos(articleRoleDtos)
-                            .articleStackDtos(articleStackDtos)
-                            .build()
-            );
+            contents.add(buildArticleFormDto(article, articleRoleDtos, articleStackDtos));
         }
 
         JPAQuery<ArticleEntity> countQuery = queryFactory
                 .selectFrom(articleEntity)
-                .where(titleContains(condition.getTitle()), contentContains(condition.getContent()));
+                .where(
+                        titleContains(condition.getTitle()),
+                        contentContains(condition.getContent())
+                );
 
         return PageableExecutionUtils.getPage(contents, pageable, () -> countQuery.fetchCount());
+    }
+
+    private BooleanExpression titleContains(String title){
+        return isEmpty(title) ? null : articleEntity.title.contains(title);
+    }
+
+    private BooleanExpression contentContains(String content){
+        return isEmpty(content) ? null : articleEntity.content.contains(content);
     }
 
     private List<ArticleRoleDto> getArticleRoles(ArticleEntity article){
@@ -128,11 +105,26 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
                 .fetch();
     }
 
-    private BooleanExpression titleContains(String title){
-        return isEmpty(title) ? null : articleEntity.title.contains(title);
-    }
-
-    private BooleanExpression contentContains(String content){
-        return isEmpty(content) ? null : articleEntity.content.contains(content);
+    private ArticleFormDto buildArticleFormDto(ArticleEntity article,
+                                                   List<ArticleRoleDto> articleRoleDtos,
+                                                   List<ArticleStackDto> articleStackDtos){
+        return                     ArticleFormDto.builder()
+                .articleId(article.getId())
+                .title(article.getTitle())
+                .content(article.getContent())
+                .createdAt(article.getCreatedAt())
+                .updateAt(article.getUpdatedAt())
+                .plannedStartAt(article.getPlannedStartAt())
+                .expiredAt(article.getExpiredAt())
+                .estimatedDuration(article.getEstimatedDuration())
+                .viewCount(article.getViewCount())
+                .bookmarkCount(article.getBookmarkCount())
+                .articleType(article.getArticleType())
+                .status(article.getStatus())
+                .meetingType(article.getMeetingType())
+                .author(article.getMember().getName())
+                .articleRoleDtos(articleRoleDtos)
+                .articleStackDtos(articleStackDtos)
+                .build();
     }
 }

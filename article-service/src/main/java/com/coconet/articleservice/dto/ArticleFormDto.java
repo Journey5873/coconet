@@ -17,10 +17,12 @@ import static lombok.AccessLevel.PROTECTED;
 @NoArgsConstructor(access = PROTECTED)
 @AllArgsConstructor
 public class ArticleFormDto {
+    private Long articleId;
     private String title;
     private String content;
     private LocalDateTime createdAt;
     private LocalDateTime updateAt;
+    private LocalDateTime plannedStartAt;
     private LocalDateTime expiredAt;
     private String estimatedDuration;
     private int viewCount;
