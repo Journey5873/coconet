@@ -16,6 +16,9 @@ import com.coconet.memberservice.security.token.converter.TokenConverter;
 import com.coconet.memberservice.security.token.dto.TokenDto;
 import com.coconet.memberservice.security.token.dto.TokenResponse;
 import lombok.RequiredArgsConstructor;
+import net.minidev.json.JSONObject;
+import net.minidev.json.parser.JSONParser;
+import net.minidev.json.parser.ParseException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,6 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -325,5 +329,23 @@ public class MemberServiceImpl implements MemberService {
                 .map(memberStackEntity -> memberStackEntity.getTechStack().getName())
                 .toList();
     }
+
+    public String getJsonValue(String jsonStr, String key) {
+        try {
+            JSONParser jsonParser = new JSONParser();
+            JSONObject jsonObject = (JSONObject) jsonParser.parse(jsonStr);
+            return jsonObject.get(key).toString();
+        }
+        catch (ParseException e) {
+            return "";
+        }
+    }
+
+    public String decodeJwt(String jwt) {
+        Base64.Decoder decoder = Base64.getUrlDecoder();
+        String[] chunks = jwt.split("\\.");
+        return new String(decoder.decode(chunks[1]));
+    }
+
 }
 

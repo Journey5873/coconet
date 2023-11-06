@@ -38,7 +38,7 @@ public class TokenProvider {
     public TokenDto issueAccessToken(MemberPrincipal principal) {
 
         Map<String, Object> data = new HashMap<>();
-        data.put("memeberId", principal.getMember().getId());
+        data.put("memberId", principal.getMember().getMemberId());
         data.put("email", principal.getMember().getEmail());
 
         LocalDateTime expiredLocalDateTime = LocalDateTime.now().plusHours(accessTokenPlusHour);
@@ -67,7 +67,7 @@ public class TokenProvider {
     public TokenDto issueRefreshToken(MemberPrincipal principal) {
 
         Map<String, Object> data = new HashMap<>();
-        data.put("memeberId", principal.getMember().getId());
+        data.put("memberId", principal.getMember().getId());
         data.put("email", principal.getMember().getEmail());
 
         LocalDateTime expiredLocalDateTime = LocalDateTime.now().plusHours(refreshTokenPlusHour);
@@ -93,40 +93,5 @@ public class TokenProvider {
 
     }
 
-    public Map<String, Object> validationTokenWithThrow(String token) {
 
-        SecretKey key = Keys.hmacShaKeyFor(secretKey.getBytes());
-
-        JwtParser parser = Jwts.parserBuilder()
-                .setSigningKey(key)
-                .build();
-
-        try {
-            Jws<Claims> result = parser.parseClaimsJws(token);
-            log.info("Jws result : {}", result.getBody());
-            return new HashMap<String, Object>(result.getBody());
-
-        } catch (Exception e) {
-
-            if (e instanceof SignatureException) {
-                throw new ApiException(TokenErrorCode.INVALID_TOKEN, "");
-            }
-            else if (e instanceof ExpiredJwtException) {
-                throw new ApiException(TokenErrorCode.EXPIRED_TOKEN, "");
-            }
-            else {
-                throw new ApiException(TokenErrorCode.TOKEN_EXCEPTION, "");
-            }
-        }
-    }
-
-    public String validationTokenWithUserEmail(String authorizationToken) {
-
-        Map<String, Object> data = validationTokenWithThrow(authorizationToken);
-        Object userEmail = data.get("email");
-        Objects.requireNonNull(userEmail, () -> {
-            throw new ApiException(ErrorCode.NULL_POINT, "");
-        });
-        return userEmail.toString();
-    }
 }

@@ -45,8 +45,6 @@ public class MemberEntity extends BaseEntity{
     @Column(nullable = false, unique = true, length = 45)
     private String memberId;
 
-    private String bio;
-
     @Column(length = 200)
     private String bio;
 

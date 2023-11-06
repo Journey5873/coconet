@@ -1,6 +1,5 @@
 package com.coconet.memberservice.security.config;
 
-import com.coconet.memberservice.security.filter.JwtFilter;
 import com.coconet.memberservice.security.jwthandler.JwtAccessDeniedHandler;
 import com.coconet.memberservice.security.oauth.Oauth2AuthenticationSuccessHandler;
 import com.coconet.memberservice.security.oauth.service.Oauth2UserService;
@@ -55,15 +54,14 @@ public class SecurityConfig {
 
                 .oauth2Login(oauth2Configurer -> oauth2Configurer
                         .userInfoEndpoint(cus -> cus.userService(oauth2UserService))
-                        .authorizationEndpoint(cus -> cus.baseUri("/member-service/oauth2/authorize"))
+                        .authorizationEndpoint(cus -> cus.baseUri("/member-service/open-api/oauth2/authorize"))
                         .successHandler(oauth2AuthenticationSuccessHandler)
                 )
 
             .exceptionHandling(configurer -> {
                 configurer.accessDeniedHandler(new JwtAccessDeniedHandler(objectMapper));
             })
-//            .addFilterBefore(new JwtFilter(tokenProvider, userDetailsService), UsernamePasswordAuthenticationFilter.class)
             .build();
     }
-
 }
+
