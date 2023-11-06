@@ -112,6 +112,7 @@ public class MemberServiceImpl implements MemberService {
                 .name(member.getName())
                 .career(Integer.parseInt(member.getCareer()))
                 .profileImg(member.getProfileImage())
+                .bio(member.getBio())
                 .roles(returnRoles)
                 .stacks(returnStacks)
                 .githubLink(member.getGithubLink())
@@ -130,6 +131,7 @@ public class MemberServiceImpl implements MemberService {
         member.changeGithubLink(requestDto.getGithubLink());
         member.changeBlogLink(requestDto.getBlogLink());
         member.changeNotionLink(requestDto.getNotionLink());
+        member.changeBio(requestDto.getBio());
 
         MemberEntity returnMember = memberRepository.save(member);
 
@@ -142,6 +144,7 @@ public class MemberServiceImpl implements MemberService {
                 .profileImg(returnMember.getProfileImage())
                 .roles(returnRoles)
                 .stacks(returnStacks)
+                .bio(returnMember.getBio())
                 .githubLink(returnMember.getGithubLink())
                 .blogLink(returnMember.getBlogLink())
                 .notionLink(returnMember.getNotionLink())
@@ -168,6 +171,7 @@ public class MemberServiceImpl implements MemberService {
                 .career(Integer.parseInt(returnMember.getCareer()))
                 .profileImg(returnMember.getProfileImage())
                 .roles(returnRoles)
+                .bio(returnMember.getBio())
                 .stacks(returnStacks)
                 .githubLink(returnMember.getGithubLink())
                 .blogLink(returnMember.getBlogLink())
