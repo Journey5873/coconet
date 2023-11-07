@@ -1,29 +1,34 @@
 package com.coconet.memberservice.controller;
 
 import com.coconet.memberservice.common.response.Response;
-import com.coconet.memberservice.dto.*;
-import com.coconet.memberservice.security.auth.MemberPrincipal;
+import com.coconet.memberservice.dto.AccessGoogleTokenRequest;
+import com.coconet.memberservice.dto.AccessTokenRequest;
+import com.coconet.memberservice.dto.MemberRegisterRequestDto;
 import com.coconet.memberservice.security.oauth.model.AuthProvider;
 import com.coconet.memberservice.security.token.dto.TokenResponse;
 import com.coconet.memberservice.service.MemberServiceImpl;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Collections;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/member-service/open-api")
+@Tag(name = "Public Controller", description = "Access without authorisation")
 public class OpenMemberController {
 
     private final MemberServiceImpl memberServiceImpl;
@@ -46,6 +51,23 @@ public class OpenMemberController {
     @Value("${spring.security.oauth2.client.registration.kakao.redirect-uri}")
     private String kakaoRedirectUri;
 
+
+    @Operation(
+            summary = "Github call back",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "OK"
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "No member found",
+                            content = @Content(
+                                    schema = @Schema(name = "Response")
+                            )
+                    )
+            }
+    )
     @GetMapping("/github")
     public Response<TokenResponse> githubCallback(@RequestParam("code") String code) {
         HttpHeaders headers = new HttpHeaders();
@@ -82,6 +104,15 @@ public class OpenMemberController {
         return Response.OK(result);
     }
 
+    @Operation(
+            summary = "Google call back",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "OK"
+                    )
+            }
+    )
     @GetMapping("/google")
     public Response<TokenResponse> googleCallback(@RequestParam("code") String code) {
         HttpHeaders headers = new HttpHeaders();
@@ -107,6 +138,15 @@ public class OpenMemberController {
         return Response.OK(result);
     }
 
+    @Operation(
+            summary = "Kakao call back",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "OK"
+                    )
+            }
+    )
     @GetMapping("/kakao")
     public Response<TokenResponse> kakaoCallback(@RequestParam("code") String code){
         HttpHeaders headers = new HttpHeaders();
@@ -151,6 +191,22 @@ public class OpenMemberController {
         return Response.OK(result);
     }
 
+    @Operation(
+            summary = "Register member with additional info",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "OK"
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "No member found",
+                            content = @Content(
+                                    schema = @Schema(name = "Response")
+                            )
+                    )
+            }
+    )
     @PostMapping("/register")
     public Response<TokenResponse> register(@RequestBody MemberRegisterRequestDto requestDto) {
         TokenResponse token = memberServiceImpl.register(requestDto);
@@ -158,6 +214,23 @@ public class OpenMemberController {
         return Response.OK(token);
     }
 
+    @Operation(
+            summary = "Oauth2 entry point"
+    )
+    @GetMapping(value = {"/oauth2/authorize/google", "/oauth2/authorize/github",
+            "/oauth2/authorize/kakao"})
+    public void authorise() {
+    }
+
+    @Operation(
+            summary = "Health test",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "OK"
+                    )
+            }
+    )
     @GetMapping("/health")
     public String healthCheck() {
         return "Hello world";

@@ -2,6 +2,7 @@ package com.coconet.memberservice.common.response;
 
 import com.coconet.memberservice.common.errorcode.ErrorCode;
 import com.coconet.memberservice.common.errorcode.ErrorCodeIfs;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,10 +12,14 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@Schema(name = "Result", description = "Response result")
 public class Result {
 
+    @Schema(example = "200")
     private Integer resultCode;
+    @Schema(example = "OK")
     private String resultMessage;
+    @Schema(example = "Everything is okay")
     private String resultDescription;
 
     public static Result OK() {
