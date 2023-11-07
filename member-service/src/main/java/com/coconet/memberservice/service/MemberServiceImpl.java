@@ -82,7 +82,7 @@ public class MemberServiceImpl implements MemberService {
 
     public TokenResponse register(MemberRegisterRequestDto requestDto) {
         MemberEntity preRegisterMember = memberRepository.findByMemberId(requestDto.getMemberId())
-                .orElseThrow(() -> new ApiException(ErrorCode.BAD_REQUEST, "memberId not found"));
+                .orElseThrow(() -> new ApiException(ErrorCode.BAD_REQUEST, "No member found"));
 
         preRegisterMember.register(requestDto.getName(),
                         String.valueOf(requestDto.getCareer()),
@@ -99,7 +99,7 @@ public class MemberServiceImpl implements MemberService {
     }
     public MemberResponseDto getUserInfo(String memberId){
         MemberEntity member = memberRepository.findByMemberId(memberId)
-                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "No user found"));
+                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "No member found"));
 
         List<String> returnRoles = getAllRoles(member).stream()
                 .map(RoleEntity::getName)
@@ -123,7 +123,7 @@ public class MemberServiceImpl implements MemberService {
 
     public MemberResponseDto updateUserInfo(String memberId, MemberRequestDto requestDto, MultipartFile imageFile) {
         MemberEntity member = memberRepository.findByMemberId(memberId)
-                                                    .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "No user found"));
+                                                    .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "No member found"));
 
         member.changeName(requestDto.getName());
         member.changeCareer(String.valueOf(requestDto.getCareer()));
@@ -153,7 +153,7 @@ public class MemberServiceImpl implements MemberService {
 
     public MemberResponseDto deleteUser(String memberId) {
         MemberEntity member = memberRepository.findByMemberId(memberId)
-                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "No user found"));
+                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "No member found"));
 
         member.deleteUser();
 
