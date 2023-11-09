@@ -1,9 +1,9 @@
-import React from 'react';
+import React from "react";
 
-import styled from 'styled-components';
+import styled from "styled-components";
 
 interface Props {
-    iconUrl: string;
+    iconUrl?: string;
     label: string;
     onClick?: () => void;
 }
@@ -25,6 +25,7 @@ const StyledSpecButton = styled.button`
     border-radius: 1rem;
     display: flex;
     align-items: center;
+    column-gap: 4px;
     justify-content: center;
     background-color: white;
     transition: transform 0.2s ease;
