@@ -9,7 +9,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.stream.Collectors;
@@ -41,8 +44,20 @@ public class EncryptionConfig {
     private String getJasyptEncryptorPassword() {
         try {
             ClassPathResource resource = new ClassPathResource("jasypt-encryptor-password.txt");
-            return Files.readAllLines(Paths.get(resource.getURI())).stream()
-                    .collect(Collectors.joining(""));
+            String resultContent = "";
+            InputStream inputStream = resource.getInputStream();
+            BufferedReader br = new BufferedReader(new InputStreamReader(inputStream, "utf-8"));
+
+            StringBuilder builder = new StringBuilder();
+            while (true) {
+                String line = br.readLine();
+                if(line == null ) break;
+                builder.append(line);
+            }
+
+            resultContent = builder.toString();
+            return resultContent;
+
         } catch (IOException e) {
             throw new RuntimeException("Not 123 found Jasypt password file.");
         }
