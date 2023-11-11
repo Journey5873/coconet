@@ -10,5 +10,5 @@ import org.springframework.data.domain.Pageable;
 public interface ArticleRepositoryCustom {
     ArticleFormDto getArticle(Long articleId);
 
-    Page<ArticleFormDto> getArticles(ArticleSearchCondition condition, Pageable pageable);
+    Page<ArticleFormDto> getArticles(String keyword, Pageable pageable);
 }

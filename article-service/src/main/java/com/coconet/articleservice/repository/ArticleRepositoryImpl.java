@@ -44,7 +44,7 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
     }
 
     @Override
-    public Page<ArticleFormDto> getArticles(ArticleSearchCondition condition, Pageable pageable) {
+    public Page<ArticleFormDto> getArticles(String keyword, Pageable pageable) {
         List<ArticleEntity> articles = queryFactory
                 .selectFrom(articleEntity)
                 .leftJoin(articleEntity.articleRoles, articleRoleEntity)
@@ -52,8 +52,7 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
                 .fetchJoin()
                 .distinct()
                 .where(
-                        titleContains(condition.getTitle()),
-                        contentContains(condition.getContent())
+                        titleContains(keyword).or(contentContains(keyword))
                 )
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
@@ -69,8 +68,8 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
         JPAQuery<ArticleEntity> countQuery = queryFactory
                 .selectFrom(articleEntity)
                 .where(
-                        titleContains(condition.getTitle()),
-                        contentContains(condition.getContent())
+                        titleContains(keyword),
+                        contentContains(keyword)
                 );
 
         return PageableExecutionUtils.getPage(contents, pageable, () -> countQuery.fetchCount());
