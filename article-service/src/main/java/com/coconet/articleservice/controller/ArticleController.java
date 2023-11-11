@@ -17,6 +17,14 @@ public class ArticleController {
 
     private final ArticleService articleService;
 
+    @PostMapping("/article/create")
+    public ResponseEntity<ArticleResponseDto> createArticle(
+            @RequestBody ArticleRequestDto request
+    ){
+        ArticleResponseDto response = articleService.createArticle(request);
+        return ResponseEntity.status(201).body(response);
+    }
+
     @GetMapping("/article/{id}")
     public ArticleResponseDto getArticle(@PathVariable String id){
         ArticleResponseDto article = articleService.getArticle(Long.valueOf(id));
@@ -24,8 +32,8 @@ public class ArticleController {
     }
 
     @GetMapping("/articles")
-    public Page<ArticleResponseDto> getArticles(ArticleSearchCondition condition, Pageable pageable){
-        return articleService.getArticles(condition, pageable);
+    public Page<ArticleResponseDto> getArticles(@RequestParam String keyword, Pageable pageable){
+        return articleService.getArticles(keyword, pageable);
     }
 
     @PostMapping("/article")
