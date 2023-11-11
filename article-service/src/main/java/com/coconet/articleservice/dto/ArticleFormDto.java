@@ -17,7 +17,7 @@ import static lombok.AccessLevel.PROTECTED;
 @NoArgsConstructor(access = PROTECTED)
 @AllArgsConstructor
 public class ArticleFormDto {
-    private Long articleId;
+    private String articleUUID;
     private String title;
     private String content;
     private LocalDateTime createdAt;
@@ -35,15 +35,18 @@ public class ArticleFormDto {
     private List<ArticleStackDto> articleStackDtos = new ArrayList<>();
 
     @QueryProjection
-    public ArticleFormDto(String title, String content, LocalDateTime createdAt,
-                          LocalDateTime updateAt, LocalDateTime expiredAt,
+
+    public ArticleFormDto(String articleUUID, String title, String content,
+                          LocalDateTime createdAt, LocalDateTime updateAt,
+                          LocalDateTime plannedStartAt, LocalDateTime expiredAt,
                           String estimatedDuration, int viewCount, int bookmarkCount,
-                          String articleType, Byte status,
-                          String meetingType, String author) {
+                          String articleType, Byte status, String meetingType, String author) {
+        this.articleUUID = articleUUID;
         this.title = title;
         this.content = content;
         this.createdAt = createdAt;
         this.updateAt = updateAt;
+        this.plannedStartAt = plannedStartAt;
         this.expiredAt = expiredAt;
         this.estimatedDuration = estimatedDuration;
         this.viewCount = viewCount;

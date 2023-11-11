@@ -18,29 +18,26 @@ public class ArticleController {
     private final ArticleService articleService;
 
     @PostMapping("/article/create")
-    public ResponseEntity<ArticleResponseDto> createArticle(
-            @RequestBody ArticleRequestDto request
-    ){
+    public ResponseEntity<ArticleResponseDto> createArticle(@RequestBody ArticleRequestDto request){
         ArticleResponseDto response = articleService.createArticle(request);
         return ResponseEntity.status(201).body(response);
     }
 
-    @GetMapping("/article/{id}")
-    public ArticleResponseDto getArticle(@PathVariable String id){
-        ArticleResponseDto article = articleService.getArticle(Long.valueOf(id));
+    @GetMapping("/article/{uuid}")
+    public ArticleResponseDto getArticle(@PathVariable String uuid){
+        ArticleResponseDto article = articleService.getArticle(uuid);
         return article;
     }
 
     @GetMapping("/articles")
-    public Page<ArticleResponseDto> getArticles(@RequestParam String keyword, Pageable pageable){
+    public Page<ArticleResponseDto> getArticles(String keyword, Pageable pageable){
         return articleService.getArticles(keyword, pageable);
     }
 
-    @PostMapping("/article")
-    public ResponseEntity<ArticleResponseDto> updateArticleInfo(@RequestBody() ArticleRequestDto articleRequestDto) {
-        ArticleResponseDto articleResponseDto = null;
-        return ResponseEntity.status(200).body(articleResponseDto);
-    }
+//    @PutMapping("/article/{id}")
+//    public ArticleResponseDto updateArticleInfo(@RequestBody() ArticleRequestDto articleRequestDto, @PathVariable String id) {
+//        return articleService.updateArticle(articleRequestDto, Long.valueOf(id));
+//    }
 
     @DeleteMapping("/delete/{id}")
     public String deleteArticle(@PathVariable String id){

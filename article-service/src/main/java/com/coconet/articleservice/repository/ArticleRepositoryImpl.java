@@ -1,6 +1,8 @@
 package com.coconet.articleservice.repository;
 
-import com.coconet.articleservice.dto.*;
+import com.coconet.articleservice.dto.ArticleFormDto;
+import com.coconet.articleservice.dto.ArticleRoleDto;
+import com.coconet.articleservice.dto.ArticleStackDto;
 import com.coconet.articleservice.entity.ArticleEntity;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -13,6 +15,7 @@ import org.springframework.data.support.PageableExecutionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import static com.coconet.articleservice.entity.QArticleEntity.articleEntity;
 import static com.coconet.articleservice.entity.QArticleRoleEntity.articleRoleEntity;
@@ -22,22 +25,20 @@ import static org.springframework.util.ObjectUtils.isEmpty;
 
 @RequiredArgsConstructor
 public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
-
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public ArticleFormDto getArticle(Long articleId) {
+    public ArticleFormDto getArticle(String articleUUID) {
 
         ArticleEntity article = queryFactory
                 .selectFrom(articleEntity)
                 .leftJoin(articleEntity.member, memberEntity)
-                .where(articleEntity.id.eq(articleId))
+                .where(articleEntity.articleUUID.eq(UUID.fromString(articleUUID)))
                 .fetchOne();
 
         if (article != null) {
             List<ArticleRoleDto> articleRoleDtos = getArticleRoles(article);
             List<ArticleStackDto> articleStackDtos = getArticleStacks(article);
-
             return buildArticleFormDto(article, articleRoleDtos, articleStackDtos);
         }
         return null;
@@ -107,8 +108,8 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
     private ArticleFormDto buildArticleFormDto(ArticleEntity article,
                                                    List<ArticleRoleDto> articleRoleDtos,
                                                    List<ArticleStackDto> articleStackDtos){
-        return                     ArticleFormDto.builder()
-                .articleId(article.getId())
+        return ArticleFormDto.builder()
+                .articleUUID(article.getArticleUUID().toString())
                 .title(article.getTitle())
                 .content(article.getContent())
                 .createdAt(article.getCreatedAt())

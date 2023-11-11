@@ -1,7 +1,10 @@
 package com.coconet.articleservice.service;
 
 import com.coconet.articleservice.dto.*;
-import com.coconet.articleservice.entity.*;
+import com.coconet.articleservice.entity.ArticleEntity;
+import com.coconet.articleservice.entity.ArticleRoleEntity;
+import com.coconet.articleservice.entity.ArticleStackEntity;
+import com.coconet.articleservice.entity.MemberEntity;
 import com.coconet.articleservice.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -11,6 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -23,12 +28,12 @@ public class ArticleService {
     private final TechStackRepository techStackRepository;
     private final ArticleStackRepository articleStackRepository;
 
-
     public ArticleResponseDto createArticle(ArticleRequestDto request) {
 
         MemberEntity member = new MemberEntity(1L, "test@Test.com", "tester");
 
         ArticleEntity articleentity = ArticleEntity.builder()
+                .articleUUID(UUID.randomUUID())
                 .title(request.getTitle())
                 .content(request.getContent())
                 .plannedStartAt(request.getPlannedStartAt().atTime(23, 59, 59))
@@ -68,28 +73,26 @@ public class ArticleService {
                     return articleStackRepository.save(articleStackEntity);
                 }).toList();
 
-        return buildArticleResponseDto(articleRepository.getArticle(savedArticle.getId()));
+        return buildArticleResponseDto(articleRepository.getArticle(savedArticle.getArticleUUID().toString()));
 
     }
 
-    public ArticleResponseDto getArticle(Long articleId){
-        ArticleFormDto articleFormDto = articleRepository.getArticle(articleId);
+    public ArticleResponseDto getArticle(String uuid){
+        ArticleFormDto articleFormDto = articleRepository.getArticle(uuid);
         return buildArticleResponseDto(articleFormDto);
     }
 
     public Page<ArticleResponseDto> getArticles(String keyword, Pageable pageable){
         Page<ArticleFormDto> articleFormDtos = articleRepository.getArticles(keyword, pageable);
         Page<ArticleResponseDto> articleResponseDtos = articleFormDtos.map(articleFormDto ->
-                        buildArticleResponseDto(articleFormDto)
-                );
+                buildArticleResponseDto(articleFormDto)
+        );
         return  articleResponseDtos;
     }
 
     public ArticleResponseDto updateArticle(ArticleRoleDto articleRoleDto, Long articleId){
         ArticleEntity article = articleRepository.findById(articleId)
                 .orElseThrow(() -> new IllegalArgumentException("Not found article"));
-
-
         return null;
     }
 
@@ -106,7 +109,7 @@ public class ArticleService {
 
     private ArticleResponseDto buildArticleResponseDto(ArticleFormDto articleFormDto){
         return  ArticleResponseDto.builder()
-                .articleId(articleFormDto.getArticleId())
+                .articleUUID(articleFormDto.getArticleUUID())
                 .title(articleFormDto.getTitle())
                 .content(articleFormDto.getContent())
                 .createdAt(articleFormDto.getCreatedAt())
