@@ -18,7 +18,7 @@ import static lombok.AccessLevel.PROTECTED;
 @NoArgsConstructor(access = PROTECTED)
 @AllArgsConstructor
 public class ArticleResponseDto {
-    private Long articleId;
+    private String articleUUID;
     private String title;
     private String content;
     private LocalDateTime createdAt;

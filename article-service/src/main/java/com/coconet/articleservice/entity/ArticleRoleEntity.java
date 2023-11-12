@@ -29,4 +29,12 @@ public class ArticleRoleEntity extends BaseEntity{
     private RoleEntity role;
 
     private Integer participant;
+
+    public ArticleRoleEntity(ArticleEntity article, RoleEntity role, Integer participant){
+        this.article = article;
+        this.role = role;
+        this.participant = participant;
+    }
+
+    public void changeParticipant(Integer participant) { this.participant = participant; }
 }

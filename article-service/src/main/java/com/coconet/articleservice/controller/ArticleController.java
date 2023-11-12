@@ -10,6 +10,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
+
 @RestController
 @RequestMapping("/article-service/open-api")
 @RequiredArgsConstructor
@@ -34,10 +36,10 @@ public class ArticleController {
         return articleService.getArticles(keyword, pageable);
     }
 
-//    @PutMapping("/article/{id}")
-//    public ArticleResponseDto updateArticleInfo(@RequestBody() ArticleRequestDto articleRequestDto, @PathVariable String id) {
-//        return articleService.updateArticle(articleRequestDto, Long.valueOf(id));
-//    }
+    @PutMapping("/article")
+    public ArticleResponseDto updateArticleInfo(@RequestBody() ArticleRequestDto articleRequestDto) {
+        return articleService.updateArticle(articleRequestDto);
+    }
 
     @DeleteMapping("/delete/{id}")
     public String deleteArticle(@PathVariable String id){

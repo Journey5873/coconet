@@ -27,4 +27,9 @@ public class ArticleStackEntity extends BaseEntity{
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tech_stack_id")
     private TechStackEntity techStack;
+
+    public ArticleStackEntity(ArticleEntity article, TechStackEntity techStack){
+        this.article = article;
+        this.techStack = techStack;
+    }
 }

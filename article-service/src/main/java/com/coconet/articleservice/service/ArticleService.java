@@ -1,10 +1,7 @@
 package com.coconet.articleservice.service;
 
 import com.coconet.articleservice.dto.*;
-import com.coconet.articleservice.entity.ArticleEntity;
-import com.coconet.articleservice.entity.ArticleRoleEntity;
-import com.coconet.articleservice.entity.ArticleStackEntity;
-import com.coconet.articleservice.entity.MemberEntity;
+import com.coconet.articleservice.entity.*;
 import com.coconet.articleservice.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -13,8 +10,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -36,8 +34,8 @@ public class ArticleService {
                 .articleUUID(UUID.randomUUID())
                 .title(request.getTitle())
                 .content(request.getContent())
-                .plannedStartAt(request.getPlannedStartAt().atTime(23, 59, 59))
-                .expiredAt(request.getExpiredAt().atTime(23, 59, 59))
+                .plannedStartAt(request.getPlannedStartAt().atTime(LocalTime.MAX))
+                .expiredAt(request.getExpiredAt().atTime(LocalTime.MAX))
                 .estimatedDuration(request.getEstimatedDuration())
                 .viewCount(0)
                 .bookmarkCount(0)
@@ -73,28 +71,115 @@ public class ArticleService {
                     return articleStackRepository.save(articleStackEntity);
                 }).toList();
 
-        return buildArticleResponseDto(articleRepository.getArticle(savedArticle.getArticleUUID().toString()));
+        return formDtoToResponseDto(articleRepository.getArticle(savedArticle.getArticleUUID().toString()));
 
     }
 
     public ArticleResponseDto getArticle(String uuid){
         ArticleFormDto articleFormDto = articleRepository.getArticle(uuid);
-        return buildArticleResponseDto(articleFormDto);
+        return formDtoToResponseDto(articleFormDto);
     }
 
     public Page<ArticleResponseDto> getArticles(String keyword, Pageable pageable){
         Page<ArticleFormDto> articleFormDtos = articleRepository.getArticles(keyword, pageable);
         Page<ArticleResponseDto> articleResponseDtos = articleFormDtos.map(articleFormDto ->
-                buildArticleResponseDto(articleFormDto)
+                formDtoToResponseDto(articleFormDto)
         );
         return  articleResponseDtos;
     }
 
-    public ArticleResponseDto updateArticle(ArticleRoleDto articleRoleDto, Long articleId){
-        ArticleEntity article = articleRepository.findById(articleId)
+    public ArticleResponseDto updateArticle(ArticleRequestDto articleRequestDto){
+        ArticleEntity article = articleRepository.findByArticleUUID(UUID.fromString(articleRequestDto.getArticleUUID()))
                 .orElseThrow(() -> new IllegalArgumentException("Not found article"));
-        return null;
+
+        article.changeTitle(articleRequestDto.getTitle());
+        article.changeContent(articleRequestDto.getContent());
+        article.changPlannedStartAt(articleRequestDto.getPlannedStartAt().atTime(LocalTime.MAX));
+        article.changeEstDuration(articleRequestDto.getEstimatedDuration());
+        article.changeExpiredAt(articleRequestDto.getExpiredAt().atTime(LocalTime.MAX));
+        article.changeMeetingType(articleRequestDto.getMeetingType());
+        article.changeArticleType(articleRequestDto.getArticleType());
+
+        updateRoles(articleRequestDto.getArticleRoleDtos(), article);
+        updateStacks(articleRequestDto.getArticleStackDtos(), article);
+
+        ArticleFormDto returnArticle = articleRepository.getArticle(article.getArticleUUID().toString());
+        return formDtoToResponseDto(returnArticle);
     }
+
+    public void updateStacks(List<ArticleStackDto> requestedStackDtos, ArticleEntity article){
+        List<String> requestedStackNames = requestedStackDtos.stream()
+                .map(ArticleStackDto::getStackName)
+                .toList();
+
+        List<ArticleStackEntity> currentArticleStacks = articleStackRepository.getArticleStacks(article);
+        List<TechStackEntity> requestedStacks = articleStackRepository.getArticleStacksNameIn(requestedStackNames);
+
+        List<String> currentArticleStackNames = currentArticleStacks.stream()
+                .map(stack -> stack.getTechStack().getName())
+                .toList();
+
+        List<TechStackEntity> stacksToAdd = requestedStacks.stream()
+                .filter(stack -> !currentArticleStackNames.contains(stack.getName()))
+                .toList();
+
+        List<ArticleStackEntity> stacksToRemove = currentArticleStacks.stream()
+                .filter(stack -> !requestedStackNames.contains(stack.getTechStack().getName()))
+                .toList();
+
+        List<ArticleStackEntity> articleStacks = stacksToAdd.stream()
+                .map(stack -> new ArticleStackEntity(article, stack))
+                .toList();
+
+        articleStackRepository.saveAll(articleStacks);
+        articleStackRepository.deleteAllInBatch(stacksToRemove);
+    }
+
+    public void updateRoles(List<ArticleRoleDto> requestedRoles, ArticleEntity article){
+        // Get current article's role list
+        List<ArticleRoleEntity> currentArticleRoles = articleRoleRepository.getArticleRoles(article);
+
+        // update article's roles
+        List<ArticleRoleEntity> rolesToAdd = new ArrayList<>();
+        List<ArticleRoleEntity> rolesToChange = new ArrayList<>();
+        for (ArticleRoleDto req : requestedRoles){
+            boolean roleExists = false;
+            for (ArticleRoleEntity curr : currentArticleRoles){
+                if (curr.getRole().getName().equals(req.getRoleName())){
+                    roleExists = true;
+                    if(!curr.getParticipant().equals(req.getParticipant())){
+                        curr.changeParticipant(req.getParticipant());
+                        rolesToChange.add(curr);
+                    }
+                    break;
+                }
+            }
+            if (!roleExists){
+                RoleEntity role = roleRepository.findByName(req.getRoleName())
+                        .orElseThrow(() -> new IllegalArgumentException("Not found role"));
+                rolesToAdd.add(
+                        ArticleRoleEntity.builder()
+                                .article(article)
+                                .role(role)
+                                .participant(req.getParticipant())
+                                .build()
+                );
+            }
+        }
+        articleRoleRepository.saveAll(rolesToAdd);
+        articleRoleRepository.saveAll(rolesToChange);
+
+        List<Long> rolesToDelete = currentArticleRoles.stream()
+                .filter(curr -> requestedRoles.stream()
+                        .noneMatch(req -> req.getRoleName().equals(curr.getRole().getName())))
+                .map(ArticleRoleEntity::getId)
+                .toList();
+
+        if (!rolesToDelete.isEmpty()){
+            articleRoleRepository.deleteArticleRolesIn(rolesToDelete);
+        }
+    }
+
 
     public String deleteArticle(Long articleId, Long memberId){
         ArticleEntity article = articleRepository.findById(articleId)
@@ -107,7 +192,7 @@ public class ArticleService {
         }
     }
 
-    private ArticleResponseDto buildArticleResponseDto(ArticleFormDto articleFormDto){
+    private ArticleResponseDto formDtoToResponseDto(ArticleFormDto articleFormDto){
         return  ArticleResponseDto.builder()
                 .articleUUID(articleFormDto.getArticleUUID())
                 .title(articleFormDto.getTitle())
