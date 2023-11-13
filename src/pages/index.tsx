@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 
 import useFetch from "../hooks/useFetch";
+import PostDetail from "./postDetail";
 
 interface Dummy {
     count: number;
@@ -42,13 +43,15 @@ export const PostDummy:PostProps = {
 }
 
 const Index = () => {
-    const getData = async () => {
-        const response = await fetch("https://api.agify.io?name=michael");
-        const result = await response.json();
+    const [postsData, setCurrentPostData] = useState(null);
+    
+    // const getData = async () => {
+    //     const response = await fetch("https://api.agify.io?name=michael");
+    //     const result = await response.json();
 
-        return result;
-    };
-    const { data } = useFetch<Dummy[]>(getData, "dummy", []);
+    //     return result;
+    // };
+    // const { data } = useFetch<Dummy[]>(getData, "dummy", []);
 
 
     return (

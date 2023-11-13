@@ -8,8 +8,12 @@ const KaKaoAuth = () => {
   
   const kakaoURL = `https://kauth.kakao.com/oauth/authorize?client_id=${REACT_APP_KAKAO_REST_API_KEY}&redirect_uri=${KAKAO_REDIRECT_URL}&response_type=code`
     const handleLogin = ()=>{
-        window.location.href = kakaoURL
+      window.location.href = kakaoURL;
     }
+  // const kakaoURL = `http://localhost:8000/member-service/open-api/oauth2/authorize/kakao`
+  // const handleLogin = ()=>{
+  //   window.location.href = kakaoURL;
+  // }
 
     return (
         <StyledButton style={{backgroundColor:'#fae100'}}>

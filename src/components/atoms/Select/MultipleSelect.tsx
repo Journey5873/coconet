@@ -2,7 +2,7 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 
 import Select from 'react-select';
-import { RootState } from '../../../store/config';
+import { RootState } from '../../../store/RootReducer';
 import { LabelProps } from './SingleSelect';
 import styled from 'styled-components';
 
@@ -10,7 +10,7 @@ export default function MultipleSelect<T extends any>({
   label,
   onChange,
 }: LabelProps<T>) {
-  const item = useSelector((state: RootState) => state.positionList);
+  const item = useSelector((state: RootState) => state.reducer.position);
 
   return (
     <StyledLabelAndSelect>
