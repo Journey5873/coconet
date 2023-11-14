@@ -2,6 +2,10 @@ import React, { useState } from "react";
 
 import useFetch from "../hooks/useFetch";
 import MultiStackSelector from "../components/organisms/multiStackSelector/multiStackSelector";
+import CustomCarousel from "../components/organisms/Carousel";
+import styled from "styled-components";
+import Tab from "../components/organisms/customTabs/Tab";
+import Tabs from "../components/organisms/customTabs/Tabs";
 
 interface Dummy {
     count: number;
@@ -54,10 +58,28 @@ const Index = () => {
     return (
         <>
             <div>
-                <MultiStackSelector handleSelected={() => {}} selected={[]} />
+                <StyledContents>
+                    <CustomCarousel />
+                    <Tabs options={[{ name: "전체" }, { name: "프로젝트" }, { name: "스터디" }]}>
+                        <Tab value="전체">
+                            <MultiStackSelector handleSelected={() => {}} selected={[]} />
+                        </Tab>
+                        <Tab value="프로젝트">
+                            <MultiStackSelector handleSelected={() => {}} selected={[]} />
+                        </Tab>
+                        <Tab value="스터디">
+                            <MultiStackSelector handleSelected={() => {}} selected={[]} />
+                        </Tab>
+                    </Tabs>
+                </StyledContents>
             </div>
         </>
     );
 };
 
 export default Index;
+
+const StyledContents = styled.div`
+    width: 1220px;
+    margin: 0 auto;
+`;
