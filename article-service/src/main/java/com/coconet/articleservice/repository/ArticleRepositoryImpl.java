@@ -3,7 +3,7 @@ package com.coconet.articleservice.repository;
 import com.coconet.articleservice.dto.ArticleFormDto;
 import com.coconet.articleservice.dto.ArticleRoleDto;
 import com.coconet.articleservice.dto.ArticleStackDto;
-import com.coconet.articleservice.entity.ArticleEntity;
+import com.coconet.articleservice.entity.*;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
@@ -21,6 +21,10 @@ import static com.coconet.articleservice.entity.QArticleEntity.articleEntity;
 import static com.coconet.articleservice.entity.QArticleRoleEntity.articleRoleEntity;
 import static com.coconet.articleservice.entity.QArticleStackEntity.articleStackEntity;
 import static com.coconet.articleservice.entity.QMemberEntity.memberEntity;
+import static com.coconet.articleservice.entity.QMemberRoleEntity.memberRoleEntity;
+import static com.coconet.articleservice.entity.QMemberStackEntity.memberStackEntity;
+import static com.coconet.articleservice.entity.QRoleEntity.roleEntity;
+import static com.coconet.articleservice.entity.QTechStackEntity.techStackEntity;
 import static org.springframework.util.ObjectUtils.isEmpty;
 
 @RequiredArgsConstructor
@@ -32,14 +36,14 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
 
         ArticleEntity article = queryFactory
                 .selectFrom(articleEntity)
+                .leftJoin(articleEntity.articleRoles, articleRoleEntity)
+                .leftJoin(articleEntity.articleStacks, articleStackEntity)
                 .leftJoin(articleEntity.member, memberEntity)
                 .where(articleEntity.articleUUID.eq(UUID.fromString(articleUUID)))
                 .fetchOne();
 
         if (article != null) {
-            List<ArticleRoleDto> articleRoleDtos = getArticleRoles(article);
-            List<ArticleStackDto> articleStackDtos = getArticleStacks(article);
-            return buildArticleFormDto(article, articleRoleDtos, articleStackDtos);
+            return buildArticleFormDto(article);
         }
         return null;
     }
@@ -50,21 +54,17 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
                 .selectFrom(articleEntity)
                 .leftJoin(articleEntity.articleRoles, articleRoleEntity)
                 .leftJoin(articleEntity.articleStacks, articleStackEntity)
-                .fetchJoin()
+                .orderBy(articleEntity.createdAt.desc())
                 .distinct()
-                .where(
-                        titleContains(keyword).or(contentContains(keyword))
-                )
+                .where(titleContains(keyword),
+                        (contentContains(keyword)))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
 
-        List<ArticleFormDto> contents = new ArrayList<>();
-        for (ArticleEntity article : articles){
-            List<ArticleRoleDto> articleRoleDtos = getArticleRoles(article);
-            List<ArticleStackDto> articleStackDtos = getArticleStacks(article);
-            contents.add(buildArticleFormDto(article, articleRoleDtos, articleStackDtos));
-        }
+        List<ArticleFormDto> contents = articles.stream()
+                .map(article -> buildArticleFormDto(article))
+                .toList();
 
         JPAQuery<ArticleEntity> countQuery = queryFactory
                 .selectFrom(articleEntity)
@@ -105,9 +105,7 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
                 .fetch();
     }
 
-    private ArticleFormDto buildArticleFormDto(ArticleEntity article,
-                                                   List<ArticleRoleDto> articleRoleDtos,
-                                                   List<ArticleStackDto> articleStackDtos){
+    private ArticleFormDto buildArticleFormDto(ArticleEntity article){
         return ArticleFormDto.builder()
                 .articleUUID(article.getArticleUUID().toString())
                 .title(article.getTitle())
@@ -123,8 +121,15 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
                 .status(article.getStatus())
                 .meetingType(article.getMeetingType())
                 .author(article.getMember().getName())
-                .articleRoleDtos(articleRoleDtos)
-                .articleStackDtos(articleStackDtos)
+                .articleRoleDtos(article.getArticleRoles().stream()
+                        .map(role -> new ArticleRoleDto(role.getRole().getName(),
+                                role.getParticipant()))
+                        .toList())
+                .articleStackDtos(article.getArticleStacks().stream()
+                        .map(stack -> new ArticleStackDto(stack.getTechStack().getName(),
+                                stack.getTechStack().getCategory(),
+                                stack.getTechStack().getImage()))
+                        .toList())
                 .build();
     }
 }
