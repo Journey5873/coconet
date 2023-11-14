@@ -28,7 +28,7 @@ const MultiStackSelector = ({ handleSelected, selected }: Props) => {
             <StyledPopupWrapper isShow={isShow}>
                 <Tabs
                     options={[
-                        { name: "인기" },
+                        { name: "전체" },
                         { name: "프론트엔드" },
                         { name: "백엔드" },
                         { name: "모바일" },
@@ -36,7 +36,7 @@ const MultiStackSelector = ({ handleSelected, selected }: Props) => {
                         { name: "모두보기" },
                     ]}
                 >
-                    <Tab value="인기">
+                    <Tab value="전체">
                         <StyledStackWrapper>
                             {skillList.map((skill) => (
                                 <SpecButton label={skill.label} onClick={() => handleSelected(skill.value)} />
@@ -58,6 +58,9 @@ const StyledContainer = styled.div`
 const StyledPopupWrapper = styled.div<{
     isShow: boolean;
 }>`
+    position: absolute;
+    top: 100%;
+    left: 0;
     margin-top: 8px;
     width: 900px;
     height: auto;
@@ -65,6 +68,8 @@ const StyledPopupWrapper = styled.div<{
     border: 1px solid lightgray;
     border-radius: 20px;
     display: ${(props) => (props.isShow ? "block" : "none")};
+    z-index: 10;
+    background-color: white;
 `;
 
 const StyledStackWrapper = styled.div`

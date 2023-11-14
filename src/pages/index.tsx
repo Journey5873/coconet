@@ -7,6 +7,7 @@ import styled from "styled-components";
 import Tab from "../components/organisms/customTabs/Tab";
 import Tabs from "../components/organisms/customTabs/Tabs";
 import Card from "../components/molecules/card/card";
+import FilterSelect from "../components/atoms/Select/filterSelect";
 
 interface Dummy {
     count: number;
@@ -63,7 +64,17 @@ const Index = () => {
                     <CustomCarousel />
                     <Tabs options={[{ name: "전체" }, { name: "프로젝트" }, { name: "스터디" }]}>
                         <Tab value="전체">
-                            <MultiStackSelector handleSelected={() => {}} selected={[]} />
+                            <div style={{ display: "flex", columnGap: "1rem" }}>
+                                <MultiStackSelector handleSelected={() => {}} selected={[]} />
+                                <FilterSelect
+                                    title="포지션"
+                                    options={["전체", "프론트엔드", "백엔드", "데브옵스", "디자이너"]}
+                                />
+                                <FilterSelect
+                                    title="진행방식"
+                                    options={["전체", "온라인", "오프라인", "온/오프라인"]}
+                                />
+                            </div>
                             <StyledItemWrpper>
                                 {[PostDummy].map((item) => (
                                     <Card
@@ -78,10 +89,54 @@ const Index = () => {
                             </StyledItemWrpper>
                         </Tab>
                         <Tab value="프로젝트">
-                            <MultiStackSelector handleSelected={() => {}} selected={[]} />
+                            <div style={{ display: "flex", columnGap: "1rem" }}>
+                                <MultiStackSelector handleSelected={() => {}} selected={[]} />
+                                <FilterSelect
+                                    title="포지션"
+                                    options={["전체", "프론트엔드", "백엔드", "데브옵스", "디자이너"]}
+                                />
+                                <FilterSelect
+                                    title="진행방식"
+                                    options={["전체", "온라인", "오프라인", "온/오프라인"]}
+                                />
+                            </div>
+                            <StyledItemWrpper>
+                                {[PostDummy].map((item) => (
+                                    <Card
+                                        bookmarkCount={item?.bookmarkCount}
+                                        expiredAt={item?.expiredAt}
+                                        role={item?.role}
+                                        techStacks={item?.techStacks}
+                                        title={item?.title}
+                                        viewCount={item?.viewCount}
+                                    />
+                                ))}
+                            </StyledItemWrpper>
                         </Tab>
                         <Tab value="스터디">
-                            <MultiStackSelector handleSelected={() => {}} selected={[]} />
+                            <div style={{ display: "flex", columnGap: "1rem" }}>
+                                <MultiStackSelector handleSelected={() => {}} selected={[]} />
+                                <FilterSelect
+                                    title="포지션"
+                                    options={["전체", "프론트엔드", "백엔드", "데브옵스", "디자이너"]}
+                                />
+                                <FilterSelect
+                                    title="진행방식"
+                                    options={["전체", "온라인", "오프라인", "온/오프라인"]}
+                                />
+                            </div>
+                            <StyledItemWrpper>
+                                {[PostDummy].map((item) => (
+                                    <Card
+                                        bookmarkCount={item?.bookmarkCount}
+                                        expiredAt={item?.expiredAt}
+                                        role={item?.role}
+                                        techStacks={item?.techStacks}
+                                        title={item?.title}
+                                        viewCount={item?.viewCount}
+                                    />
+                                ))}
+                            </StyledItemWrpper>
                         </Tab>
                     </Tabs>
                 </StyledContents>
