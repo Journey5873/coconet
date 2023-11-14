@@ -84,7 +84,6 @@ const PostDetail = () => {
                                 <StyledPositionApplyButton>지원</StyledPositionApplyButton>
                               </StyledPositionList>                
                             </ul>
-                    
 												</StyledPostInfoListContent>                    
 												<StyledPostInfoListContent className="language">
 														<StyledPostInfoTitle>사용 언어</StyledPostInfoTitle>
@@ -114,7 +113,7 @@ const PostDetail = () => {
 						</StyledViewAndBookmarkCount>
 						<div style={{ marginBottom: 80 }}>
 							<StyledCommentInputWrppaer>
-									<StyledCommentTitle>댓글<span>0</span></StyledCommentTitle>
+									<StyledCommentTitle>댓글<span style={{marginLeft : 6}}>0</span></StyledCommentTitle>
 									<StyledCommentInputContainer>
 										<StyledCommentInputProfile />
 										<StyledCommentInputTextArea name="comment" id="comment" placeholder="댓글을 입력하세요." ></StyledCommentInputTextArea>
@@ -122,7 +121,33 @@ const PostDetail = () => {
 									<StyledCommentInputButton>
 										댓글등록
 									</StyledCommentInputButton>
-							</StyledCommentInputWrppaer>
+              </StyledCommentInputWrppaer>
+              <StyledCommentListWrapper>
+                <StyledCommentList>
+                    <div>
+                      <StyledCommentUserInfoWrapper>
+                        <StyledCommentInputProfile className="comment_list" />
+                        <StyledCommentUserInfo>
+                          <StyledCommentUserName>작성자 1</StyledCommentUserName>
+                          <StyledCommentTime>2023-11-12 18:28:21</StyledCommentTime>
+                        </StyledCommentUserInfo>
+                      </StyledCommentUserInfoWrapper>
+                    </div>
+                    <StyledCommentContent>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Suscipit optio, laudantium quaerat quasi praesentium possimus tempore velit numquam veniam laboriosam..</StyledCommentContent>
+                </StyledCommentList>
+                  <StyledCommentList>
+                    <div>
+                      <StyledCommentUserInfoWrapper>
+                        <StyledCommentInputProfile  className="comment_list" />
+                        <StyledCommentUserInfo>
+                          <StyledCommentUserName>작성자 2</StyledCommentUserName>
+                          <StyledCommentTime>2023-11-12 18:28:21</StyledCommentTime>
+                        </StyledCommentUserInfo>
+                      </StyledCommentUserInfoWrapper>
+                    </div>
+                    <StyledCommentContent>Lorem ipsum, dolor sit amet consectetur adipisicing elit.</StyledCommentContent>
+                </StyledCommentList>
+              </StyledCommentListWrapper>  
 						</div>            
 					</>
 				): (
@@ -217,19 +242,16 @@ const StyledPostInfoList = styled.ul`
 		list-style: none;
 		justify-content : space-between;
 		row-gap: 24px;
+
+    @media screen and (max-width: 600px) {
+      flex-direction : column;
+    }
 `
 
 const StyledPostInfoRemains = styled.div`
 		margin-top : 24px;
 `
 
-const StyledLanguageList = styled.ul`
-		display: flex;
-		align-items: center;
-		grid-gap: 12px;
-		gap: 12px;
-		list-style: none;
-`
 const StyledPositionList = styled.li`
     display: flex;
     flex-direction: row;
@@ -240,10 +262,8 @@ const StyledPositionList = styled.li`
 const StyledPositionName = styled.h2`
   font-size: 15px;
     line-height: 1.3125rem;
-    color: #424251;
     margin-right: 30px;
-    width: 221px;
-    font-weight: 400;
+    font-weight: 700;
 `
 
 const StyledPositionCount = styled.span`
@@ -255,18 +275,17 @@ const StyledPositionCount = styled.span`
 
 const StyledPositionApplyButton = styled.button`
   font-size: .75rem;
-    color: #81839c;
     padding: 5px 30px!important;
     box-sizing: border-box;
-    border: 1px solid #81839c;
+    border: 1px solid #8CAF8E;
     border-radius: 50px;
     transition: all .2s;
     background-color: #ffffff;
     cursor:pointer;
 
     &:hover {
-      background-color: #42495b;
-      border: 1px solid #42495b;
+      background-color: #8CAF8E;
+      border: 1px solid #8CAF8E;
       color: #fff;
     }
 `
@@ -285,6 +304,10 @@ const StyledPostInfoListContent = styled.li`
     &.language {
       width : 100%;
       margin-top : 24px;
+    }
+
+    @media screen and (max-width: 600px) {
+      width : 100%;
     }
 `
 
@@ -422,6 +445,13 @@ const StyledCommentInputProfile = styled(CoconutIcon)`
     width: 44px;
     height: 44px;
     border-radius: 50%;
+
+  &.comment_list {
+      width: 52px;
+      height: 52px;
+      margin-right: 16px;
+      object-fit: cover;
+  }
 `
 
 const StyledCommentInputTextArea = styled.textarea`
@@ -447,4 +477,48 @@ const StyledCommentInputButton = styled.button`
   font-size: 16px;
 	line-height: 40px;
   cursor: pointer;
+`
+
+const StyledCommentListWrapper = styled.div`
+
+`
+
+const StyledCommentList = styled.li`
+    display: flex;
+    flex-direction: column;
+    padding-top: 1.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 2px solid #e1e1e1;
+`
+
+const StyledCommentUserInfoWrapper = styled.div`
+    display: flex;
+    align-items: center;
+    margin-bottom: 18px;
+`
+
+const StyledCommentUserInfo = styled.div`
+  display: flex;
+  flex-direction: column;
+  font-weight :700;
+`
+
+const StyledCommentUserName = styled.div`
+    color: #333;
+    font-weight: 700;
+`
+
+const StyledCommentTime = styled.div`
+    font-size: 14px;
+    line-height: 126.5%;
+    letter-spacing: -.005em;
+    color: #9f9f9f;
+`
+
+const StyledCommentContent = styled.p`
+    font-size: 1.125rem;
+    line-height: 1.7;
+    letter-spacing: -.004em;
+    word-break: break-all;
+    overflow-wrap: break-all;
 `
