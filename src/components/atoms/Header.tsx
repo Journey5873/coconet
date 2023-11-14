@@ -7,11 +7,13 @@ import { ReactComponent as Polygon } from '../assets/images/polygon.svg';
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import LoginModal from "./LoginModal";
+import {RxHamburgerMenu} from 'react-icons/rx';
 
 
 export default function Header() {
     const [openDropdownbar, setOpenDropdownbar] = useState(false);
     const [openLoginModal, setOpenLoginModal] = useState(false);
+    
 
     const handleDropdownbar = () => {
         setOpenDropdownbar(openDropdownbar => !openDropdownbar);
@@ -28,7 +30,7 @@ export default function Header() {
     ];
     return (
         <StyledHeaderWrapper>
-            <Link to="/">
+            <Link to="/" >
                 <StyledLogoImg src={Logo} />
             </Link>
             <StyledMenuWrapper>
@@ -42,6 +44,7 @@ export default function Header() {
                 </StyledMenuImage>
                 <StyledLoginUser onClick={() => handleDropdownbar()}>
                     <StyledLoginUserImg src={coconutIcon} alt="coconutIcon" />
+                    <RxHamburgerMenu className="mobileMenu" size={23} />
                     <StyledPolygon />
                     <StyledDropdownBar openDropdownbar={openDropdownbar}>
                         <StyledDropDownBarMenu>
@@ -71,9 +74,10 @@ const StyledHeaderWrapper = styled.nav`
     height: 85px;
     padding: 0 10px;
 
+
+
     @media screen and (max-width: 575px) {
         position: relative;
-        height: 60px;
         padding: 0 20px;
     }
 `
@@ -81,6 +85,12 @@ const StyledHeaderWrapper = styled.nav`
 const StyledLogoImg = styled.img`
     width: 230px;
     height: 70px;
+
+        @media screen and (max-width: 770px) {
+            width : 150px;
+            height : 50px;
+        
+    }
 `
 
 const StyledMenuWrapper = styled.div`
@@ -113,11 +123,13 @@ const StyledMenuImage = styled.div`
     width : 25px;
     height : 25px;
     cursor : pointer;
+    
+   
 
     @media screen and (max-width: 575px){
-    position: static;
-    width: 28px;
-    height: auto;
+        position: static;
+        width: 28px;
+        height: auto;
 }
 `
 
@@ -126,6 +138,15 @@ const StyledLoginUser = styled.div`
     display: flex;
     align-items: center;
     position: relative;
+
+    .mobileMenu {
+        display: none;
+    }
+
+    @media screen and (max-width:575px ) {
+        .mobileMenu { display: block}
+
+    }
 `
 
 const StyledLoginUserImg = styled.img`
@@ -136,6 +157,11 @@ const StyledLoginUserImg = styled.img`
     border-radius: 50%;
     object-fit: cover;
     transition: all .125s ease-in 0s;
+
+        @media screen and (max-width:575px ) {
+        display: none;
+
+    }
 `
 
 const StyledPolygon = styled(Polygon)`
@@ -143,6 +169,10 @@ const StyledPolygon = styled(Polygon)`
     position: absolute;
     top: 15px;
     right: -4px;
+        @media screen and (max-width:575px ) {
+        display: none;
+
+    }
 `
 const StyledDropdownBar = styled.div<{openDropdownbar:boolean}>`
     position: absolute;

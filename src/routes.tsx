@@ -5,6 +5,7 @@ import SettingPage from "./pages/setting";
 import MyPosts from "./pages/myPosts";
 import MyLikes from "./pages/myLikes";
 import PostDetail from "./pages/postDetail";
+import KakaoCallBack from "./components/organisms/KaKaoCallback";
 
 export const routes = [
     {
@@ -30,6 +31,11 @@ export const routes = [
             {
                 path: "/myLikes",
                 element: <MyLikes />,
+                index: true,
+            },
+            {
+                path: "/member-service/open-api/kakao",
+                element: <KakaoCallBack />,
                 index: true,
             },
         ],

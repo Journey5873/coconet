@@ -9,7 +9,7 @@ import Chip from "@mui/material/Chip";
 import { useSelector, useDispatch } from "react-redux";
 import styled from "styled-components";
 import { decrease, increase } from "../../../store/positionSlice";
-import { RootState } from "../../../store/config";
+import { RootState } from "../../../store/RootReducer";
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
 
@@ -45,7 +45,7 @@ export default function MultipleSelectWithCount() {
     const theme = useTheme();
     const [stackLists, setStackLists] = React.useState<string[]>([]);
     
-    const items = useSelector((state : RootState) => state.positionList);
+    const items = useSelector((state : RootState) => state.reducer.position);
 
     let dispatch = useDispatch();
 
