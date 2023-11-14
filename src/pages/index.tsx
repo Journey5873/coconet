@@ -143,5 +143,4 @@ const StyledItemWrpper = styled.div`
   margin-top: 1rem;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 2rem;
 `
