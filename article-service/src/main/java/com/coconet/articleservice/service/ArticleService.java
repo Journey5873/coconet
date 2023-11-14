@@ -75,8 +75,8 @@ public class ArticleService {
 
     }
 
-    public ArticleResponseDto getArticle(String uuid){
-        ArticleFormDto articleFormDto = articleRepository.getArticle(uuid);
+    public ArticleResponseDto getArticle(String articleUUID){
+        ArticleFormDto articleFormDto = articleRepository.getArticle(articleUUID);
         return formDtoToResponseDto(articleFormDto);
     }
 
@@ -180,12 +180,11 @@ public class ArticleService {
         }
     }
 
-
-    public String deleteArticle(Long articleId, Long memberId){
-        ArticleEntity article = articleRepository.findById(articleId)
+    public String deleteArticle(String articleUUID, String memberUUID){
+        ArticleEntity article = articleRepository.findByArticleUUID(UUID.fromString(articleUUID))
                 .orElseThrow();
-        if (article.getMember().equals(memberId)){
-            articleRepository.deleteById(articleId);
+        if (article.getMember().getMemberUUID().equals(UUID.fromString(memberUUID))){
+            articleRepository.deleteById(article.getId());
             return "Successfully deleted";
         }else{
             return "Only the author can delete the article";

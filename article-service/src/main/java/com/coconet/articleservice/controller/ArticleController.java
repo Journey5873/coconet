@@ -2,15 +2,12 @@ package com.coconet.articleservice.controller;
 
 import com.coconet.articleservice.dto.ArticleRequestDto;
 import com.coconet.articleservice.dto.ArticleResponseDto;
-import com.coconet.articleservice.dto.ArticleSearchCondition;
 import com.coconet.articleservice.service.ArticleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
 
 @RestController
 @RequestMapping("/article-service/open-api")
@@ -41,9 +38,9 @@ public class ArticleController {
         return articleService.updateArticle(articleRequestDto);
     }
 
-    @DeleteMapping("/delete/{id}")
-    public String deleteArticle(@PathVariable String id){
-        Long memberId = 2L;
-        return articleService.deleteArticle(Long.valueOf(id), memberId);
+    @DeleteMapping("/delete/{articleUUID}")
+    public String deleteArticle(@PathVariable String articleUUID){
+        String memberUUID = "";
+        return articleService.deleteArticle(articleUUID, memberUUID);
     }
 }
