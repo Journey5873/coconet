@@ -6,6 +6,7 @@ import CustomCarousel from "../components/organisms/Carousel";
 import styled from "styled-components";
 import Tab from "../components/organisms/customTabs/Tab";
 import Tabs from "../components/organisms/customTabs/Tabs";
+import Card from "../components/molecules/card/card";
 
 interface Dummy {
     count: number;
@@ -63,6 +64,18 @@ const Index = () => {
                     <Tabs options={[{ name: "전체" }, { name: "프로젝트" }, { name: "스터디" }]}>
                         <Tab value="전체">
                             <MultiStackSelector handleSelected={() => {}} selected={[]} />
+                            <StyledItemWrpper>
+                                {[PostDummy].map((item) => (
+                                    <Card
+                                        bookmarkCount={item?.bookmarkCount}
+                                        expiredAt={item?.expiredAt}
+                                        role={item?.role}
+                                        techStacks={item?.techStacks}
+                                        title={item?.title}
+                                        viewCount={item?.viewCount}
+                                    />
+                                ))}
+                            </StyledItemWrpper>
                         </Tab>
                         <Tab value="프로젝트">
                             <MultiStackSelector handleSelected={() => {}} selected={[]} />
@@ -82,4 +95,10 @@ export default Index;
 const StyledContents = styled.div`
     width: 1220px;
     margin: 0 auto;
+`;
+
+const StyledItemWrpper = styled.div`
+    margin-top: 1rem;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
 `;
