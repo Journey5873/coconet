@@ -6,6 +6,7 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import java.util.List;
+import java.util.UUID;
 
 import static lombok.AccessLevel.*;
 
@@ -20,7 +21,7 @@ public class MemberEntity extends BaseEntity{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
+    @Column(name = "member_id")
     private Long id;
 
     @Column(length = 50, nullable = false)
@@ -42,8 +43,9 @@ public class MemberEntity extends BaseEntity{
     @Column(nullable = false)
     private Byte isActivated;
 
-    @Column(nullable = false, unique = true, length = 45)
-    private String memberId;
+    @Column(columnDefinition = "BINARY(16)", name = "member_uuid",
+            nullable = false, unique = true)
+    private UUID memberUUID;
 
     @Column(length = 200)
     private String bio;

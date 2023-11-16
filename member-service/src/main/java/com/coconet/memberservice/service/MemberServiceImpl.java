@@ -46,7 +46,7 @@ public class MemberServiceImpl implements MemberService {
     public boolean existMember(String email) {
         return memberRepository.findByEmail(email).isPresent();
     }
-    public String preRegister(AuthProvider provider, String email) {
+    public UUID preRegister(AuthProvider provider, String email) {
         MemberEntity user = MemberEntity.builder()
                 .email(email)
                 .name("Undefined")
@@ -55,12 +55,12 @@ public class MemberServiceImpl implements MemberService {
                 .updatedAt(LocalDateTime.now())
                 .provider(provider)
                 .isActivated((byte) 1)
-                .memberId(UUID.randomUUID().toString())
+                .memberUUID(UUID.randomUUID())
                 .build();
 
         memberRepository.save(user);
 
-        return user.getMemberId();
+        return user.getMemberUUID();
     }
 
     public TokenResponse login (String email) {
@@ -69,7 +69,7 @@ public class MemberServiceImpl implements MemberService {
 
         if(member.getName().equals("Undefined")) {
             return TokenResponse.builder()
-                    .memberId(member.getMemberId()).build();
+                    .memberId(member.getMemberUUID()).build();
         }
         else {
             MemberPrincipal memberPrincipal = new MemberPrincipal(member);
@@ -81,8 +81,12 @@ public class MemberServiceImpl implements MemberService {
     }
 
     public TokenResponse register(MemberRegisterRequestDto requestDto) {
-        MemberEntity preRegisterMember = memberRepository.findByMemberId(requestDto.getMemberId())
+        MemberEntity preRegisterMember = memberRepository.findByMemberUUID(requestDto.getMemberId())
                 .orElseThrow(() -> new ApiException(ErrorCode.BAD_REQUEST, "No member found"));
+
+        if(memberRepository.findByName(requestDto.getName()).stream().findAny().isPresent()) {
+            throw new ApiException(ErrorCode.BAD_REQUEST, "The name is already used");
+        }
 
         preRegisterMember.register(requestDto.getName(),
                         String.valueOf(requestDto.getCareer()),
@@ -97,8 +101,9 @@ public class MemberServiceImpl implements MemberService {
 
         return login(returnedMember.getEmail());
     }
-    public MemberResponseDto getUserInfo(String memberId){
-        MemberEntity member = memberRepository.findByMemberId(memberId)
+
+    public MemberResponseDto getUserInfo(UUID memberId){
+        MemberEntity member = memberRepository.findByMemberUUID(memberId)
                 .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "No member found"));
 
         List<String> returnRoles = getAllRoles(member).stream()
@@ -121,9 +126,13 @@ public class MemberServiceImpl implements MemberService {
                 .build();
     }
 
-    public MemberResponseDto updateUserInfo(String memberId, MemberRequestDto requestDto, MultipartFile imageFile) {
-        MemberEntity member = memberRepository.findByMemberId(memberId)
+    public MemberResponseDto updateUserInfo(UUID memberId, MemberRequestDto requestDto, MultipartFile imageFile) {
+        MemberEntity member = memberRepository.findByMemberUUID(memberId)
                                                     .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "No member found"));
+
+        if(memberRepository.findByName(requestDto.getName()).stream().findAny().isPresent()) {
+            throw new ApiException(ErrorCode.BAD_REQUEST, "The name is already used");
+        }
 
         member.changeName(requestDto.getName());
         member.changeCareer(String.valueOf(requestDto.getCareer()));
@@ -151,8 +160,8 @@ public class MemberServiceImpl implements MemberService {
                 .build();
     }
 
-    public MemberResponseDto deleteUser(String memberId) {
-        MemberEntity member = memberRepository.findByMemberId(memberId)
+    public MemberResponseDto deleteUser(UUID memberId) {
+        MemberEntity member = memberRepository.findByMemberUUID(memberId)
                 .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "No member found"));
 
         member.deleteUser();

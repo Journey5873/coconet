@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.util.List;
+import java.util.UUID;
 
 @AllArgsConstructor
 @Getter
@@ -17,7 +18,7 @@ public class MemberRegisterRequestDto {
 
     @NotNull
     @Schema(example = "qweasd123QDC")
-    private String memberId;
+    private UUID memberId;
     @Size(min = 2, max = 8)
     @NotNull
     @Schema(example = "taylor")

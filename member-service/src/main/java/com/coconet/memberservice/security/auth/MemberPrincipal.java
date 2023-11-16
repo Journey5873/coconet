@@ -32,7 +32,7 @@ public class MemberPrincipal implements UserDetails, OAuth2User{
 
     @Override
     public String getName() {
-        return member.getMemberId();
+        return member.getMemberUUID().toString();
     }
 
     @Override

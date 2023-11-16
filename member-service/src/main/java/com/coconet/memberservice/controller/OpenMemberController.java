@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Collections;
+import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -95,7 +96,7 @@ public class OpenMemberController {
         email += "@github.com";
 
         if(!memberServiceImpl.existMember(email)) {
-            String memberId = memberServiceImpl.preRegister(AuthProvider.github, email);
+            UUID memberId = memberServiceImpl.preRegister(AuthProvider.github, email);
             return Response.OK(TokenResponse.builder()
                     .memberId(memberId).build());
         }
@@ -129,7 +130,7 @@ public class OpenMemberController {
         String email = memberServiceImpl.getJsonValue(payload, "email");
 
         if(!memberServiceImpl.existMember(email)) {
-            String memberId = memberServiceImpl.preRegister(AuthProvider.google, email);
+            UUID memberId = memberServiceImpl.preRegister(AuthProvider.google, email);
             return Response.OK(TokenResponse.builder()
                     .memberId(memberId).build());
         }
@@ -182,7 +183,7 @@ public class OpenMemberController {
         email = email.substring(0, email.indexOf("@")) + "@kakao.com";
 
         if(!memberServiceImpl.existMember(email)) {
-            String memberId = memberServiceImpl.preRegister(AuthProvider.kakao, email);
+            UUID memberId = memberServiceImpl.preRegister(AuthProvider.kakao, email);
             return Response.OK(TokenResponse.builder()
                     .memberId(memberId).build());
         }

@@ -14,6 +14,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.UUID;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/member-service/api")
@@ -39,7 +41,7 @@ public class PrivateMemberController {
             }
     )
     @GetMapping("/my-profile")
-    public Response<MemberResponseDto> getUserInfo(@RequestHeader(value="memberId") String memberId) {
+    public Response<MemberResponseDto> getUserInfo(@RequestHeader(value="memberId") UUID memberId) {
         MemberResponseDto memberResponseDto = memberServiceImpl.getUserInfo(memberId);
         return Response.OK(memberResponseDto);
     }
@@ -61,7 +63,7 @@ public class PrivateMemberController {
             }
     )
     @PutMapping("/my-profile")
-    public Response<MemberResponseDto> updateUserInfo(@RequestPart("requestDto") MemberRequestDto requestDto, @RequestPart("imageFile") MultipartFile imageFile, @RequestHeader(value="memberId") String memberId) {
+    public Response<MemberResponseDto> updateUserInfo(@RequestPart("requestDto") MemberRequestDto requestDto, @RequestPart("imageFile") MultipartFile imageFile, @RequestHeader(value="memberId") UUID memberId) {
         MemberResponseDto memberResponseDto = memberServiceImpl.updateUserInfo(memberId, requestDto, imageFile);
         return Response.OK(memberResponseDto);
     }
@@ -83,7 +85,7 @@ public class PrivateMemberController {
             }
     )
     @DeleteMapping("/delete")
-    public Response<MemberResponseDto> deleteUser(@RequestHeader(value="memberId") String memberId) {
+    public Response<MemberResponseDto> deleteUser(@RequestHeader(value="memberId") UUID memberId) {
         MemberResponseDto memberResponseDto = memberServiceImpl.deleteUser(memberId);
         return Response.OK(memberResponseDto);
     }

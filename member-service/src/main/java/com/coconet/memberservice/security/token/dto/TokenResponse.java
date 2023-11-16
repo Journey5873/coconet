@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Getter
 @NoArgsConstructor
@@ -19,5 +20,5 @@ public class TokenResponse {
     private LocalDateTime accessTokenExpiredAt;
     private String refreshToken;
     private LocalDateTime refreshTokenExpiredAt;
-    private String memberId;
+    private UUID memberId;
 }

@@ -6,14 +6,16 @@ import com.coconet.memberservice.dto.MemberResponseDto;
 import com.coconet.memberservice.security.token.dto.TokenResponse;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.UUID;
+
 public interface MemberService {
     TokenResponse login(String email);
 
     TokenResponse register(MemberRegisterRequestDto requestDto);
 
-    MemberResponseDto getUserInfo(String memberId);
+    MemberResponseDto getUserInfo(UUID memberId);
 
-    MemberResponseDto updateUserInfo(String userId, MemberRequestDto requestDto, MultipartFile imageFile);
+    MemberResponseDto updateUserInfo(UUID memberId, MemberRequestDto requestDto, MultipartFile imageFile);
 
-    MemberResponseDto deleteUser(String userId);
+    MemberResponseDto deleteUser(UUID memberId);
 }
