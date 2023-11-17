@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import { FaBookmark, FaRegBookmark, FaEye } from "react-icons/fa";
 import { DummyData } from "../../../data/data";
-import { typeMap, imageMap } from "../../../utils/utils";
+import { typeMap, imageMap, dateFormat } from "../../../utils/utils";
 import { useNavigate } from "react-router-dom";
 
 interface Props {
@@ -10,8 +10,17 @@ interface Props {
 
 const Card = ({ item }: Props) => {
     const navigation = useNavigate();
-    const { articleId, expiredAt, title, articleRoleDtos, articleStackDtos, viewCount, articleType, meetingType } =
-        item;
+    const {
+        articleId,
+        expiredAt,
+        title,
+        articleRoleDtos,
+        articleStackDtos,
+        viewCount,
+        articleType,
+        meetingType,
+        author,
+    } = item;
     return (
         <StyledCardContainer onClick={() => navigation(`/post/${articleId}`)}>
             <StyledRowBetweenWrapper>
@@ -21,7 +30,7 @@ const Card = ({ item }: Props) => {
                 </StyledRowWrapper>
                 <FaRegBookmark style={{ fontSize: "32px", color: "#8caf8e" }} />
             </StyledRowBetweenWrapper>
-            <StyledCardExpired>{`마감일 | ${expiredAt}`}</StyledCardExpired>
+            <StyledCardExpired>{`마감일 | ${dateFormat(expiredAt)}`}</StyledCardExpired>
             <h2>{title}</h2>
             <div style={{ display: "flex", columnGap: "4px" }}>
                 {articleRoleDtos.map((item, index) => (
@@ -35,10 +44,15 @@ const Card = ({ item }: Props) => {
                     </StyledTech>
                 ))}
             </StyledRowWrapper>
-            <StyledRowWrapper>
-                <FaEye />
-                {viewCount}
-            </StyledRowWrapper>
+            <div style={{ borderTop: "1px solid lightgray", paddingTop: "16px" }}>
+                <StyledRowBetweenWrapper>
+                    <span>{author}</span>
+                    <StyledRowWrapper>
+                        <FaEye />
+                        {viewCount}
+                    </StyledRowWrapper>
+                </StyledRowBetweenWrapper>
+            </div>
         </StyledCardContainer>
     );
 };
