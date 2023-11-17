@@ -2,15 +2,18 @@ import styled from "styled-components";
 import { FaBookmark, FaRegBookmark, FaEye } from "react-icons/fa";
 import { DummyData } from "../../../data/data";
 import { typeMap, imageMap } from "../../../utils/utils";
+import { useNavigate } from "react-router-dom";
 
 interface Props {
     item: DummyData;
 }
 
 const Card = ({ item }: Props) => {
-    const { expiredAt, title, articleRoleDtos, articleStackDtos, viewCount, articleType, meetingType } = item;
+    const navigation = useNavigate();
+    const { articleId, expiredAt, title, articleRoleDtos, articleStackDtos, viewCount, articleType, meetingType } =
+        item;
     return (
-        <StyledCardContainer>
+        <StyledCardContainer onClick={() => navigation(`/post/${articleId}`)}>
             <StyledRowBetweenWrapper>
                 <StyledRowWrapper>
                     <StyledArticleType>{typeMap.get(articleType)}</StyledArticleType>
