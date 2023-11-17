@@ -1,34 +1,37 @@
-import { FaBookmark, FaEye } from "react-icons/fa";
-
 import styled from "styled-components";
+import { FaBookmark, FaRegBookmark, FaEye } from "react-icons/fa";
+import { DummyData } from "../../../data/data";
+import { typeMap, imageMap } from "../../../utils/utils";
 
 interface Props {
-    title: string;
-    expiredAt: string;
-    viewCount: number;
-    bookmarkCount: number;
-    role: string[];
-    techStacks: string[];
+    item: DummyData;
 }
 
-const Card = ({ bookmarkCount, expiredAt, role, techStacks, title, viewCount }: Props) => {
+const Card = ({ item }: Props) => {
+    const { expiredAt, title, articleRoleDtos, articleStackDtos, viewCount, articleType, meetingType } = item;
     return (
         <StyledCardContainer>
             <StyledRowBetweenWrapper>
-                <StyledCardExpired>{`마감일 | ${expiredAt}`}</StyledCardExpired>
-                <FaBookmark />
+                <StyledRowWrapper>
+                    <StyledArticleType>{typeMap.get(articleType)}</StyledArticleType>
+                    <StyledMeetingType>{typeMap.get(meetingType)}</StyledMeetingType>
+                </StyledRowWrapper>
+                <FaRegBookmark style={{ fontSize: "32px", color: "#8caf8e" }} />
             </StyledRowBetweenWrapper>
-
+            <StyledCardExpired>{`마감일 | ${expiredAt}`}</StyledCardExpired>
             <h2>{title}</h2>
-            {role.map((item, index) => (
-                <StyledRole key={index}>{item}</StyledRole>
-            ))}
+            <div style={{ display: "flex", columnGap: "4px" }}>
+                {articleRoleDtos.map((item, index) => (
+                    <StyledRole key={index}>{typeMap.get(item.roleName)}</StyledRole>
+                ))}
+            </div>
             <StyledRowWrapper>
-                {techStacks.map((item, index) => (
-                    <StyledTech key={index}>{item}</StyledTech>
+                {articleStackDtos.map((item, index) => (
+                    <StyledTech key={index}>
+                        <StyledTechImg src={imageMap[item.stackName]} />
+                    </StyledTech>
                 ))}
             </StyledRowWrapper>
-
             <StyledRowWrapper>
                 <FaEye />
                 {viewCount}
@@ -41,15 +44,15 @@ export default Card;
 
 const StyledCardContainer = styled.div`
     width: 100%;
-    padding: 1rem;
-    border: 2px solid lightgray;
-    border-radius: 20px;
+    padding: 16px 20px;
+    border: 2px solid #8caf8e;
+    border-radius: 30px;
     display: flex;
     flex-direction: column;
     gap: 1rem;
 
     &:hover {
-        scale: 1.1;
+        scale: 1.05;
     }
 `;
 
@@ -59,20 +62,21 @@ const StyledCardExpired = styled.div`
 `;
 
 const StyledRole = styled.div`
-    padding: 2px 4px;
-    max-width: 100px;
+    padding: 4px;
+    min-width: 80px;
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: #dddcdc;
-    color: dodgerblue;
+    background-color: white;
+    color: #8caf8e;
+    border: 1px solid #8caf8e;
     border-radius: 20px;
 `;
 
 const StyledRowWrapper = styled.div`
     display: flex;
     flex-direction: row;
-    column-gap: 1rem;
+    column-gap: 8px;
     align-items: center;
 `;
 
@@ -84,11 +88,28 @@ const StyledRowBetweenWrapper = styled.div`
 `;
 
 const StyledTech = styled.div`
-    width: 50px;
-    height: 50px;
+    width: 35px;
+    aspect-ratio: 1/1;
     border: 1px solid lightgray;
     border-radius: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
+`;
+
+const StyledTechImg = styled.img`
+    width: 90%;
+    height: 90%;
+    object-fit: cover;
+`;
+
+const StyledArticleType = styled(StyledRole)`
+    border: none;
+    background-color: lightgray;
+    color: black;
+`;
+
+const StyledMeetingType = styled(StyledRole)`
+    border: 1px solid lightgray;
+    color: black;
 `;
