@@ -6,7 +6,7 @@ import Flutter from "../components/assets/images/skills/flutter.png";
 import Java from "../components/assets/images/skills/java.png";
 import Jenkins from "../components/assets/images/skills/jenkins.png";
 import Jira from "../components/assets/images/skills/jira.png";
-import Javascript from "../components/assets/images/skills/js.png";
+import JavaScript from "../components/assets/images/skills/js.png";
 import Kotlin from "../components/assets/images/skills/kotlin.png";
 import Mariadb from "../components/assets/images/skills/mariadb.png";
 import Mongodb from "../components/assets/images/skills/mongodb.png";
@@ -15,10 +15,11 @@ import Nextjs from "../components/assets/images/skills/next.js.png";
 import Nodejs from "../components/assets/images/skills/node.js.png";
 import Python from "../components/assets/images/skills/python.png";
 import React from "../components/assets/images/skills/react.png";
+import ReactNative from "../components/assets/images/skills/react.png";
 import Spring from "../components/assets/images/skills/spring.png";
 import Swift from "../components/assets/images/skills/swift.png";
 import Thymeleaf from "../components/assets/images/skills/thymeleaf.png";
-import Typescript from "../components/assets/images/skills/typescript.png";
+import TypeScript from "../components/assets/images/skills/typescript.png";
 
 export const typeMap = new Map([
     ["project", "프로젝트"],
@@ -35,7 +36,7 @@ export const imageMap: Record<any, any> = {
     Docker,
     Figma,
     Flutter,
-    Javascript,
+    JavaScript,
     Kotlin,
     Jenkins,
     Jira,
@@ -50,7 +51,8 @@ export const imageMap: Record<any, any> = {
     Spring,
     Swift,
     Thymeleaf,
-    Typescript,
+    TypeScript,
+    ReactNative,
 };
 
 export const dateFormat = (datetime: string) => {

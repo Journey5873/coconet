@@ -2,6 +2,8 @@ import React, { useState } from "react";
 
 import { skillList } from "../../atoms/MultipleSelect";
 
+import { imageMap } from "../../../utils/utils";
+
 import Tabs from "../customTabs/Tabs";
 
 import Tab from "../customTabs/Tab";
@@ -39,7 +41,11 @@ const MultiStackSelector = ({ handleSelected, selected }: Props) => {
                     <Tab value="전체">
                         <StyledStackWrapper>
                             {skillList.map((skill) => (
-                                <SpecButton label={skill.label} onClick={() => handleSelected(skill.value)} />
+                                <SpecButton
+                                    label={skill.label}
+                                    iconUrl={imageMap[skill.label]}
+                                    onClick={() => handleSelected(skill.value)}
+                                />
                             ))}
                         </StyledStackWrapper>
                     </Tab>
