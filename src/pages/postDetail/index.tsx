@@ -4,23 +4,29 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
 import { ReactComponent as ArrowBack } from '../../components/assets/images/arrowBack.svg';
 import { ReactComponent as CoconutIcon } from '../../components/assets/images/coconutIcon.svg';
-import { ReactComponent as LinkIcon } from '../../components/assets/images/linkIcon.svg';
 import { FiEye } from "react-icons/fi"
 import { FaRegThumbsUp } from "react-icons/fa";
-import coconutIcon from "../../components/assets/images/coconutIcon.svg"
 import posts from "../../data/dummy.json";
-import { PostDetailProps } from "../../interface";
+import SupportButtonModal from "../../components/molecules/SupportButtonModal";
 
 
 const PostDetail = () => {
-	const [post, setPost] = useState<any>(posts.DATA);
+  const [post, setPost] = useState<any>(posts.DATA);
+  const [isVisible, setIsVisible] = useState(false);
+  
 	const params = useParams();
 	const navigate = useNavigate();
 	const expiredAtdate = new Date(post.expiredAt);
 	const plannedStartAt = new Date(post.plannedStartAt)
 	const expiredAtFormat = new Intl.DateTimeFormat('kr').format(expiredAtdate);
-	const plannedStartAtFormat = new Intl.DateTimeFormat('kr').format(plannedStartAt);
+  const plannedStartAtFormat = new Intl.DateTimeFormat('kr').format(plannedStartAt);
+
+  
+  const handleSupportButton = () => {
+    setIsVisible(!isVisible)
+  }
 	
+  console.log(isVisible)
 
 		return (
 				<>
@@ -58,13 +64,6 @@ const PostDetail = () => {
 														<span>{plannedStartAtFormat}</span>
 												</StyledPostInfoListContent>
 												<StyledPostInfoListContent>
-														<StyledPostInfoTitle>연락 방법</StyledPostInfoTitle>
-														<StyledContackPoint>
-																<div>이메일</div>
-																<StyledLinkIcon />         
-														</StyledContackPoint>
-												</StyledPostInfoListContent>
-												<StyledPostInfoListContent>
 														<StyledPostInfoTitle>예상 기간</StyledPostInfoTitle>
 											<span>{ post?.estimatedDuration}</span>
 												</StyledPostInfoListContent>
@@ -76,12 +75,10 @@ const PostDetail = () => {
                               <StyledPositionList>
                                 <StyledPositionName>Frontend</StyledPositionName>
                                 <StyledPositionCount>3</StyledPositionCount>
-                                <StyledPositionApplyButton>지원</StyledPositionApplyButton>
                               </StyledPositionList>                
                               <StyledPositionList>
                                 <StyledPositionName>Backend</StyledPositionName>
                                 <StyledPositionCount>3</StyledPositionCount>
-                                <StyledPositionApplyButton>지원</StyledPositionApplyButton>
                               </StyledPositionList>                
                             </ul>
 												</StyledPostInfoListContent>                    
@@ -92,8 +89,11 @@ const PostDetail = () => {
 																<StyledLanguageImg><img src={require('../../components/assets/images/skills/java.png')} alt="react" /></StyledLanguageImg>
 														</StyledLanguageListWrapper>
 												</StyledPostInfoListContent>                    
-										</StyledPostInfoRemains>            
-								</StyledPostInfoWrapper>
+                  </StyledPostInfoRemains>    
+                </StyledPostInfoWrapper>
+                  <StyledSupportButton onClick={() => handleSupportButton()}>
+										지원하기
+									</StyledSupportButton>
 						</StyledPostHeader>
 						<StyledPostContentWrapper>
 								<StyledPostInfo>프로젝트 소개</StyledPostInfo>  
@@ -148,7 +148,8 @@ const PostDetail = () => {
                     <StyledCommentContent>Lorem ipsum, dolor sit amet consectetur adipisicing elit.</StyledCommentContent>
                 </StyledCommentList>
               </StyledCommentListWrapper>  
-						</div>            
+              </div>            
+              {isVisible && <SupportButtonModal isVisible={isVisible} handleSupportButton={handleSupportButton} />}
 					</>
 				): (
 						<Loader />
@@ -249,6 +250,7 @@ const StyledPostInfoList = styled.ul`
 `
 
 const StyledPostInfoRemains = styled.div`
+  display : flex;
 		margin-top : 24px;
 `
 
@@ -260,10 +262,11 @@ const StyledPositionList = styled.li`
 `
 
 const StyledPositionName = styled.h2`
+  width : 100px;
   font-size: 15px;
-    line-height: 1.3125rem;
-    margin-right: 30px;
-    font-weight: 700;
+  line-height: 1.3125rem;
+  margin-right: 30px;
+  font-weight: 700;
 `
 
 const StyledPositionCount = styled.span`
@@ -273,21 +276,19 @@ const StyledPositionCount = styled.span`
     margin-right: 34px;
 `
 
-const StyledPositionApplyButton = styled.button`
-  font-size: .75rem;
-    padding: 5px 30px!important;
-    box-sizing: border-box;
-    border: 1px solid #8CAF8E;
-    border-radius: 50px;
-    transition: all .2s;
-    background-color: #ffffff;
-    cursor:pointer;
-
-    &:hover {
-      background-color: #8CAF8E;
-      border: 1px solid #8CAF8E;
-      color: #fff;
-    }
+const StyledSupportButton = styled.button`
+	margin: 0 auto;
+  margin-top : 61px;
+	width: 180px;
+  height: 50px;
+  background: #8CAF8E;
+  border-radius: 50px;
+  border: 1px solid #8CAF8E;
+  font-weight: 700;
+  color: #fff;
+  font-size: 16px;
+	line-height: 40px;
+  cursor: pointer;
 `
 
 const StyledPostInfoListContent = styled.li`
@@ -332,7 +333,7 @@ const StyledPostInfoTitle = styled.span`
 `
 
 const StyledPostContentWrapper = styled.div`
-		margin-top: 132px;
+		margin-top: 44px;
 		font-size: 1.125rem;
 		word-break: break-all;
 		line-height: 1.7;
@@ -351,27 +352,6 @@ const StyledPostInfo = styled.h2`
 const StyledPostContent = styled.div`
 		width: 100%;
 		margin: 40px auto 0;
-`
-
-const StyledContackPoint = styled.div`
-		cursor: pointer;
-		display: flex;
-		grid-gap: 4px;
-		gap: 4px;
-		position: absolute;
-		background: #f2f4f8;
-		padding: 4px 8px;
-		border-radius: 10px;
-		color: #4a5e75;
-		left: 114px;
-		font-size: 14px;
-		text-decoration-line: underline;
-		text-decoration-color: #4a5e75;
-`
-
-const StyledLinkIcon = styled(LinkIcon)`
-		width: 16px;
-		height: 16px;
 `
 
 const StyledViewAndBookmarkCount = styled.section`

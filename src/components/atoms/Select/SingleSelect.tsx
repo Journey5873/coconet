@@ -5,8 +5,8 @@ import { PositionOptions, PositonProps } from '../../assets/data/data';
 import { CareerOptions } from '../../assets/data/data';
 
 export interface LabelProps<T extends any> {
-  label: '직무' | '경력' | '관심스택';
-  onChange: (value: T) => void;
+  label: string;
+  onChange: (value: any) => void;
   value: T;
 }
 
@@ -18,7 +18,7 @@ export default function SingleSelect<T extends any>({
   const [option, setOption] = useState<PositonProps | any>([]);
 
   useEffect(() => {
-    if (label === '직무') {
+    if (label === '직무' || label === '포지션') {
       setOption(PositionOptions);
     } else if (label === '경력') {
       setOption(CareerOptions);
@@ -26,7 +26,7 @@ export default function SingleSelect<T extends any>({
   }, [label]);
 
   return (
-    <StyledSelectWrapper>
+    <StyledSelectWrapper className='singleSelect'>
       <StyledInputLabel id="demo-simple-select-label">
         {label}
         <StyledRequired>*</StyledRequired>
@@ -38,7 +38,7 @@ export default function SingleSelect<T extends any>({
         options={option}
         value={value || [option[0]]}
         className="singleSelect"
-        onChange={(newValue, _) => onChange(newValue as T)}
+        onChange={(newValue, _) => onChange(newValue)}
       />
     </StyledSelectWrapper>
   );
@@ -69,6 +69,7 @@ const StyledRequired = styled.span`
 `;
 
 const StyledSelect = styled(Select)`
+  flex : 1;
   &.singleSelect .css-1fdsijx-ValueContainer {
     min-height: 48px;
   }

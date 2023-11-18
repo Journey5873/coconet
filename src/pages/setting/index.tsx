@@ -19,7 +19,7 @@ export interface SettingFormType {
   notionLink?: string;
 }
 
-interface SelectValue {
+export interface SelectValue {
   value: string;
   label: string;
 }
