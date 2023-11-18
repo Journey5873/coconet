@@ -90,10 +90,4 @@ public class PrivateMemberController {
         MemberResponseDto memberResponseDto = memberServiceImpl.deleteUser(memberId);
         return Response.OK(memberResponseDto);
     }
-
-    @PostMapping("/get-member-id")
-    public Response<MemberIdDto> getMemberId(@RequestHeader(value="memberId") UUID memberId) {
-        MemberIdDto memberIdDto = memberServiceImpl.getMemberId(memberId);
-        return Response.OK(memberIdDto);
-    }
 }

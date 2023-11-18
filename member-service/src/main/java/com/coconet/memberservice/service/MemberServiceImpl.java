@@ -362,7 +362,8 @@ public class MemberServiceImpl implements MemberService {
     }
 
     public MemberIdDto getMemberId(UUID memberUUID) {
-        Long memberId = memberRepository.findByMemberUUID(memberUUID).get().getId();
+        Long memberId = memberRepository.findByMemberUUID(memberUUID).orElseThrow(() -> new ApiException(ErrorCode.BAD_REQUEST, "No member found"))
+                .getId();
         return new MemberIdDto(memberId);
     }
 }

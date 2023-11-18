@@ -3,6 +3,7 @@ package com.coconet.memberservice.controller;
 import com.coconet.memberservice.common.response.Response;
 import com.coconet.memberservice.dto.AccessGoogleTokenRequest;
 import com.coconet.memberservice.dto.AccessTokenRequest;
+import com.coconet.memberservice.dto.MemberIdDto;
 import com.coconet.memberservice.dto.MemberRegisterRequestDto;
 import com.coconet.memberservice.security.oauth.model.AuthProvider;
 import com.coconet.memberservice.security.token.dto.TokenResponse;
@@ -235,5 +236,11 @@ public class OpenMemberController {
     @GetMapping("/health")
     public String healthCheck() {
         return "Hello world";
+    }
+
+    @PostMapping("/get-member-id")
+    public Response<MemberIdDto> getMemberId(UUID memberId) {
+        MemberIdDto memberIdDto = memberServiceImpl.getMemberId(memberId);
+        return Response.OK(memberIdDto);
     }
 }
