@@ -6,27 +6,36 @@ import { ReactComponent as ArrowBack } from '../../components/assets/images/arro
 import { ReactComponent as CoconutIcon } from '../../components/assets/images/coconutIcon.svg';
 import { FiEye } from "react-icons/fi"
 import { FaRegThumbsUp } from "react-icons/fa";
+import { imageMap, dateFormat } from "../../utils/utils";
 import posts from "../../data/dummy.json";
 import SupportButtonModal from "../../components/molecules/SupportButtonModal";
+import { DummyData } from "../../data/data";
 
 
 const PostDetail = () => {
-  const [post, setPost] = useState<any>(posts.DATA);
+
   const [isVisible, setIsVisible] = useState(false);
   
-	const params = useParams();
+	const { postId } = useParams();
+	const [post, setPost] = useState<DummyData | null>(null);
 	const navigate = useNavigate();
-	const expiredAtdate = new Date(post.expiredAt);
-	const plannedStartAt = new Date(post.plannedStartAt)
-	const expiredAtFormat = new Intl.DateTimeFormat('kr').format(expiredAtdate);
-  const plannedStartAtFormat = new Intl.DateTimeFormat('kr').format(plannedStartAt);
+
 
   
   const handleSupportButton = () => {
     setIsVisible(!isVisible)
   }
 	
-  console.log(isVisible)
+	//게시글 GET
+	useEffect(() => {
+		fetch(`http://localhost:8000/article-service/open--api/article/${postId}`)
+		.then(res => res.json())
+		.then(data => {
+			setPost(data.post[0]);
+		});
+	}, [postId]);
+
+  if (!post) return null;
 
 		return (
 				<>
@@ -39,55 +48,52 @@ const PostDetail = () => {
 								<StyledPostProfileBox>
 												<StyledUser>
 												<StyledUserImg color="rgb(153, 153, 153)" />
-														{/* {
-																post.userImage
-																? <StyledUserImg src="../../components/assets/images/Logo.svg" />
-																: <Logo />
-														}     */}
-										<StyledUserName>{post?.author }</StyledUserName>            
+										<StyledUserName>{post.author }</StyledUserName>            
 										</StyledUser>
 										<StyledSeperator></StyledSeperator>
-									<StlyedRegisteredDate>{expiredAtFormat}</StlyedRegisteredDate>
+									<StlyedRegisteredDate>{`${dateFormat(post.expiredAt)}`}</StlyedRegisteredDate>
 								</StyledPostProfileBox>
 								<StyledPostInfoWrapper>
 										<StyledPostInfoList>
 												<StyledPostInfoListContent>
 														<StyledPostInfoTitle>모집 구분</StyledPostInfoTitle>
-											<span>{ post?.articleType}</span>
+											<span>{post.articleType}</span>
 												</StyledPostInfoListContent>
 												<StyledPostInfoListContent>
 														<StyledPostInfoTitle>진행 방식</StyledPostInfoTitle>
-														<span>{ post?.meetingType}</span>
+														<span>{ post.meetingType}</span>
 												</StyledPostInfoListContent>
 												<StyledPostInfoListContent>
 														<StyledPostInfoTitle>시작 예정</StyledPostInfoTitle>
-														<span>{plannedStartAtFormat}</span>
+														<span>{ `${dateFormat(post.plannedStartAt)}`}</span>
 												</StyledPostInfoListContent>
 												<StyledPostInfoListContent>
 														<StyledPostInfoTitle>예상 기간</StyledPostInfoTitle>
-											<span>{ post?.estimatedDuration}</span>
+											<span>{ post.estimatedDuration}</span>
 												</StyledPostInfoListContent>
 										</StyledPostInfoList>
 										<StyledPostInfoRemains>
 												<StyledPostInfoListContent className="recruitment_status">
 														<StyledPostInfoTitle >모집 현황</StyledPostInfoTitle>
 														<ul>
-                              <StyledPositionList>
-                                <StyledPositionName>Frontend</StyledPositionName>
-                                <StyledPositionCount>3</StyledPositionCount>
-                              </StyledPositionList>                
-                              <StyledPositionList>
-                                <StyledPositionName>Backend</StyledPositionName>
-                                <StyledPositionCount>3</StyledPositionCount>
-                              </StyledPositionList>                
+													{post.articleRoleDtos.map((value, i) => (
+														<StyledPositionList>
+															<StyledPositionName>{value.roleName}</StyledPositionName>
+															<StyledPositionCount>{value.participant}</StyledPositionCount>
+														</StyledPositionList>
+													))}
+                                          
                             </ul>
 												</StyledPostInfoListContent>                    
 												<StyledPostInfoListContent className="language">
 														<StyledPostInfoTitle>사용 언어</StyledPostInfoTitle>
-														<StyledLanguageListWrapper>
-																<StyledLanguageImg><img src={require('../../components/assets/images/skills/react.png')} alt="react" /></StyledLanguageImg>
-																<StyledLanguageImg><img src={require('../../components/assets/images/skills/java.png')} alt="react" /></StyledLanguageImg>
-														</StyledLanguageListWrapper>
+											<StyledLanguageListWrapper>
+												{post.articleStackDtos.map((item, index) => (
+													<StyledTech key={index}>
+														<StyledTechImg src={imageMap[item.stackName]} />
+													</StyledTech>
+												))}
+											</StyledLanguageListWrapper>
 												</StyledPostInfoListContent>                    
                   </StyledPostInfoRemains>    
                 </StyledPostInfoWrapper>
@@ -317,14 +323,23 @@ const StyledLanguageListWrapper = styled.ul`
   display: flex;
   gap : 15px;
 `
-
-const StyledLanguageImg = styled.li`
-  
-  img {
+const StyledTech = styled.li`
     width: 50px;
-    height : 50px;
-  }
-`
+	height : 50px;
+    aspect-ratio: 1/1;
+    border: 1px solid lightgray;
+    border-radius: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+`;
+
+const StyledTechImg = styled.img`
+    width: 90%;
+    height: 90%;
+    object-fit: cover;
+`;
+
 
 const StyledPostInfoTitle = styled.span`
 		color: #717171;

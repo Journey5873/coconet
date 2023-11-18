@@ -6,6 +6,9 @@ import MyPosts from "./pages/myPosts";
 import MyLikes from "./pages/myLikes";
 import PostDetail from "./pages/postDetail";
 import KakaoCallBack from "./components/organisms/KaKaoCallback";
+import { dummyData } from "./data/data";
+
+
 
 export const routes = [
     {
