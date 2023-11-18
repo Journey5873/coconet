@@ -4,6 +4,7 @@ import com.coconet.memberservice.common.errorcode.ErrorCode;
 import com.coconet.memberservice.common.errorcode.ErrorCodeIfs;
 import com.coconet.memberservice.common.exception.ApiException;
 import com.coconet.memberservice.common.response.Response;
+import com.coconet.memberservice.dto.MemberIdDto;
 import com.coconet.memberservice.dto.MemberRegisterRequestDto;
 import com.coconet.memberservice.dto.MemberRequestDto;
 import com.coconet.memberservice.dto.MemberResponseDto;
@@ -360,5 +361,9 @@ public class MemberServiceImpl implements MemberService {
         return new String(decoder.decode(chunks[1]));
     }
 
+    public MemberIdDto getMemberId(UUID memberUUID) {
+        Long memberId = memberRepository.findByMemberUUID(memberUUID).get().getId();
+        return new MemberIdDto(memberId);
+    }
 }
 

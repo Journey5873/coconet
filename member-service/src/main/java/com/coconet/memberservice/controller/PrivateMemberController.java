@@ -1,6 +1,7 @@
 package com.coconet.memberservice.controller;
 
 import com.coconet.memberservice.common.response.Response;
+import com.coconet.memberservice.dto.MemberIdDto;
 import com.coconet.memberservice.dto.MemberRequestDto;
 import com.coconet.memberservice.dto.MemberResponseDto;
 import com.coconet.memberservice.service.MemberServiceImpl;
@@ -90,4 +91,9 @@ public class PrivateMemberController {
         return Response.OK(memberResponseDto);
     }
 
+    @PostMapping("/get-member-id")
+    public Response<MemberIdDto> getMemberId(@RequestHeader(value="memberId") UUID memberId) {
+        MemberIdDto memberIdDto = memberServiceImpl.getMemberId(memberId);
+        return Response.OK(memberIdDto);
+    }
 }
