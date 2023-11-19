@@ -4,6 +4,8 @@ import { skillData } from '../../../data/data'
 
 import { imageMap } from '../../../utils/utils'
 
+import { ImCancelCircle } from 'react-icons/im'
+
 import Tabs from '../customTabs/Tabs'
 
 import Tab from '../customTabs/Tab'
@@ -98,6 +100,21 @@ const MultiStackSelector = ({ handleSelected, selected }: Props) => {
             </StyledStackWrapper>
           </Tab>
         </Tabs>
+        <div
+          style={{
+            display: 'flex',
+            columnGap: '8px',
+            flexWrap: 'wrap',
+            alignItems: 'center',
+          }}
+        >
+          {selected?.map((skill) => (
+            <StyledSelectedButton>
+              <span>{skill}</span>
+              <ImCancelCircle onClick={() => handleSelected(skill)} />
+            </StyledSelectedButton>
+          ))}
+        </div>
       </StyledPopupWrapper>
     </StyledContainer>
   )
@@ -141,5 +158,13 @@ const StyledSelectButton = styled.div`
   align-items: center;
   column-gap: 1rem;
   border: 1px solid lightgray;
+  border-radius: 20px;
+`
+const StyledSelectedButton = styled.div`
+  padding: 4px 16px;
+  background-color: lightgray;
+  display: flex;
+  column-gap: 8px;
+  align-items: center;
   border-radius: 20px;
 `

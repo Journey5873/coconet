@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useCallback } from 'react'
 import useFetch from '../hooks/useFetch'
 import MultiStackSelector from '../components/organisms/multiStackSelector/multiStackSelector'
 import CustomCarousel from '../components/organisms/Carousel'
@@ -17,13 +17,27 @@ interface Dummy {
 }
 
 const Index = () => {
-  const getData = async () => {
-    const response = await fetch('https://api.agify.io?name=michael')
-    const result = await response.json()
+  const [selected, setSelected] = useState<string[]>([])
 
-    return result
-  }
-  const { data } = useFetch<Dummy[]>(getData, 'dummy', [])
+  console.log(selected, 'selectedselected')
+
+  const hanldeSelected = useCallback(
+    (value: string) => {
+      if (checkFor()) {
+        const filteredSelected = selected.filter((skill) => skill !== value)
+        setSelected(filteredSelected)
+      }
+
+      if (!checkFor()) {
+        setSelected((prev) => [...prev, value])
+      }
+
+      function checkFor() {
+        return selected.indexOf(value) >= 0
+      }
+    },
+    [selected],
+  )
 
   return (
     <>
@@ -40,8 +54,8 @@ const Index = () => {
             <Tab value="전체">
               <div style={{ display: 'flex', columnGap: '1rem' }}>
                 <MultiStackSelector
-                  handleSelected={() => console.log('select')}
-                  selected={[]}
+                  handleSelected={hanldeSelected}
+                  selected={selected}
                 />
                 <FilterSelect
                   title="포지션"
