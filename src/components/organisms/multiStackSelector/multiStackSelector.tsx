@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useMemo } from 'react'
 
 import { skillData } from '../../../data/data'
 
@@ -21,6 +21,7 @@ interface Props {
 
 const MultiStackSelector = ({ handleSelected, selected }: Props) => {
   const [isShow, setIsShow] = useState<boolean>(false)
+  const isSelected = useMemo(() => selected.length > 0, [selected.length])
   return (
     <StyledContainer>
       <div>
@@ -42,60 +43,80 @@ const MultiStackSelector = ({ handleSelected, selected }: Props) => {
           <Tab value="전체">
             <StyledStackWrapper>
               {skillData.all.map((skill, index) => (
-                <SpecButton
-                  key={index}
-                  label={skill.label}
-                  iconUrl={imageMap[skill.label]}
-                  onClick={() => handleSelected(skill.value)}
-                />
+                <StyledSpecButton
+                  isSelected={isSelected && selected.indexOf(skill.value) < 0}
+                >
+                  <SpecButton
+                    key={index}
+                    label={skill.label}
+                    iconUrl={imageMap[skill.label]}
+                    onClick={() => handleSelected(skill.value)}
+                  />
+                </StyledSpecButton>
               ))}
             </StyledStackWrapper>
           </Tab>
           <Tab value="프론트엔드">
             <StyledStackWrapper>
               {skillData.frontend.map((skill, index) => (
-                <SpecButton
-                  key={index}
-                  label={skill.label}
-                  iconUrl={imageMap[skill.label]}
-                  onClick={() => handleSelected(skill.value)}
-                />
+                <StyledSpecButton
+                  isSelected={isSelected && selected.indexOf(skill.value) < 0}
+                >
+                  <SpecButton
+                    key={index}
+                    label={skill.label}
+                    iconUrl={imageMap[skill.label]}
+                    onClick={() => handleSelected(skill.value)}
+                  />
+                </StyledSpecButton>
               ))}
             </StyledStackWrapper>
           </Tab>
           <Tab value="백엔드">
             <StyledStackWrapper>
               {skillData.backend.map((skill, index) => (
-                <SpecButton
-                  key={index}
-                  label={skill.label}
-                  iconUrl={imageMap[skill.label]}
-                  onClick={() => handleSelected(skill.value)}
-                />
+                <StyledSpecButton
+                  isSelected={isSelected && selected.indexOf(skill.value) < 0}
+                >
+                  <SpecButton
+                    key={index}
+                    label={skill.label}
+                    iconUrl={imageMap[skill.label]}
+                    onClick={() => handleSelected(skill.value)}
+                  />
+                </StyledSpecButton>
               ))}
             </StyledStackWrapper>
           </Tab>
           <Tab value="모바일">
             <StyledStackWrapper>
               {skillData.mobile.map((skill, index) => (
-                <SpecButton
-                  key={index}
-                  label={skill.label}
-                  iconUrl={imageMap[skill.label]}
-                  onClick={() => handleSelected(skill.value)}
-                />
+                <StyledSpecButton
+                  isSelected={isSelected && selected.indexOf(skill.value) < 0}
+                >
+                  <SpecButton
+                    key={index}
+                    label={skill.label}
+                    iconUrl={imageMap[skill.label]}
+                    onClick={() => handleSelected(skill.value)}
+                  />
+                </StyledSpecButton>
               ))}
             </StyledStackWrapper>
           </Tab>
           <Tab value="기타">
             <StyledStackWrapper>
               {skillData.etc.map((skill, index) => (
-                <SpecButton
-                  key={index}
-                  label={skill.label}
-                  iconUrl={imageMap[skill.label]}
-                  onClick={() => handleSelected(skill.value)}
-                />
+                <StyledSpecButton
+                  isSelected={isSelected && selected.indexOf(skill.value) < 0}
+                >
+                  <SpecButton
+                    key={index}
+                    label={skill.label}
+                    iconUrl={imageMap[skill.label]}
+                    onClick={() => handleSelected(skill.value)}
+                  />
+                </StyledSpecButton>
               ))}
             </StyledStackWrapper>
           </Tab>
@@ -148,6 +169,12 @@ const StyledStackWrapper = styled.div`
   flex-direction: row;
   gap: 8px;
   flex-wrap: wrap;
+`
+
+const StyledSpecButton = styled.div<{
+  isSelected: boolean
+}>`
+  opacity: ${(props) => (props.isSelected ? '0.5' : '1')};
 `
 
 const StyledSelectButton = styled.div`
