@@ -7,6 +7,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 import MultipleSelect from '../../components/atoms/Select/MultipleSelect'
+import MultipleSelectWithCount from '../../components/atoms/Select/MultipleSelectWithCount'
 
 export default function PostNew() {
   // 모집 구분
@@ -57,11 +58,9 @@ export default function PostNew() {
             />
           </StyledPostSelectList>
           <StyledPostSelectList>
-            <SingleSelect
-              label="모집 인원"
-              value={personne}
-              onChange={handlePersonne}
-              placeholder="인원 미정~10명 이상"
+            <MultipleSelectWithCount
+              label="모집 포지션/인원"
+              placeholder="프론트엔드/0명"
             />
           </StyledPostSelectList>
         </StyledPostSelect>
@@ -95,20 +94,13 @@ export default function PostNew() {
           <StyledPostSelectList>
             <label htmlFor="">모집 마감일</label>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <DemoContainer components={['DatePicker']}>
+              <StyledDemoContainer
+                components={['DatePicker']}
+                sx={{ '.MuiTextField-root': { width: '100%' } }}
+              >
                 <DatePicker />
-              </DemoContainer>
+              </StyledDemoContainer>
             </LocalizationProvider>
-          </StyledPostSelectList>
-        </StyledPostSelect>
-        <StyledPostSelect>
-          <StyledPostSelectList>
-            <MultipleSelect
-              label="포지션"
-              value={category}
-              onChange={handleCategory}
-              placeholder={'프론트엔드, 백엔드...'}
-            />
           </StyledPostSelectList>
         </StyledPostSelect>
       </section>
@@ -177,4 +169,10 @@ const StyledPostSelect = styled.ul`
 
 const StyledPostSelectList = styled.li`
   flex: 1;
+`
+
+const StyledDemoContainer = styled(DemoContainer)`
+  /* .css-4jnixx-MuiStack-root > .MuiTextField-root { */
+  min-width: 100%;
+  /* } */
 `
