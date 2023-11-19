@@ -1,16 +1,16 @@
-import React from "react";
+import React from 'react'
 
-import { Outlet } from "react-router-dom";
+import { Outlet } from 'react-router-dom'
 
-import Header from "../components/atoms/Header";
+import Header from '../components/atoms/Header'
 
 const Layout: React.FC = () => {
-    return (
-        <div>
-            <Header />
-            <Outlet />
-        </div>
-    );
-};
+  return (
+    <div>
+      <Header />
+      <Outlet />
+    </div>
+  )
+}
 
-export default Layout;
+export default Layout

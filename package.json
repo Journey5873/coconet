@@ -9,6 +9,7 @@
     "@mui/material": "^5.14.10",
     "@mui/styled-engine": "^5.14.10",
     "@mui/styled-engine-sc": "^5.14.10",
+    "@mui/x-date-pickers": "^6.18.1",
     "@react-oauth/google": "^0.11.1",
     "@reduxjs/toolkit": "^1.9.7",
     "@testing-library/jest-dom": "^5.17.0",
@@ -20,6 +21,8 @@
     "@types/react-dom": "^18.2.7",
     "@types/react-redux": "^7.1.26",
     "axios": "^1.5.1",
+    "dayjs": "^1.11.10",
+    "prettier": "^3.1.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.47.0",
@@ -58,6 +61,7 @@
     ]
   },
   "devDependencies": {
-    "@types/styled-components": "^5.1.28"
+    "@types/styled-components": "^5.1.28",
+    "eslint": "^8.54.0"
   }
 }

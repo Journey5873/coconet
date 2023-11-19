@@ -1,51 +1,50 @@
-import React, { ChangeEvent, useState } from 'react';
-import { useForm } from 'react-hook-form';
-import RegisterImage from '../../components/atoms/RegisterImage';
-import styled from 'styled-components';
-import Labelnput from '../../components/molecules/Labelnput';
-import SingleSelect from '../../components/atoms/Select/SingleSelect';
-import LinkList from '../../components/organisms/LinkList';
-import GreenButton from '../../components/atoms/Button/GreenButton';
-import MultipleSelect from '../../components/atoms/Select/MultipleSelect';
-import useFetch from '../../hooks/useFetch';
+import React, { ChangeEvent, useState } from 'react'
+import { useForm } from 'react-hook-form'
+import RegisterImage from '../../components/atoms/RegisterImage'
+import styled from 'styled-components'
+import Labelnput from '../../components/molecules/Labelnput'
+import SingleSelect from '../../components/atoms/Select/SingleSelect'
+import LinkList from '../../components/organisms/LinkList'
+import GreenButton from '../../components/atoms/Button/GreenButton'
+import MultipleSelect from '../../components/atoms/Select/MultipleSelect'
 
 export interface SettingFormType {
-  name: string;
-  career: number;
-  roles: string[];
-  stacks: string[];
-  githubLink?: string;
-  blogLink?: string;
-  notionLink?: string;
+  name: string
+  career: number
+  roles: string[]
+  stacks: string[]
+  githubLink?: string
+  blogLink?: string
+  notionLink?: string
 }
 
 export interface SelectValue {
-  value: string;
-  label: string;
+  value: string
+  label: string
 }
 
 const SettingPage = () => {
-  const [name, setName] = useState('');
+  const [name, setName] = useState('')
   const [job, setJob] = useState<SelectValue>({
     label: '',
     value: '',
-  });
+  })
   const [carrer, setCarrer] = useState<SelectValue>({
     label: '',
     value: '',
-  });
-  const [stack, setStack] = useState<SelectValue[]>([]);
+  })
+  const [stack, setStack] = useState<SelectValue[]>([])
 
   const handleName = (e: any) => {
-    const target = e.target as HTMLInputElement;
-    setName(target.value);
-  };
+    const target = e.target as HTMLInputElement
+    setName(target.value)
+  }
 
-  const handleJob = (value: SelectValue) => setJob(value);
+  const handleJob = (value: SelectValue) => setJob(value)
 
-  const handleCarrer = (value: SelectValue) => setCarrer(value);
+  const handleCarrer = (value: SelectValue) => setCarrer(value)
 
-  const handleStack = (value: SelectValue[]) => setStack(value);
+  const handleStack = (value: SelectValue[]) => setStack(value)
 
   const onSave = async () => {
     try {
@@ -54,20 +53,20 @@ const SettingPage = () => {
         roles: [job.value],
         statks: [...stack].map((item) => item.value),
         carrer: +carrer.value,
-      };
+      }
 
       const response = await fetch('/member-service/open-api/my-profile', {
         body: JSON.stringify(DTO),
         method: 'PUT',
-      });
+      })
 
-      const result = await response.json();
+      const result = await response.json()
 
-      console.log(result.data);
+      console.log(result.data)
     } catch (error) {
-      console.log(error);
+      console.log(error)
     }
-  };
+  }
 
   return (
     <Container>
@@ -75,21 +74,36 @@ const SettingPage = () => {
         <RegisterImage />
       </div>
       <Labelnput text="닉네임" isRequired value={name} onChange={handleName} />
-      <SingleSelect label="직무" onChange={handleJob} value={job} />
+      <SingleSelect
+        label="직무"
+        onChange={handleJob}
+        value={job}
+        placeholder="프론트엔드"
+      />
       <Labelnput text="소속" />
-      <SingleSelect label="경력" onChange={handleCarrer} value={carrer} />
-      <Labelnput text="자기소개" onChange={() => {}} />
-      <MultipleSelect label={'관심스택'} onChange={handleStack} value={stack} />
-      <LinkList onSubmit={() => {}} />
+      <SingleSelect
+        label="경력"
+        onChange={handleCarrer}
+        value={carrer}
+        placeholder="1년"
+      />
+      <Labelnput text="자기소개" onChange={() => console.log('change')} />
+      <MultipleSelect
+        label={'관심스택'}
+        onChange={handleStack}
+        value={stack}
+        placeholder="Select.dd.."
+      />
+      <LinkList onSubmit={() => console.log('submit')} />
       <StyledButtonWrapper>
         <GreenButton buttonName="저장" onClick={() => onSave()} />
         <DeleteUserButton>회원탈퇴</DeleteUserButton>
       </StyledButtonWrapper>
     </Container>
-  );
-};
+  )
+}
 
-export default SettingPage;
+export default SettingPage
 
 const Container = styled.div`
   width: 100%;
@@ -101,7 +115,7 @@ const Container = styled.div`
   padding: 16px;
   gap: 16px;
   margin: 0px auto;
-`;
+`
 
 const StyledButtonWrapper = styled.div`
   margin: 0 auto;
@@ -112,7 +126,7 @@ const StyledButtonWrapper = styled.div`
   align-items: center;
   justify-items: center;
   text-align: center;
-`;
+`
 
 const DeleteUserButton = styled.div`
   font-size: 16px;
@@ -122,4 +136,4 @@ const DeleteUserButton = styled.div`
   text-align: center;
   color: rgb(194, 198, 207);
   cursor: pointer;
-`;
+`

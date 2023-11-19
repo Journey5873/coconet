@@ -1,47 +1,64 @@
-import React, { useEffect, useState } from 'react';
-import Select from 'react-select';
-import styled from 'styled-components';
-import { PositionOptions, PositonProps } from '../../assets/data/data';
-import { CareerOptions } from '../../assets/data/data';
+import React, { useEffect, useState } from 'react'
+import Select from 'react-select'
+import styled from 'styled-components'
+import {
+  CategoryOptions,
+  OnOfflineOptions,
+  PeriodOptions,
+  PersonnelOptions,
+  PositionOptions,
+  SelectProps,
+} from '../../assets/data/data'
+import { CareerOptions } from '../../assets/data/data'
+import { SelectValue } from '../../../pages/setting'
 
-export interface LabelProps<T extends any> {
-  label: string;
-  onChange: (value: any) => void;
-  value: T;
+export interface LabelProps {
+  label: string
+  onChange: (value: any) => void
+  value: SelectValue | SelectValue[]
+  placeholder: string
 }
 
-export default function SingleSelect<T extends any>({
+export default function SingleSelect({
   label,
   onChange,
   value,
-}: LabelProps<T>) {
-  const [option, setOption] = useState<PositonProps | any>([]);
+  placeholder,
+}: LabelProps) {
+  const [option, setOption] = useState<SelectProps[]>([])
 
   useEffect(() => {
     if (label === '직무' || label === '포지션') {
-      setOption(PositionOptions);
+      setOption(PositionOptions)
     } else if (label === '경력') {
-      setOption(CareerOptions);
+      setOption(CareerOptions)
+    } else if (label === '모집구분') {
+      setOption(CategoryOptions)
+    } else if (label === '모집 인원') {
+      setOption(PersonnelOptions)
+    } else if (label === '진행 방식') {
+      setOption(OnOfflineOptions)
+    } else if (label === '진행 기간') {
+      setOption(PeriodOptions)
     }
-  }, [label]);
+  }, [])
 
   return (
-    <StyledSelectWrapper className='singleSelect'>
+    <StyledSelectWrapper className="singleSelect">
       <StyledInputLabel id="demo-simple-select-label">
         {label}
         <StyledRequired>*</StyledRequired>
       </StyledInputLabel>
       <StyledSelect
-        aria-labelledby="aria-label"
-        // defaultValue={[option[0]]}
         inputId="aria-example-input"
         options={option}
         value={value || [option[0]]}
         className="singleSelect"
-        onChange={(newValue, _) => onChange(newValue)}
+        placeholder={placeholder}
+        onChange={(newValue) => onChange(newValue)}
       />
     </StyledSelectWrapper>
-  );
+  )
 }
 
 const StyledSelectWrapper = styled.div`
@@ -50,7 +67,7 @@ const StyledSelectWrapper = styled.div`
   gap: 8px;
   margin-bottom: 20px;
   width: 100%;
-`;
+`
 
 const StyledInputLabel = styled.label`
   color: rgb(51, 51, 51);
@@ -58,7 +75,7 @@ const StyledInputLabel = styled.label`
   font-weight: 700;
   line-height: 20px;
   letter-spacing: -0.28px;
-`;
+`
 const StyledRequired = styled.span`
   padding-left: 3px;
   color: rgb(234, 114, 111);
@@ -66,11 +83,11 @@ const StyledRequired = styled.span`
   font-weight: 700;
   line-height: 20px;
   letter-spacing: -0.28px;
-`;
+`
 
 const StyledSelect = styled(Select)`
-  flex : 1;
+  flex: 1;
   &.singleSelect .css-1fdsijx-ValueContainer {
     min-height: 48px;
   }
-`;
+`
