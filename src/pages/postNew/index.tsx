@@ -94,12 +94,12 @@ export default function PostNew() {
           <StyledPostSelectList>
             <label htmlFor="">모집 마감일</label>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <StyledDemoContainer
+              <DemoContainer
                 components={['DatePicker']}
                 sx={{ '.MuiTextField-root': { width: '100%' } }}
               >
                 <DatePicker />
-              </StyledDemoContainer>
+              </DemoContainer>
             </LocalizationProvider>
           </StyledPostSelectList>
         </StyledPostSelect>
@@ -169,10 +169,4 @@ const StyledPostSelect = styled.ul`
 
 const StyledPostSelectList = styled.li`
   flex: 1;
-`
-
-const StyledDemoContainer = styled(DemoContainer)`
-  /* .css-4jnixx-MuiStack-root > .MuiTextField-root { */
-  min-width: 100%;
-  /* } */
 `
