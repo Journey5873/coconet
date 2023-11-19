@@ -9,7 +9,7 @@ import { FaRegThumbsUp } from 'react-icons/fa'
 import { imageMap, dateFormat } from '../../utils/utils'
 import posts from '../../data/dummy.json'
 import SupportButtonModal from '../../components/molecules/SupportButtonModal'
-import { DummyData } from '../../data/data'
+import { DummyData, dummyData } from '../../data/data'
 
 const PostDetail = () => {
   const [isVisible, setIsVisible] = useState(false)
@@ -24,11 +24,12 @@ const PostDetail = () => {
 
   //게시글 GET
   useEffect(() => {
-    fetch(`http://localhost:8000/article-service/open--api/article/${postId}`)
-      .then((res) => res.json())
-      .then((data) => {
-        setPost(data.post[0])
-      })
+    // fetch(`http://localhost:8000/article-service/open--api/article/${postId}`)
+    //   .then((res) => res.json())
+    //   .then((data) => {
+    //     setPost(data.post[0])
+    //   })
+    setPost(dummyData)
   }, [postId])
 
   if (!post) return null
