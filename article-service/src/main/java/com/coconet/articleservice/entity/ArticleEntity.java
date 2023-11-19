@@ -63,6 +63,9 @@ public class ArticleEntity extends BaseEntity{
     @OneToMany(mappedBy = "article")
     private List<ArticleStackEntity> articleStacks;
 
+    @OneToMany(mappedBy = "article")
+    private List<ReplyEntity> replies;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private MemberEntity member;

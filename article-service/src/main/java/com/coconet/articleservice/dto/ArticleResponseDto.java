@@ -35,6 +35,7 @@ public class ArticleResponseDto {
 
     private List<ArticleRoleDto> articleRoleDtos = new ArrayList<>();
     private List<ArticleStackDto> articleStackDtos = new ArrayList<>();
+    private List<ReplyResponseDto> replyResponseDtos = new ArrayList<>();
 
     public ArticleResponseDto(String title, String content, LocalDateTime createdAt,
                               LocalDateTime updateAt, LocalDateTime expiredAt, String estimatedDuration,

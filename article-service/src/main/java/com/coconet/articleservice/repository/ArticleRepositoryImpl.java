@@ -3,6 +3,7 @@ package com.coconet.articleservice.repository;
 import com.coconet.articleservice.dto.ArticleFormDto;
 import com.coconet.articleservice.dto.ArticleRoleDto;
 import com.coconet.articleservice.dto.ArticleStackDto;
+import com.coconet.articleservice.dto.ReplyResponseDto;
 import com.coconet.articleservice.entity.*;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -21,10 +22,7 @@ import static com.coconet.articleservice.entity.QArticleEntity.articleEntity;
 import static com.coconet.articleservice.entity.QArticleRoleEntity.articleRoleEntity;
 import static com.coconet.articleservice.entity.QArticleStackEntity.articleStackEntity;
 import static com.coconet.articleservice.entity.QMemberEntity.memberEntity;
-import static com.coconet.articleservice.entity.QMemberRoleEntity.memberRoleEntity;
-import static com.coconet.articleservice.entity.QMemberStackEntity.memberStackEntity;
-import static com.coconet.articleservice.entity.QRoleEntity.roleEntity;
-import static com.coconet.articleservice.entity.QTechStackEntity.techStackEntity;
+import static com.coconet.articleservice.entity.QReplyEntity.replyEntity;
 import static org.springframework.util.ObjectUtils.isEmpty;
 
 @RequiredArgsConstructor
@@ -105,6 +103,19 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
                 .fetch();
     }
 
+    private List<ReplyResponseDto> getReplyResponse(ArticleEntity article) {
+        return queryFactory
+                .select(Projections.constructor(ReplyResponseDto.class,
+                        replyEntity.replyId,
+                        replyEntity.content,
+                        replyEntity.repliedAt,
+                        replyEntity.updatedAt,
+                        replyEntity.member.name))
+                .from(replyEntity)
+                .where(replyEntity.article.eq(article))
+                .fetch();
+    }
+
     private ArticleFormDto buildArticleFormDto(ArticleEntity article){
         return ArticleFormDto.builder()
                 .articleUUID(article.getArticleUUID().toString())
@@ -129,6 +140,13 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
                         .map(stack -> new ArticleStackDto(stack.getTechStack().getName(),
                                 stack.getTechStack().getCategory(),
                                 stack.getTechStack().getImage()))
+                        .toList())
+                .replyResponseDtos(article.getReplies().stream()
+                        .map(reply -> new ReplyResponseDto(reply.getReplyId(),
+                                reply.getContent(),
+                                reply.getRepliedAt(),
+                                reply.getUpdatedAt(),
+                                reply.getMember().getName()))
                         .toList())
                 .build();
     }

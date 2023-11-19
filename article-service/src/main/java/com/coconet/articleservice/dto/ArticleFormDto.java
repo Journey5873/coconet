@@ -33,6 +33,7 @@ public class ArticleFormDto {
     private String author;
     private List<ArticleRoleDto> articleRoleDtos = new ArrayList<>();
     private List<ArticleStackDto> articleStackDtos = new ArrayList<>();
+    private List<ReplyResponseDto> replyResponseDtos = new ArrayList<>();
 
     @QueryProjection
 
