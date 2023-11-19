@@ -19,8 +19,6 @@ interface Dummy {
 const Index = () => {
   const [selected, setSelected] = useState<string[]>([])
 
-  console.log(selected, 'selectedselected')
-
   const hanldeSelected = useCallback(
     (value: string) => {
       if (checkFor()) {
