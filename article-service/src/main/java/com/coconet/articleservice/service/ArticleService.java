@@ -25,6 +25,7 @@ public class ArticleService {
     private final ArticleRoleRepository articleRoleRepository;
     private final TechStackRepository techStackRepository;
     private final ArticleStackRepository articleStackRepository;
+    private final ReplyRepository replyRepository;
 
     public ArticleResponseDto createArticle(ArticleRequestDto request) {
 
@@ -209,6 +210,67 @@ public class ArticleService {
                 .author(articleFormDto.getAuthor())
                 .articleRoleDtos(articleFormDto.getArticleRoleDtos())
                 .articleStackDtos(articleFormDto.getArticleStackDtos())
+                .replyResponseDtos(articleFormDto.getReplyResponseDtos())
+                .build();
+    }
+
+    /**
+     *  reply
+     */
+    public ReplyResponseDto write(ReplyRequestDto replyDto, String articleUUID) {
+
+        ReplyEntity replyEntity = ReplyEntity.builder()
+                .content(replyDto.getContent())
+                .repliedAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+
+                // TODO 멤버 설정 리팩토링 필요
+                .member(new MemberEntity(1L, "test@test.com", "tester"))
+                .article(articleRepository.findByArticleUUID(UUID.fromString(articleUUID)).orElseThrow(() -> new IllegalArgumentException("Not Found Article")))
+                .build();
+        replyRepository.save(replyEntity);
+
+        return ReplyResponseDto.builder()
+                .content(replyEntity.getContent())
+                .articleUUID(replyEntity.getArticle().getArticleUUID().toString())
+                .repliedAt(replyEntity.getRepliedAt())
+                .updatedAt(replyEntity.getUpdatedAt())
+                .author(replyEntity.getMember().getName())
+                .build();
+    }
+
+    public void deleteReply(Long replyId, Long memberId) {
+        ReplyEntity replyEntity = replyRepository.findById(replyId).orElseThrow(() -> new IllegalArgumentException("Not Found Reply"));
+
+        // TODO member 비교 리팩토링 필요함
+        if(replyEntity.getMember().getId().equals(memberId)){
+            replyRepository.delete(replyEntity);
+            //
+        }else {
+            throw new IllegalArgumentException("Only replier can delete the reply.");
+        }
+    }
+
+    public ReplyResponseDto updateReply(Long replyId, ReplyRequestDto replyDto, Long memberId) {
+
+        ReplyEntity replyEntity = replyRepository.findById(replyId).orElseThrow(() -> new IllegalArgumentException("Not Found Reply"));
+
+        // TODO member 비교 리팩토링 필요
+        if(replyEntity.getMember().getId().equals(memberId)){
+            // update
+            replyEntity.changeContent(replyDto.getContent());
+            replyEntity.changeUpdatedAt(LocalDateTime.now());
+            replyRepository.save(replyEntity);
+        }else {
+            throw new IllegalArgumentException("Only replier can update the reply.");
+        }
+
+        return ReplyResponseDto.builder()
+                .content(replyEntity.getContent())
+                .articleUUID(replyEntity.getArticle().getArticleUUID().toString())
+                .repliedAt(replyEntity.getRepliedAt())
+                .updatedAt(replyEntity.getUpdatedAt())
+                .author(replyEntity.getMember().getName())
                 .build();
     }
 }

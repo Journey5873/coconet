@@ -2,6 +2,8 @@ package com.coconet.articleservice.controller;
 
 import com.coconet.articleservice.dto.ArticleRequestDto;
 import com.coconet.articleservice.dto.ArticleResponseDto;
+import com.coconet.articleservice.dto.ReplyRequestDto;
+import com.coconet.articleservice.dto.ReplyResponseDto;
 import com.coconet.articleservice.service.ArticleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -42,5 +44,33 @@ public class ArticleController {
     public String deleteArticle(@PathVariable String articleUUID){
         String memberUUID = "";
         return articleService.deleteArticle(articleUUID, memberUUID);
+    }
+
+    // reply
+
+    @PostMapping("/reply/{articleUUID}")
+    public ReplyResponseDto reply(
+            @PathVariable String articleUUID,
+            @RequestBody ReplyRequestDto replyDto
+    ){
+        ReplyResponseDto response = articleService.write(replyDto, articleUUID);
+        return response;
+    }
+
+    @PutMapping("/reply/{replyId}")
+    public ReplyResponseDto updateReply(
+            @PathVariable Long replyId,
+            @RequestBody ReplyRequestDto replyDto
+    ){
+        Long memberId = 1L;
+        ReplyResponseDto response = articleService.updateReply(replyId, replyDto, memberId);
+
+        return response;
+    }
+
+    @DeleteMapping("/reply/{replyId}")
+    public void deleteReply(@PathVariable Long replyId) {
+        Long memberId = 1L;
+        articleService.deleteReply(replyId, memberId);
     }
 }
