@@ -7,18 +7,15 @@ import Tab from '../components/organisms/customTabs/Tab'
 import Tabs from '../components/organisms/customTabs/Tabs'
 import Card from '../components/molecules/card/card'
 import FilterSelect from '../components/atoms/Select/filterSelect'
-
 import { DummyData, dummyData } from '../data/data'
-
-interface Dummy {
-  count: number
-  name: string
-  age: number
-}
 
 const Index = () => {
   const [selected, setSelected] = useState<string[]>([])
+  const [selectedPosition, setSelectedPosition] = useState<string>('')
 
+  /**
+   * 기술을 선택하는 함수
+   */
   const hanldeSelected = useCallback(
     (value: string) => {
       if (checkFor()) {
@@ -36,6 +33,13 @@ const Index = () => {
     },
     [selected],
   )
+
+  /**
+   * 포지션을 선택하는 함수
+   */
+  const handlePosiionSelected = useCallback((value: string) => {
+    setSelectedPosition(value)
+  }, [])
 
   return (
     <>
@@ -57,18 +61,14 @@ const Index = () => {
                 />
                 <FilterSelect
                   title="포지션"
-                  options={[
-                    '전체',
-                    '프론트엔드',
-                    '백엔드',
-                    '데브옵스',
-                    '디자이너',
-                  ]}
+                  selected={selectedPosition}
+                  handleSelected={handlePosiionSelected}
+                  options={['프론트엔드', '백엔드', '데브옵스', '디자이너']}
                 />
-                <FilterSelect
+                {/* <FilterSelect
                   title="진행방식"
-                  options={['전체', '온라인', '오프라인', '온/오프라인']}
-                />
+                  options={['온라인', '오프라인', '온/오프라인']}
+                /> */}
               </div>
               <StyledItemWrpper>
                 {[dummyData].map((item) => (
