@@ -24,9 +24,9 @@ public class ArticleController {
         return ResponseEntity.status(201).body(response);
     }
 
-    @GetMapping("/article/{uuid}")
-    public ArticleResponseDto getArticle(@PathVariable String uuid){
-        ArticleResponseDto article = articleService.getArticle(uuid);
+    @GetMapping("/article/{articleUUID}")
+    public ArticleResponseDto getArticle(@PathVariable String articleUUID){
+        ArticleResponseDto article = articleService.getArticle(articleUUID);
         return article;
     }
 
@@ -42,8 +42,7 @@ public class ArticleController {
 
     @DeleteMapping("/delete/{articleUUID}")
     public String deleteArticle(@PathVariable String articleUUID){
-        String memberUUID = "";
-        return articleService.deleteArticle(articleUUID, memberUUID);
+        return articleService.deleteArticle(articleUUID);
     }
 
     // reply

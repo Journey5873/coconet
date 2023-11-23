@@ -186,11 +186,13 @@ public class ArticleService {
         }
     }
 
-    public String deleteArticle(String articleUUID, String memberUUID){
+    public String deleteArticle(String articleUUID){
         ArticleEntity article = articleRepository.findByArticleUUID(UUID.fromString(articleUUID))
                 .orElseThrow();
-        if (article.getMember().getMemberUUID().equals(UUID.fromString(memberUUID))){
-            articleRepository.deleteById(article.getId());
+        // TODO refactoring about member-service connecting
+        MemberEntity member = new MemberEntity(59L, "nahyeon.in11@gmail.com", "tester99");
+        if (article.getMember().getId().equals(member.getId())){
+            article.changeStatus((byte)0);
             return "Successfully deleted";
         }else{
             return "Only the author can delete the article";
