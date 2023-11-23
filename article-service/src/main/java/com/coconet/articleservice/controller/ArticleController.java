@@ -31,8 +31,8 @@ public class ArticleController {
     }
 
     @GetMapping("/articles")
-    public Page<ArticleResponseDto> getArticles(String keyword, Pageable pageable){
-        return articleService.getArticles(keyword, pageable);
+    public Page<ArticleResponseDto> getArticles(String keyword, String articleType, Pageable pageable){
+        return articleService.getArticles(keyword, articleType, pageable);
     }
 
     @PutMapping("/article")

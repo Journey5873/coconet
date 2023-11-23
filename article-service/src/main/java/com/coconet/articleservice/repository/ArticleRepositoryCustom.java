@@ -10,5 +10,5 @@ import java.util.List;
 public interface ArticleRepositoryCustom {
     ArticleFormDto getArticle(String articleUUID);
 
-    Page<ArticleFormDto> getArticles(String keyword, Pageable pageable);
+    Page<ArticleFormDto> getArticles(String keyword, String articleType,Pageable pageable);
 }

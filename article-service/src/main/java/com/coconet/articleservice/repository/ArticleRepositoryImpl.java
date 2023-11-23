@@ -47,15 +47,18 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
     }
 
     @Override
-    public Page<ArticleFormDto> getArticles(String keyword, Pageable pageable) {
+    public Page<ArticleFormDto> getArticles(String keyword, String articleType, Pageable pageable) {
         List<ArticleEntity> articles = queryFactory
                 .selectFrom(articleEntity)
                 .leftJoin(articleEntity.articleRoles, articleRoleEntity)
                 .leftJoin(articleEntity.articleStacks, articleStackEntity)
                 .orderBy(articleEntity.createdAt.desc())
                 .distinct()
-                .where(titleContains(keyword),
-                        (contentContains(keyword)))
+                .where(
+                        titleContains(keyword),
+                        contentContains(keyword),
+                        articleTypeEquals(articleType)
+                )
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
@@ -68,7 +71,8 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
                 .selectFrom(articleEntity)
                 .where(
                         titleContains(keyword),
-                        contentContains(keyword)
+                        contentContains(keyword),
+                        articleTypeEquals(articleType)
                 );
 
         return PageableExecutionUtils.getPage(contents, pageable, () -> countQuery.fetchCount());
@@ -80,6 +84,10 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
 
     private BooleanExpression contentContains(String content){
         return isEmpty(content) ? null : articleEntity.content.contains(content);
+    }
+
+    private BooleanExpression articleTypeEquals(String type) {
+        return isEmpty(type) ? null : articleEntity.articleType.eq(type);
     }
 
     private List<ArticleRoleDto> getArticleRoles(ArticleEntity article){

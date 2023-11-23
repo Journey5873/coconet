@@ -81,8 +81,8 @@ public class ArticleService {
         return formDtoToResponseDto(articleFormDto);
     }
 
-    public Page<ArticleResponseDto> getArticles(String keyword, Pageable pageable){
-        Page<ArticleFormDto> articleFormDtos = articleRepository.getArticles(keyword, pageable);
+    public Page<ArticleResponseDto> getArticles(String keyword, String articleType, Pageable pageable){
+        Page<ArticleFormDto> articleFormDtos = articleRepository.getArticles(keyword, articleType, pageable);
         Page<ArticleResponseDto> articleResponseDtos = articleFormDtos.map(articleFormDto ->
                 formDtoToResponseDto(articleFormDto)
         );
