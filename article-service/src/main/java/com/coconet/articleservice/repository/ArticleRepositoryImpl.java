@@ -30,14 +30,19 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public ArticleFormDto getArticle(String articleUUID) {
+    public ArticleFormDto getArticle(UUID articleUUID) {
+
+        queryFactory.update(articleEntity)
+                .set(articleEntity.viewCount, articleEntity.viewCount.add(1))
+                .where(articleEntity.articleUUID.eq(articleUUID))
+                .execute();
 
         ArticleEntity article = queryFactory
                 .selectFrom(articleEntity)
                 .leftJoin(articleEntity.articleRoles, articleRoleEntity)
                 .leftJoin(articleEntity.articleStacks, articleStackEntity)
                 .leftJoin(articleEntity.member, memberEntity)
-                .where(articleEntity.articleUUID.eq(UUID.fromString(articleUUID)))
+                .where(articleEntity.articleUUID.eq(articleUUID))
                 .fetchOne();
 
         if (article != null) {

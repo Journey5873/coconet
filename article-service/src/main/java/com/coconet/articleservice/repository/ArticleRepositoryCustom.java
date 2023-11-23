@@ -1,14 +1,13 @@
 package com.coconet.articleservice.repository;
 
 import com.coconet.articleservice.dto.ArticleFormDto;
-import com.coconet.articleservice.entity.MemberEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import java.util.List;
+import java.util.UUID;
 
 public interface ArticleRepositoryCustom {
-    ArticleFormDto getArticle(String articleUUID);
+    ArticleFormDto getArticle(UUID articleUUID);
 
     Page<ArticleFormDto> getArticles(String keyword, String articleType,Pageable pageable);
 }

@@ -77,12 +77,12 @@ public class ArticleService {
         em.clear();
         em.flush();
 
-        return formDtoToResponseDto(articleRepository.getArticle(savedArticle.getArticleUUID().toString()));
+        return formDtoToResponseDto(articleRepository.getArticle(savedArticle.getArticleUUID()));
 
     }
 
     public ArticleResponseDto getArticle(String articleUUID){
-        ArticleFormDto articleFormDto = articleRepository.getArticle(articleUUID);
+        ArticleFormDto articleFormDto = articleRepository.getArticle(UUID.fromString(articleUUID));
         return formDtoToResponseDto(articleFormDto);
     }
 
@@ -109,7 +109,7 @@ public class ArticleService {
         updateRoles(articleRequestDto.getArticleRoleDtos(), article);
         updateStacks(articleRequestDto.getArticleStackDtos(), article);
 
-        ArticleFormDto returnArticle = articleRepository.getArticle(article.getArticleUUID().toString());
+        ArticleFormDto returnArticle = articleRepository.getArticle(article.getArticleUUID());
         return formDtoToResponseDto(returnArticle);
     }
 
