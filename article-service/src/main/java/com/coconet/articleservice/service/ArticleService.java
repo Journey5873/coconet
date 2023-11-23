@@ -90,7 +90,7 @@ public class ArticleService {
     }
 
     public ArticleResponseDto updateArticle(ArticleRequestDto articleRequestDto){
-        ArticleEntity article = articleRepository.findByArticleUUID(UUID.fromString(articleRequestDto.getArticleUUID()))
+        ArticleEntity article = articleRepository.findByArticleUUID(articleRequestDto.getArticleUUID())
                 .orElseThrow(() -> new IllegalArgumentException("Not found article"));
 
         article.changeTitle(articleRequestDto.getTitle());

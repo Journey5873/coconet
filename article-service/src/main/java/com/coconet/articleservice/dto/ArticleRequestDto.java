@@ -7,7 +7,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import static lombok.AccessLevel.PROTECTED;
 
@@ -17,7 +19,7 @@ import static lombok.AccessLevel.PROTECTED;
 @NoArgsConstructor(access = PROTECTED)
 @AllArgsConstructor
 public class ArticleRequestDto {
-    private String articleUUID;
+    private UUID articleUUID;
     private String title;
     private String content;
     private LocalDate plannedStartAt;
@@ -25,7 +27,6 @@ public class ArticleRequestDto {
     private String estimatedDuration;
     private String articleType;
     private String meetingType;
-
-    private List<ArticleRoleDto> articleRoleDtos;
-    private List<ArticleStackDto> articleStackDtos;
+    private List<ArticleRoleDto> articleRoleDtos = new ArrayList<>();
+    private List<ArticleStackDto> articleStackDtos = new ArrayList<>();
 }

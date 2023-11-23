@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import static lombok.AccessLevel.PROTECTED;
 
@@ -17,7 +18,7 @@ import static lombok.AccessLevel.PROTECTED;
 @NoArgsConstructor(access = PROTECTED)
 @AllArgsConstructor
 public class ArticleFormDto {
-    private String articleUUID;
+    private UUID articleUUID;
     private String title;
     private String content;
     private LocalDateTime createdAt;
@@ -37,7 +38,7 @@ public class ArticleFormDto {
 
     @QueryProjection
 
-    public ArticleFormDto(String articleUUID, String title, String content,
+    public ArticleFormDto(UUID articleUUID, String title, String content,
                           LocalDateTime createdAt, LocalDateTime updateAt,
                           LocalDateTime plannedStartAt, LocalDateTime expiredAt,
                           String estimatedDuration, int viewCount, int bookmarkCount,

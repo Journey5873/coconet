@@ -118,7 +118,7 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
 
     private ArticleFormDto buildArticleFormDto(ArticleEntity article){
         return ArticleFormDto.builder()
-                .articleUUID(article.getArticleUUID().toString())
+                .articleUUID(article.getArticleUUID())
                 .title(article.getTitle())
                 .content(article.getContent())
                 .createdAt(article.getCreatedAt())
