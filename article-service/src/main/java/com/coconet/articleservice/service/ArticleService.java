@@ -3,6 +3,7 @@ package com.coconet.articleservice.service;
 import com.coconet.articleservice.dto.*;
 import com.coconet.articleservice.entity.*;
 import com.coconet.articleservice.repository.*;
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -26,6 +27,7 @@ public class ArticleService {
     private final TechStackRepository techStackRepository;
     private final ArticleStackRepository articleStackRepository;
     private final ReplyRepository replyRepository;
+    private final EntityManager em;
 
     public ArticleResponseDto createArticle(ArticleRequestDto request) {
 
@@ -71,6 +73,9 @@ public class ArticleService {
                             .build();
                     return articleStackRepository.save(articleStackEntity);
                 }).toList();
+
+        em.clear();
+        em.flush();
 
         return formDtoToResponseDto(articleRepository.getArticle(savedArticle.getArticleUUID().toString()));
 
