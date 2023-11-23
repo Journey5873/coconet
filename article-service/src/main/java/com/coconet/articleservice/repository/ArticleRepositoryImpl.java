@@ -14,7 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
 
-import java.util.ArrayList;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -41,7 +41,7 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
                 .fetchOne();
 
         if (article != null) {
-            return buildArticleFormDto(article);
+            return entityToFormDto(article);
         }
         return null;
     }
@@ -55,8 +55,9 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
                 .orderBy(articleEntity.createdAt.desc())
                 .distinct()
                 .where(
-                        titleContains(keyword),
-                        contentContains(keyword),
+                        articleEntity.status.eq((byte)1)
+                                .and(articleEntity.expiredAt.after(LocalDateTime.now())),
+                        containsKeyword(keyword),
                         articleTypeEquals(articleType)
                 )
                 .offset(pageable.getOffset())
@@ -64,18 +65,23 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
                 .fetch();
 
         List<ArticleFormDto> contents = articles.stream()
-                .map(article -> buildArticleFormDto(article))
+                .map(article -> entityToFormDto(article))
                 .toList();
 
         JPAQuery<ArticleEntity> countQuery = queryFactory
                 .selectFrom(articleEntity)
                 .where(
-                        titleContains(keyword),
-                        contentContains(keyword),
+                        articleEntity.status.eq((byte)1)
+                                .and(articleEntity.expiredAt.after(LocalDateTime.now())),
+                        containsKeyword(keyword),
                         articleTypeEquals(articleType)
                 );
 
         return PageableExecutionUtils.getPage(contents, pageable, () -> countQuery.fetchCount());
+    }
+
+    private BooleanExpression containsKeyword(String keyword){
+        return isEmpty(keyword) ? null : titleContains(keyword).or(contentContains(keyword));
     }
 
     private BooleanExpression titleContains(String title){
@@ -124,7 +130,7 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
                 .fetch();
     }
 
-    private ArticleFormDto buildArticleFormDto(ArticleEntity article){
+    private ArticleFormDto entityToFormDto(ArticleEntity article){
         return ArticleFormDto.builder()
                 .articleUUID(article.getArticleUUID())
                 .title(article.getTitle())
