@@ -8,6 +8,7 @@ import {
   PersonnelOptions,
   PositionOptions,
   SelectProps,
+  StackOptions,
 } from '../../assets/data/data'
 import { CareerOptions } from '../../assets/data/data'
 import { SelectValue } from '../../../pages/setting'
@@ -22,13 +23,12 @@ export interface LabelProps {
 export default function SingleSelect({
   label,
   onChange,
-  value,
   placeholder,
 }: LabelProps) {
   const [option, setOption] = useState<SelectProps[]>([])
 
   useEffect(() => {
-    if (label === '직무' || label === '포지션') {
+    if (label === '직무') {
       setOption(PositionOptions)
     } else if (label === '경력') {
       setOption(CareerOptions)
@@ -52,7 +52,6 @@ export default function SingleSelect({
       <StyledSelect
         inputId="aria-example-input"
         options={option}
-        value={value || [option[0]]}
         className="singleSelect"
         placeholder={placeholder}
         onChange={(newValue) => onChange(newValue)}

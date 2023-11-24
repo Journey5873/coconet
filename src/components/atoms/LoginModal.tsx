@@ -1,22 +1,22 @@
-import React from 'react';
-import styled, { keyframes } from 'styled-components';
-import CloseIcon from '@mui/icons-material/Close';
-import { ReactComponent as GoogleLogo } from '../assets/images/googleLogo.svg';
-import { ReactComponent as GithubLogo } from '../assets/images/githubLogo.svg';
-import { ReactComponent as CoconetLogo } from '../assets/images/Logo.svg';
-import KakaoAuth from '../organisms/KaKaoAuth';
+import React from 'react'
+import styled, { keyframes } from 'styled-components'
+import CloseIcon from '@mui/icons-material/Close'
+import { ReactComponent as GoogleLogo } from '../assets/images/googleLogo.svg'
+import { ReactComponent as GithubLogo } from '../assets/images/githubLogo.svg'
+import { ReactComponent as CoconetLogo } from '../assets/images/Logo.svg'
+import KakaoAuth from '../organisms/KaKaoAuth'
 
 interface Props {
-  handleLoginModalVisible: () => void;
+  handleLoginModalVisible: () => void
 }
 
 // 깃헙 로그인
-const clientId = '3e638ae1e9bacaed52ec';
-const redirectUrl = 'http://localhost:3000';
-const githubURL = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUrl}`;
+const clientId = '3e638ae1e9bacaed52ec'
+const redirectUrl = 'http://localhost:3000'
+const githubURL = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUrl}`
 const handleLogin = () => {
-  window.location.href = githubURL;
-};
+  window.location.href = githubURL
+}
 
 export default function LoginModal({ handleLoginModalVisible }: Props) {
   return (
@@ -39,7 +39,7 @@ export default function LoginModal({ handleLoginModalVisible }: Props) {
                   <GoogleLogo />
                 </StyledButton>
                 <StyledButtonDescription href="http://localhost:9091/oauth2/authorize/google">
-                  Goggle 로그인
+                  Google 로그인
                 </StyledButtonDescription>
               </StyledBottonWrapper>
               <StyledBottonWrapper>
@@ -57,7 +57,7 @@ export default function LoginModal({ handleLoginModalVisible }: Props) {
         </StyledLoginModalWrapper>
       </StyledLoginModalBg>
     </React.Fragment>
-  );
+  )
 }
 
 const loginModalAnimation = keyframes`
@@ -70,7 +70,7 @@ const loginModalAnimation = keyframes`
       opacity: 1;
       top: 50%;
   }
-`;
+`
 
 const Login = styled.div`
   box-sizing: border-box;
@@ -79,7 +79,7 @@ const Login = styled.div`
   inset: 0px;
   background: rgba(77, 77, 77, 0.5);
   z-index: 999;
-`;
+`
 
 const StyledLoginModalBg = styled.div`
   box-sizing: border-box;
@@ -95,7 +95,7 @@ const StyledLoginModalBg = styled.div`
     min-height: 100%;
     position: relative;
   }
-`;
+`
 
 const StyledLoginModalWrapper = styled.div`
   width: 800px;
@@ -108,7 +108,7 @@ const StyledLoginModalWrapper = styled.div`
   margin: 0 auto;
   transform: translateY(-50%);
   animation: ${loginModalAnimation} 0.5s ease 0s 1 normal forwards running;
-`;
+`
 
 const StyledLoginModalHeader = styled.div`
   background: #f8f9fa;
@@ -124,7 +124,7 @@ const StyledLoginModalHeader = styled.div`
     padding: 0 1rem;
     border-radius: 0;
   }
-`;
+`
 const StyledLoginModalContent = styled.div`
   background: #fff;
   height: 100%;
@@ -133,7 +133,7 @@ const StyledLoginModalContent = styled.div`
   flex-direction: column;
   align-items: center;
   border-radius: 0 0 8px 8px;
-`;
+`
 
 const StyledLoginTitle = styled.h1`
   margin: 20px 0;
@@ -141,7 +141,7 @@ const StyledLoginTitle = styled.h1`
   @media (max-width: 768px) {
     font-size: 1.2rem;
   }
-`;
+`
 
 const StyledLoginWrapper = styled.section`
   margin-top: 4rem;
@@ -156,12 +156,12 @@ const StyledLoginWrapper = styled.section`
     gap: 30px;
     margin-top: 1.5rem;
   }
-`;
+`
 
 const StyledBottonWrapper = styled.div`
   display: flex;
   flex-direction: column;
-`;
+`
 
 const StyledButton = styled.button`
   width: 8rem;
@@ -182,7 +182,7 @@ const StyledButton = styled.button`
     width: 20rem;
     height: 4.5rem;
   }
-`;
+`
 const StyledButtonDescription = styled.a`
   margin-top: 10px;
   font-weight: 700;
@@ -191,4 +191,5 @@ const StyledButtonDescription = styled.a`
   text-align: center;
   letter-spacing: -0.005em;
   color: #565656;
-`;
+  text-decoration: none;
+`

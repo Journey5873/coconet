@@ -17,14 +17,6 @@ export default function PostNew() {
   })
   const handleCategory = (value: SelectValue) => setCategory(value)
 
-  // 모집 인원
-  const [personne, setPersonne] = useState<SelectValue>({
-    label: '',
-    value: '',
-  })
-
-  const handlePersonne = (value: SelectValue) => setPersonne(value)
-
   // 진행 방식
   const [onOffline, setOnOffline] = useState<SelectValue>({
     label: '',
@@ -38,6 +30,13 @@ export default function PostNew() {
     value: '',
   })
   const handlePeriod = (value: SelectValue) => setPeriod(value)
+
+  // 기술 스택
+  const [stack, setStack] = useState<SelectValue>({
+    label: '',
+    value: '',
+  })
+  const handleStack = (value: SelectValue) => setStack(value)
 
   return (
     <PostRegisterWrapper>
@@ -78,7 +77,7 @@ export default function PostNew() {
               label="진행 기간"
               value={period}
               onChange={handlePeriod}
-              placeholder={'기간 미정~6개월 이상'}
+              placeholder={'2개월 이하~1년 이상'}
             />
           </StyledPostSelectList>
         </StyledPostSelect>
@@ -86,19 +85,19 @@ export default function PostNew() {
           <StyledPostSelectList>
             <MultipleSelect
               label="기술 스택"
-              value={category}
-              onChange={handleCategory}
+              value={stack}
+              onChange={handleStack}
               placeholder={'프로젝트 사용 스택'}
             />
           </StyledPostSelectList>
           <StyledPostSelectList>
-            <label htmlFor="">모집 마감일</label>
+            <StyledInputLabel>모집 마감일</StyledInputLabel>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DemoContainer
                 components={['DatePicker']}
                 sx={{ '.MuiTextField-root': { width: '100%' } }}
               >
-                <DatePicker />
+                <DatePicker disablePast />
               </DemoContainer>
             </LocalizationProvider>
           </StyledPostSelectList>
@@ -169,4 +168,12 @@ const StyledPostSelect = styled.ul`
 
 const StyledPostSelectList = styled.li`
   flex: 1;
+`
+
+const StyledInputLabel = styled.label`
+  color: rgb(51, 51, 51);
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 20px;
+  letter-spacing: -0.28px;
 `

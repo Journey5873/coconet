@@ -46,7 +46,6 @@ function getStyles(name: string, personName: readonly string[], theme: Theme) {
 }
 
 export default function MultipleSelectWithCount({ label, placeholder }: Props) {
-  const theme = useTheme()
   const [stackLists, setStackLists] = React.useState<string[]>([])
 
   const items = useSelector((state: RootState) => state.reducer.position)
@@ -67,6 +66,7 @@ export default function MultipleSelectWithCount({ label, placeholder }: Props) {
         </StyledInputLabel>
         <Select
           multiple
+          placeholder={placeholder}
           value={stackLists}
           input={<OutlinedInput id="select-multiple-chip" />}
           renderValue={(selected) => (

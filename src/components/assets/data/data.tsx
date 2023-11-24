@@ -49,19 +49,42 @@ export const PersonnelOptions: SelectProps[] = [
 ]
 
 export const OnOfflineOptions: SelectProps[] = [
-  { value: '전체', label: '전체' },
   { value: '온라인', label: '온라인' },
   { value: '오프라인', label: '오프라인' },
   { value: '온/오프라인', label: '온/오프라인' },
 ]
 
 export const PeriodOptions: SelectProps[] = [
-  { value: '기간 미정', label: '기간 미정' },
-  { value: '1개월', label: '1개월' },
   { value: '2개월', label: '2개월' },
   { value: '3개월', label: '3개월' },
   { value: '4개월', label: '4개월' },
   { value: '5개월', label: '5개월' },
   { value: '6개월', label: '6개월' },
-  { value: '장기', label: '장기' },
+  { value: '1년 미만', label: '1년 미만' },
+  { value: '1년 이상', label: '1년 이상' },
+]
+
+export const StackOptions: SelectProps[] = [
+  { value: 'Java', label: 'Java' },
+  { value: 'Spring', label: 'Spring' },
+  { value: 'Node.js', label: 'Node.js' },
+  { value: 'Kotlin', label: 'Kotlin' },
+  { value: 'Python', label: 'Python' },
+  { value: 'Django', label: 'Django' },
+  { value: 'Mysql', label: 'Mysql' },
+  { value: 'MongoDB', label: 'MongoDB' },
+  { value: 'net', label: 'net' },
+  { value: 'JavaScript', label: 'JavaScript' },
+  { value: 'React', label: 'React' },
+  { value: 'TypeScript', label: 'TypeScript' },
+  { value: 'Next.js', label: 'Next.js' },
+  { value: 'Flutter', label: 'Flutter' },
+  { value: 'Swift', label: 'Swift' },
+  { value: 'AWS', label: 'AWS' },
+  { value: 'Docker', label: 'Docker' },
+  { value: 'Figma', label: 'Figma' },
+  { value: 'Git', label: 'Git' },
+  { value: 'Jenkins', label: 'Jenkins' },
+  { value: 'Jira', label: 'Jira' },
+  { value: 'Unity', label: 'Unity' },
 ]

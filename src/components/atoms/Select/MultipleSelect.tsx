@@ -1,13 +1,25 @@
-import React from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { useSelector } from 'react-redux'
 
 import Select from 'react-select'
 import { RootState } from '../../../store/RootReducer'
 import { LabelProps } from './SingleSelect'
 import styled from 'styled-components'
+import { SelectProps } from '@mui/material'
+import { StackOptions } from '../../assets/data/data'
 
-export default function MultipleSelect({ label, onChange }: LabelProps) {
-  const item = useSelector((state: RootState) => state.reducer.position)
+export default function MultipleSelect({
+  label,
+  onChange,
+  placeholder,
+}: LabelProps) {
+  const [item, setItem] = useState<SelectProps[]>([])
+
+  useEffect(() => {
+    if (label === '관심스택' || '기술 스택') {
+      setItem(StackOptions)
+    }
+  }, [])
 
   return (
     <StyledLabelAndSelect>
@@ -21,7 +33,7 @@ export default function MultipleSelect({ label, onChange }: LabelProps) {
         options={item}
         className="basic-multi-select"
         classNamePrefix="select"
-        placeholder="Select..."
+        placeholder={placeholder}
         onChange={(newValue) => onChange(newValue)}
       />
     </StyledLabelAndSelect>
