@@ -11,9 +11,7 @@ interface Props {
 }
 
 // 깃헙 로그인
-const clientId = '3e638ae1e9bacaed52ec'
-const redirectUrl = 'http://localhost:3000'
-const githubURL = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUrl}`
+const githubURL = `http://localhost:8000/member-service/open-api/oauth2/authorize/github`
 const handleLogin = () => {
   window.location.href = githubURL
 }
@@ -38,7 +36,7 @@ export default function LoginModal({ handleLoginModalVisible }: Props) {
                 <StyledButton>
                   <GoogleLogo />
                 </StyledButton>
-                <StyledButtonDescription href="http://localhost:9091/oauth2/authorize/google">
+                <StyledButtonDescription href="http://localhost:8000/member-service/open-api/oauth2/authorize/google">
                   Google 로그인
                 </StyledButtonDescription>
               </StyledBottonWrapper>

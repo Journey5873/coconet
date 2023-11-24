@@ -119,8 +119,9 @@ const PostRegisterWrapper = styled.div`
   max-width: 1040px;
   display: flex;
   flex-direction: column;
+  box-sizing: border-box;
   padding: 60px 16px;
-  width: 1024px;
+  width: 100%;
   margin: 0 auto;
   color: #333;
   grid-gap: 50px;
@@ -134,6 +135,10 @@ const StyledSelectSection = styled.div`
   padding: 16px;
   margin-bottom: 36px;
   border-bottom: 3px solid #f2f2f2;
+
+  @media screen and (max-width: 575px) {
+    padding: 8px;
+  }
 `
 
 const StyledSectionNumber = styled.span`
@@ -149,6 +154,13 @@ const StyledSectionNumber = styled.span`
   font-weight: 700;
   line-height: 19px;
   color: #fff;
+
+  @media screen and (max-width: 575px) {
+    margin-right: 6px;
+    width: 20px;
+    height: 20px;
+    font-size: 12px;
+  }
 `
 
 const StyledSelectSectionTitle = styled.h2`
@@ -157,6 +169,10 @@ const StyledSelectSectionTitle = styled.h2`
   line-height: 40px;
   letter-spacing: -0.05em;
   margin: 0;
+
+  @media screen and (max-width: 575px) {
+    font-size: 16px;
+  }
 `
 const StyledPostSelect = styled.ul`
   margin-top: 40px;
@@ -164,6 +180,13 @@ const StyledPostSelect = styled.ul`
   grid-gap: 15px;
   gap: 15px;
   list-style: none;
+
+  @media screen and (max-width: 768px) {
+    flex-direction: column;
+    grid-gap: 20px;
+    gap: 20px;
+    margin-top: 20px;
+  }
 `
 
 const StyledPostSelectList = styled.li`
