@@ -15,15 +15,13 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
+import org.springframework.http.*;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
+import java.net.URI;
 import java.util.Collections;
 import java.util.UUID;
 
@@ -71,7 +69,7 @@ public class OpenMemberController {
             }
     )
     @GetMapping("/github")
-    public Response<TokenResponse> githubCallback(@RequestParam("code") String code) {
+    public ResponseEntity<TokenResponse> githubCallback(@RequestParam("code") String code) {
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
         HttpEntity<AccessTokenRequest> entity = new HttpEntity<>(new AccessTokenRequest(githubClientId, githubSecret, code), headers);
@@ -98,12 +96,21 @@ public class OpenMemberController {
 
         if(!memberServiceImpl.existMember(email)) {
             UUID memberId = memberServiceImpl.preRegister(AuthProvider.github, email);
-            return Response.OK(TokenResponse.builder()
-                    .memberId(memberId).build());
+            return ResponseEntity.status(HttpStatus.FOUND)
+                    .location(URI.create("http://localhost:3000?memberId=" + memberId.toString()))
+                    .build();
         }
 
         TokenResponse result = memberServiceImpl.login(email);
-        return Response.OK(result);
+
+        if(result.getMemberId() != null)
+            return ResponseEntity.status(HttpStatus.FOUND)
+                    .location(URI.create("http://localhost:3000?memberId=" + result.getMemberId().toString()))
+                    .build();
+
+        return ResponseEntity.status(HttpStatus.FOUND)
+                .location(URI.create("http://localhost:3000?accessToken=" + result.getAccessToken().toString()))
+                .build();
     }
 
     @Operation(
@@ -116,7 +123,7 @@ public class OpenMemberController {
             }
     )
     @GetMapping("/google")
-    public Response<TokenResponse> googleCallback(@RequestParam("code") String code) {
+    public ResponseEntity<TokenResponse> googleCallback(@RequestParam("code") String code) {
         HttpHeaders headers = new HttpHeaders();
         HttpEntity<AccessGoogleTokenRequest> entity = new HttpEntity<>(new AccessGoogleTokenRequest(googleClientId, googleSecret, code, "authorization_code"
                 , googleRedirectUri), headers);
@@ -132,12 +139,21 @@ public class OpenMemberController {
 
         if(!memberServiceImpl.existMember(email)) {
             UUID memberId = memberServiceImpl.preRegister(AuthProvider.google, email);
-            return Response.OK(TokenResponse.builder()
-                    .memberId(memberId).build());
+            return ResponseEntity.status(HttpStatus.FOUND)
+                    .location(URI.create("http://localhost:3000?memberId=" + memberId.toString()))
+                    .build();
         }
 
         TokenResponse result = memberServiceImpl.login(email);
-        return Response.OK(result);
+
+        if(result.getMemberId() != null)
+            return ResponseEntity.status(HttpStatus.FOUND)
+                    .location(URI.create("http://localhost:3000?memberId=" + result.getMemberId().toString()))
+                    .build();
+
+        return ResponseEntity.status(HttpStatus.FOUND)
+                .location(URI.create("http://localhost:3000?accessToken=" + result.getAccessToken().toString()))
+                .build();
     }
 
     @Operation(
@@ -150,7 +166,7 @@ public class OpenMemberController {
             }
     )
     @GetMapping("/kakao")
-    public Response<TokenResponse> kakaoCallback(@RequestParam("code") String code){
+    public ResponseEntity<TokenResponse> kakaoCallback(@RequestParam("code") String code){
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-type", "application/x-www-form-urlencoded;charset=utf-8");
 
@@ -185,12 +201,20 @@ public class OpenMemberController {
 
         if(!memberServiceImpl.existMember(email)) {
             UUID memberId = memberServiceImpl.preRegister(AuthProvider.kakao, email);
-            return Response.OK(TokenResponse.builder()
-                    .memberId(memberId).build());
+            return ResponseEntity.status(HttpStatus.FOUND)
+                    .location(URI.create("http://localhost:3000?memberId=" + memberId.toString()))
+                    .build();
         }
 
         TokenResponse result = memberServiceImpl.login(email);
-        return Response.OK(result);
+        if(result.getMemberId() != null)
+            return ResponseEntity.status(HttpStatus.FOUND)
+                    .location(URI.create("http://localhost:3000?memberId=" + result.getMemberId().toString()))
+                    .build();
+
+        return ResponseEntity.status(HttpStatus.FOUND)
+                .location(URI.create("http://localhost:3000?accessToken=" + result.getAccessToken().toString()))
+                .build();
     }
 
     @Operation(
