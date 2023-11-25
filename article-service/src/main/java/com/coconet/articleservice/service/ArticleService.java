@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
@@ -184,6 +185,50 @@ public class ArticleService {
         if (!rolesToDelete.isEmpty()){
             articleRoleRepository.deleteArticleRolesIn(rolesToDelete);
         }
+    }
+
+    public List<ArticleResponseDto> getSuggestions(){
+        // TODO refactoring about member-service connecting
+        MemberEntity member = new MemberEntity(59L, "nahyeon.in11@gmail.com", "tester99");
+        List<RoleEntity> memberRoles = roleRepository.getMemberRoles(member);
+        List<TechStackEntity> memberStacks = techStackRepository.getMemberStacks(member);
+
+        List<ArticleFormDto> suggestions = articleRepository.getSuggestions(memberRoles, memberStacks);
+
+        return suggestions.stream()
+                .sorted(Comparator.comparingInt(suggestion ->
+                        calculatePriority(suggestion, memberRoles, memberStacks)))
+                .map(this::formDtoToResponseDto)
+                .toList();
+    }
+
+    int calculatePriority(
+            ArticleFormDto suggestion,
+            List<RoleEntity> memberRoles,
+            List<TechStackEntity> memberStacks
+    ) {
+
+        // Check if there is any matching roles between the suggestion and user roles
+        boolean hasRole = memberRoles.stream()
+                .anyMatch(role -> suggestion.getArticleRoleDtos().stream()
+                        .map(ArticleRoleDto::getRoleName)
+                        .anyMatch(roleName -> roleName.equals(role.getName())));
+
+        // Check the number of matching stacks between the suggestion and user stacks
+        long stackCount = memberStacks.stream()
+                .filter(techStack -> suggestion.getArticleStackDtos().stream()
+                        .map(ArticleStackDto::getStackName)
+                        .anyMatch(stackName -> stackName.equals(techStack.getName())))
+                .count();
+
+        if (hasRole && stackCount >= 2){
+            return 1;
+        } else if (stackCount >= 2) {
+            return 2;
+        } else if (hasRole){
+            return 3;
+        }
+        return 0;
     }
 
     public String deleteArticle(String articleUUID){

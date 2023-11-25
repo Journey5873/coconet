@@ -11,6 +11,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/article-service/open-api")
 @RequiredArgsConstructor
@@ -33,6 +35,11 @@ public class ArticleController {
     @GetMapping("/articles")
     public Page<ArticleResponseDto> getArticles(String keyword, String articleType, Pageable pageable){
         return articleService.getArticles(keyword, articleType, pageable);
+    }
+
+    @GetMapping("/suggestions")
+    public List<ArticleResponseDto> getSuggestions(){
+        return articleService.getSuggestions();
     }
 
     @PutMapping("/article")

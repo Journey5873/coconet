@@ -7,6 +7,7 @@ import com.coconet.articleservice.dto.ReplyResponseDto;
 import com.coconet.articleservice.entity.*;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -55,10 +56,10 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
     public Page<ArticleFormDto> getArticles(String keyword, String articleType, Pageable pageable) {
         List<ArticleEntity> articles = queryFactory
                 .selectFrom(articleEntity)
+                .distinct()
                 .leftJoin(articleEntity.articleRoles, articleRoleEntity)
                 .leftJoin(articleEntity.articleStacks, articleStackEntity)
                 .orderBy(articleEntity.createdAt.desc())
-                .distinct()
                 .where(
                         articleEntity.status.eq((byte)1)
                                 .and(articleEntity.expiredAt.after(LocalDateTime.now())),
@@ -85,6 +86,41 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
         return PageableExecutionUtils.getPage(contents, pageable, () -> countQuery.fetchCount());
     }
 
+    @Override
+    public List<ArticleFormDto> getSuggestions(List<RoleEntity> memberRoles, List<TechStackEntity> memberStacks) {
+
+        // A condition for filtering articles based on member's roles.
+        BooleanExpression roleCondition = JPAExpressions.selectOne()
+                .from(articleRoleEntity)
+                .where(articleRoleEntity.article.eq(articleEntity))
+                .groupBy(articleEntity)
+                .having(articleRoleEntity.role.in(memberRoles).countDistinct().goe(1))
+                .exists();
+        // A condition for filtering articles based on member's tacks.
+        BooleanExpression stackCondition = JPAExpressions.selectOne()
+                .from(articleStackEntity)
+                .where(articleStackEntity.article.eq(articleEntity))
+                .groupBy(articleEntity)
+                .having(articleStackEntity.techStack.in(memberStacks).countDistinct().goe(2))
+                .exists();
+
+        List<ArticleEntity> suggestions = queryFactory.selectFrom(articleEntity)
+                .leftJoin(articleEntity.articleRoles, articleRoleEntity)
+                .leftJoin(articleEntity.articleStacks, articleStackEntity)
+                .where(
+                        articleEntity.status.eq((byte) 1)
+                                .and(articleEntity.expiredAt.after(LocalDateTime.now()))
+                                .and(roleCondition.or(stackCondition))
+                )
+                .orderBy(articleEntity.createdAt.desc())
+                .distinct()
+                .fetch();
+
+        return suggestions.stream()
+                .map(this::entityToFormDto)
+                .toList();
+    }
+
     private BooleanExpression containsKeyword(String keyword){
         return isEmpty(keyword) ? null : titleContains(keyword).or(contentContains(keyword));
     }
@@ -99,27 +135,6 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
 
     private BooleanExpression articleTypeEquals(String type) {
         return isEmpty(type) ? null : articleEntity.articleType.eq(type);
-    }
-
-    private List<ArticleRoleDto> getArticleRoles(ArticleEntity article){
-        return queryFactory
-                .select(Projections.constructor(ArticleRoleDto.class,
-                        articleRoleEntity.role.name,
-                        articleRoleEntity.participant))
-                .from(articleRoleEntity)
-                .where(articleRoleEntity.article.eq(article))
-                .fetch();
-    }
-
-    private List<ArticleStackDto> getArticleStacks(ArticleEntity article){
-        return queryFactory
-                .select(Projections.constructor(ArticleStackDto.class,
-                        articleStackEntity.techStack.name,
-                        articleStackEntity.techStack.category,
-                        articleStackEntity.techStack.image))
-                .from(articleStackEntity)
-                .where(articleStackEntity.article.eq(article))
-                .fetch();
     }
 
     private List<ReplyResponseDto> getReplyResponse(ArticleEntity article) {
