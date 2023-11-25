@@ -28,8 +28,7 @@ public class ArticleController {
 
     @GetMapping("/article/{articleUUID}")
     public ArticleResponseDto getArticle(@PathVariable String articleUUID){
-        ArticleResponseDto article = articleService.getArticle(articleUUID);
-        return article;
+        return articleService.getArticle(articleUUID);
     }
 
     @GetMapping("/articles")
@@ -41,6 +40,9 @@ public class ArticleController {
     public List<ArticleResponseDto> getSuggestions(){
         return articleService.getSuggestions();
     }
+
+    @GetMapping("/popular")
+    public List<ArticleResponseDto> getPopularPosts(){ return articleService.getPopularPosts(); }
 
     @PutMapping("/article")
     public ArticleResponseDto updateArticleInfo(@RequestBody() ArticleRequestDto articleRequestDto) {

@@ -15,4 +15,6 @@ public interface ArticleRepositoryCustom {
     Page<ArticleFormDto> getArticles(String keyword, String articleType,Pageable pageable);
 
     List<ArticleFormDto> getSuggestions(List<RoleEntity> roleEntities, List<TechStackEntity> stackEntities);
+
+    List<ArticleFormDto> getPopularPosts();
 }

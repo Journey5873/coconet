@@ -89,10 +89,7 @@ public class ArticleService {
 
     public Page<ArticleResponseDto> getArticles(String keyword, String articleType, Pageable pageable){
         Page<ArticleFormDto> articleFormDtos = articleRepository.getArticles(keyword, articleType, pageable);
-        Page<ArticleResponseDto> articleResponseDtos = articleFormDtos.map(articleFormDto ->
-                formDtoToResponseDto(articleFormDto)
-        );
-        return  articleResponseDtos;
+        return  articleFormDtos.map(this::formDtoToResponseDto);
     }
 
     public ArticleResponseDto updateArticle(ArticleRequestDto articleRequestDto){
@@ -198,6 +195,12 @@ public class ArticleService {
         return suggestions.stream()
                 .sorted(Comparator.comparingInt(suggestion ->
                         calculatePriority(suggestion, memberRoles, memberStacks)))
+                .map(this::formDtoToResponseDto)
+                .toList();
+    }
+
+    public List<ArticleResponseDto> getPopularPosts(){
+        return articleRepository.getPopularPosts().stream()
                 .map(this::formDtoToResponseDto)
                 .toList();
     }

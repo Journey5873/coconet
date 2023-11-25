@@ -71,7 +71,7 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
                 .fetch();
 
         List<ArticleFormDto> contents = articles.stream()
-                .map(article -> entityToFormDto(article))
+                .map(this::entityToFormDto)
                 .toList();
 
         JPAQuery<ArticleEntity> countQuery = queryFactory
@@ -117,6 +117,27 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
                 .fetch();
 
         return suggestions.stream()
+                .map(this::entityToFormDto)
+                .toList();
+    }
+
+    @Override
+    public List<ArticleFormDto> getPopularPosts() {
+        List<ArticleEntity> populars = queryFactory.selectFrom(articleEntity)
+                .where(
+                        articleEntity.status.eq((byte) 1)
+                                .and(articleEntity.expiredAt.after(LocalDateTime.now()))
+                )
+                .orderBy(
+                        articleEntity.viewCount.desc(),
+                        articleEntity.bookmarkCount.desc(),
+                        articleEntity.createdAt.desc()
+                )
+                .limit(7)
+                .distinct()
+                .fetch();
+
+        return populars.stream()
                 .map(this::entityToFormDto)
                 .toList();
     }
