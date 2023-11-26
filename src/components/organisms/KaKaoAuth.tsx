@@ -4,7 +4,8 @@ import styled from 'styled-components'
 const KaKaoAuth = () => {
   const kakaoURL = `http://localhost:8000/member-service/open-api/oauth2/authorize/kakao`
   const handleLogin = () => {
-    window.open(kakaoURL, '_target')
+    // window.open(kakaoURL, '_target')
+    window.location.href = kakaoURL
   }
 
   return (

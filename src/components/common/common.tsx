@@ -1,6 +1,7 @@
 import styled from 'styled-components'
 
 export const StyledFlexRowBox = styled.div`
+  width: 100%;
   display: flex;
   flex-direction: row;
   column-gap: 8px;

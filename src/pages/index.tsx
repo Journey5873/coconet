@@ -1,4 +1,6 @@
-import React, { useState, useCallback } from 'react'
+import React, { useState, useCallback, useMemo } from 'react'
+import { DummyData, dummyData } from '../data/data'
+import { useSearchParams, useNavigate } from 'react-router-dom'
 import useFetch from '../hooks/useFetch'
 import MultiStackSelector from '../components/organisms/multiStackSelector/multiStackSelector'
 import CustomCarousel from '../components/organisms/Carousel'
@@ -7,11 +9,23 @@ import Tab from '../components/organisms/customTabs/Tab'
 import Tabs from '../components/organisms/customTabs/Tabs'
 import Card from '../components/molecules/card/card'
 import FilterSelect from '../components/atoms/Select/filterSelect'
-import { DummyData, dummyData } from '../data/data'
+import AdditionalModal from '../components/organisms/modal/additionalModal'
 
 const Index = () => {
+  const navigate = useNavigate()
   const [selected, setSelected] = useState<string[]>([])
   const [selectedPosition, setSelectedPosition] = useState<string>('')
+  const [searchParams] = useSearchParams()
+
+  const memberId = useMemo(
+    () => searchParams.get('memberId') || '',
+    [searchParams.get('memberId')],
+  )
+
+  const token = useMemo(
+    () => searchParams.get('token') || '',
+    [searchParams.get('token')],
+  )
 
   /**
    * 기술을 선택하는 함수
@@ -81,6 +95,10 @@ const Index = () => {
           </Tabs>
         </StyledContents>
       </div>
+      <AdditionalModal
+        open={memberId ? true : false}
+        handleClose={() => navigate('/')}
+      />
     </>
   )
 }
