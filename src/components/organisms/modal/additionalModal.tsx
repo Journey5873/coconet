@@ -8,15 +8,29 @@ import { StyledFlexRowBox } from '../../common/common'
 import SingleSelect from '../../atoms/Select/SingleSelect'
 import { SelectValue } from '../../../pages/setting'
 import MultipleSelect from '../../atoms//Select/MultipleSelect'
+import axios from 'axios'
+
+type RegisterDto = {
+  memberId: string
+  name: string
+  career: number
+  roles: string[]
+  stacks: string[]
+  bio?: string
+  githubLink?: string
+  blogLink?: string
+  notionLink?: string
+}
 
 interface Props {
   open: boolean
   handleClose?: () => void
+  memberId: string
   //   nickname: string
   //   handleFormValue: (e: any) => void
 }
 
-const AdditionalModal = ({ open, handleClose }: Props) => {
+const AdditionalModal = ({ open, handleClose, memberId }: Props) => {
   const [tab, setTab] = useState<number>(1)
   const [additinalValue, setAdditionalValue] = useState<Record<string, any>>({
     nickname: '',
@@ -29,7 +43,7 @@ const AdditionalModal = ({ open, handleClose }: Props) => {
       value: '',
     },
   })
-  const [stack, setStack] = useState<SelectValue[]>([])
+  const [stacks, setStacks] = useState<SelectValue[]>([])
 
   const handelChangeAdditionalValue = (e: any) => {
     const { name, value } = e.target
@@ -37,12 +51,45 @@ const AdditionalModal = ({ open, handleClose }: Props) => {
   }
 
   const handleCarrer = (value: SelectValue) =>
-    setAdditionalValue((prev) => ({ ...prev, carrer: value }))
+    setAdditionalValue((prev) => ({ ...prev, career: value }))
 
   const handleRoles = (value: SelectValue) =>
     setAdditionalValue((prev) => ({ ...prev, roles: value }))
 
-  const handleStack = (value: SelectValue[]) => setStack(value)
+  const handleStack = (value: SelectValue[]) => setStacks(value)
+
+  const onRegister = async () => {
+    try {
+      const registerInfo: RegisterDto = {
+        memberId,
+        career: additinalValue.career.value,
+        name: additinalValue.nickname,
+        roles: [additinalValue.roles.value],
+        stacks: [...stacks.map((stack) => stack.value)],
+        bio: '',
+        githubLink: '',
+        blogLink: '',
+        notionLink: '',
+      }
+      console.log(registerInfo, 'registerInfo')
+      const response = await fetch(
+        'http://localhost:8000/member-service/open-api/register',
+        {
+          body: JSON.stringify(registerInfo),
+          method: 'post',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      )
+
+      const result = await response.json()
+
+      console.log(result)
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
   if (!open) {
     return null
@@ -122,7 +169,7 @@ const AdditionalModal = ({ open, handleClose }: Props) => {
                     <StyledFlexRowBox>
                       <StyledButton
                         onClick={() => {
-                          if (!additinalValue?.carrer.label) {
+                          if (!additinalValue?.career.label) {
                             alert('경력을 입력해주세요.')
                             return
                           }
@@ -153,19 +200,19 @@ const AdditionalModal = ({ open, handleClose }: Props) => {
                   <MultipleSelect
                     label={'관심스택'}
                     onChange={handleStack}
-                    value={stack}
+                    value={stacks}
                     placeholder="Java, React"
                   />
                   <div style={{ alignSelf: 'center' }}>
                     <StyledFlexRowBox>
                       <StyledButton
                         onClick={() => {
-                          if (stack.length) {
+                          if (!stacks.length) {
                             alert('관심 기술을 입력해주세요.')
                             return
                           }
 
-                          setTab(3)
+                          onRegister()
                         }}
                       >
                         다음

@@ -98,6 +98,7 @@ const Index = () => {
       <AdditionalModal
         open={memberId ? true : false}
         handleClose={() => navigate('/')}
+        memberId={memberId}
       />
     </>
   )
