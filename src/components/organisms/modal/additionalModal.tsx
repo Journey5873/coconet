@@ -1,10 +1,13 @@
-import React from 'react'
+import React, { useState } from 'react'
 import styled, { keyframes } from 'styled-components'
 import CloseIcon from '@mui/icons-material/Close'
 import { ReactComponent as CoconetLogo } from '../../assets/images/Logo.svg'
-import { Input } from '@mui/material'
+import { MdArrowBackIos } from 'react-icons/md'
 import CustomInput from '../../atoms/Input'
 import { StyledFlexRowBox } from '../../common/common'
+import SingleSelect from '../../atoms/Select/SingleSelect'
+import { SelectValue } from '../../../pages/setting'
+import MultipleSelect from '../../atoms//Select/MultipleSelect'
 
 interface Props {
   open: boolean
@@ -14,9 +17,37 @@ interface Props {
 }
 
 const AdditionalModal = ({ open, handleClose }: Props) => {
+  const [tab, setTab] = useState<number>(1)
+  const [additinalValue, setAdditionalValue] = useState<Record<string, any>>({
+    nickname: '',
+    roles: {
+      label: '',
+      value: '',
+    },
+    career: {
+      label: '',
+      value: '',
+    },
+  })
+  const [stack, setStack] = useState<SelectValue[]>([])
+
+  const handelChangeAdditionalValue = (e: any) => {
+    const { name, value } = e.target
+    setAdditionalValue((prev) => ({ ...prev, [name]: value }))
+  }
+
+  const handleCarrer = (value: SelectValue) =>
+    setAdditionalValue((prev) => ({ ...prev, carrer: value }))
+
+  const handleRoles = (value: SelectValue) =>
+    setAdditionalValue((prev) => ({ ...prev, roles: value }))
+
+  const handleStack = (value: SelectValue[]) => setStack(value)
+
   if (!open) {
     return null
   }
+
   return (
     <React.Fragment>
       {/* <Login onClick={() => handleLoginModalVisible()} /> */}
@@ -30,19 +61,120 @@ const AdditionalModal = ({ open, handleClose }: Props) => {
             />
           </StyledLoginModalHeader>
           <StyledLoginModalContent>
-            <StyledLoginTitle>COCONET에 처음오셨군요.</StyledLoginTitle>
-            <StyledLoginTitle>닉네임을 설정해주세요!</StyledLoginTitle>
-            <StyledContentsWrapper>
-              <StyledFlexRowBox>
-                <span style={{ minWidth: 'fit-content' }}>닉네임</span>
-                <CustomInput />
-              </StyledFlexRowBox>
-              <div style={{ alignSelf: 'center' }}>
-                <StyledFlexRowBox>
-                  <StyledButton>다음</StyledButton>
-                </StyledFlexRowBox>
-              </div>
-            </StyledContentsWrapper>
+            {tab === 1 && (
+              <>
+                <StyledLoginTitle>COCONET에 처음오셨군요.</StyledLoginTitle>
+                <StyledLoginTitle>닉네임을 설정해주세요!</StyledLoginTitle>
+                <StyledContentsWrapper>
+                  <StyledFlexRowBox>
+                    <span style={{ minWidth: 'fit-content' }}>닉네임</span>
+                    <CustomInput
+                      name="nickname"
+                      value={additinalValue?.nickname}
+                      onChange={handelChangeAdditionalValue}
+                    />
+                  </StyledFlexRowBox>
+                  <div style={{ alignSelf: 'center' }}>
+                    <StyledFlexRowBox>
+                      <StyledButton
+                        onClick={() => {
+                          if (!additinalValue?.nickname) {
+                            alert('닉네임을 입력해주세요.')
+                            return
+                          }
+                          setTab(2)
+                        }}
+                      >
+                        다음
+                      </StyledButton>
+                    </StyledFlexRowBox>
+                  </div>
+                </StyledContentsWrapper>
+              </>
+            )}
+
+            {tab === 2 && (
+              <>
+                <div style={{ alignSelf: 'start' }}>
+                  <StyledBackButton onClick={() => setTab(1)}>
+                    <MdArrowBackIos />
+                  </StyledBackButton>
+                </div>
+
+                <StyledLoginTitle>
+                  {additinalValue?.nickname} 님 반가워요.
+                </StyledLoginTitle>
+                <StyledLoginTitle>직무와 경력을 알려주세요.</StyledLoginTitle>
+                <StyledContentsWrapper>
+                  <SingleSelect
+                    label="직무"
+                    onChange={handleRoles}
+                    value={additinalValue.roles}
+                    placeholder="프론트엔드"
+                  />
+                  <SingleSelect
+                    label="경력"
+                    onChange={handleCarrer}
+                    value={additinalValue.carrer}
+                    placeholder="0년"
+                  />
+                  <div style={{ alignSelf: 'center' }}>
+                    <StyledFlexRowBox>
+                      <StyledButton
+                        onClick={() => {
+                          if (!additinalValue?.carrer.label) {
+                            alert('경력을 입력해주세요.')
+                            return
+                          }
+                          if (!additinalValue?.roles.label) {
+                            alert('직무를 입력해주세요.')
+                            return
+                          }
+                          setTab(3)
+                        }}
+                      >
+                        다음
+                      </StyledButton>
+                    </StyledFlexRowBox>
+                  </div>
+                </StyledContentsWrapper>
+              </>
+            )}
+
+            {tab === 3 && (
+              <>
+                <div style={{ alignSelf: 'start' }}>
+                  <StyledBackButton onClick={() => setTab(2)}>
+                    <MdArrowBackIos />
+                  </StyledBackButton>
+                </div>
+                <StyledLoginTitle>관심 기술을 알려주세요.</StyledLoginTitle>
+                <StyledContentsWrapper>
+                  <MultipleSelect
+                    label={'관심스택'}
+                    onChange={handleStack}
+                    value={stack}
+                    placeholder="Java, React"
+                  />
+                  <div style={{ alignSelf: 'center' }}>
+                    <StyledFlexRowBox>
+                      <StyledButton
+                        onClick={() => {
+                          if (stack.length) {
+                            alert('관심 기술을 입력해주세요.')
+                            return
+                          }
+
+                          setTab(3)
+                        }}
+                      >
+                        다음
+                      </StyledButton>
+                    </StyledFlexRowBox>
+                  </div>
+                </StyledContentsWrapper>
+              </>
+            )}
           </StyledLoginModalContent>
         </StyledLoginModalWrapper>
       </StyledLoginModalBg>
@@ -160,4 +292,8 @@ const StyledButton = styled.button`
     width: 20rem;
     height: 4.5rem;
   }
+`
+const StyledBackButton = styled.div`
+  cursor: pointer;
+  font-size: 20px;
 `
