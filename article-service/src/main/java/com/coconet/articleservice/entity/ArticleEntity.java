@@ -1,6 +1,9 @@
 package com.coconet.articleservice.entity;
 
 
+import com.coconet.articleservice.entity.enums.ArticleType;
+import com.coconet.articleservice.entity.enums.EstimatedDuration;
+import com.coconet.articleservice.entity.enums.MeetingType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -36,6 +39,7 @@ public class ArticleEntity extends BaseEntity{
 
     @Column(nullable = false)
     private String content;
+
     @Column(nullable = false)
     private LocalDateTime plannedStartAt;
 
@@ -66,9 +70,9 @@ public class ArticleEntity extends BaseEntity{
     @OneToMany(mappedBy = "article")
     private List<ReplyEntity> replies;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
-    private MemberEntity member;
+    @Column(columnDefinition = "BINARY(16)", name = "member_uuid",
+            nullable = false, unique = true)
+    private UUID memberUUID;
 
     public void changeTitle(String title) { this.title = title; }
     public void changeContent(String content) { this.content = content; }
@@ -78,5 +82,13 @@ public class ArticleEntity extends BaseEntity{
     public void changeArticleType(String articleType) { this.articleType = articleType; }
     public void changeStatus(Byte status) { this.status = status; }
     public void changeMeetingType(String meetingType) { this.meetingType = meetingType; }
+
+    public void setBookmark() {
+        this.bookmarkCount++;
+    }
+
+    public void deleteBookmark() {
+        this.bookmarkCount--;
+    }
 }
 

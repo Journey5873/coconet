@@ -1,0 +1,75 @@
+server:
+  port: 64502
+
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: 312658128764-84u9024ugo9c5509be9aona2u3sgkl2e.apps.googleusercontent.com
+            client-secret: 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
+            redirect-uri: http://localhost:8000/member-service/open-api/google
+            scope:
+              - email
+              - profile
+          github:
+            client-id: 152affc5eb3c193835dd
+            client-secret: aae57228ede4e860276908359bf85c0c6b8dedfe
+            redirect-uri: http://localhost:8000/member-service/open-api/github
+          kakao:
+            client-id: 41e770712c05c78c64328c3054f6b913
+            client-secret: N4OkukQUpcA5eHkPYCq0VyfVYi3mp6n3
+            redirect-uri: http://localhost:8000/member-service/open-api/kakao
+            authorization-grant-type: authorization_code
+        provider:
+          kakao:
+            authorization-uri: https://kauth.kakao.com/oauth/authorize
+            token-uri: https://kauth.kakao.com/oauth/token
+
+
+  datasource:
+    url: jdbc:mysql://coconet.cvmfdihkqonw.ap-southeast-2.rds.amazonaws.com:3306/coconet
+    username: admin
+    password: AdM!nCoC0N3T
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+  application:
+    name: Member-service
+
+#Token
+token:
+  secret:
+    key: SpringBootJWTHelperTokenSecretKeyValue123!@#
+  access-token:
+    plus-hour: 1
+  refresh-token:
+    plus-hour: 12
+
+
+# Swagger
+springdoc:
+  packages-to-scan: com.coconet.memberservice.controller
+  default-consumes-media-type: application/json;charset=UTF-8
+  default-produces-media-type: application/json;charset=UTF-8
+  swagger-ui:
+    path: /swagger
+    disable-swagger-default-url: true
+    display-request-duration: true
+
+# Eureka
+eureka:
+  client:
+    service-url:
+      default_zone: http://localhost:8761/eureka
+
+# Jasypt
+jasypt:
+  encryptor:
+    bean: jasyptStringEncryptor
+    algorithm: PBEWithMD5AndDES
+    pool-size: 2
+    string-output-type: base64
+    key-obtention-iterations: 10000

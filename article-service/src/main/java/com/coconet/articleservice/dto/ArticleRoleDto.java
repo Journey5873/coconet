@@ -10,7 +10,7 @@ import static lombok.AccessLevel.PROTECTED;
 
 @Getter
 @Builder
-@NoArgsConstructor(access = PROTECTED)
+@NoArgsConstructor
 public class ArticleRoleDto {
     private String roleName;
     private Integer participant;

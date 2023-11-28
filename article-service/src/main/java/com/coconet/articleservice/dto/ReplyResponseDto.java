@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 import static lombok.AccessLevel.PROTECTED;
 
@@ -21,14 +22,14 @@ public class ReplyResponseDto {
     private String content;
     private LocalDateTime repliedAt;
     private LocalDateTime updatedAt;
-    private String author;
+    private UUID memberUUID;
     private String articleUUID;
 
-    public ReplyResponseDto(Long replyId, String content, LocalDateTime repliedAt, LocalDateTime updatedAt, String author) {
+    public ReplyResponseDto(Long replyId, String content, LocalDateTime repliedAt, LocalDateTime updatedAt, UUID memberUUID) {
         this.replyId = replyId;
         this.content = content;
         this.repliedAt = repliedAt;
         this.updatedAt = updatedAt;
-        this.author = author;
+        this.memberUUID = memberUUID;
     }
 }

@@ -5,6 +5,9 @@ import com.coconet.articleservice.dto.ArticleRoleDto;
 import com.coconet.articleservice.dto.ArticleStackDto;
 import com.coconet.articleservice.dto.ReplyResponseDto;
 import com.coconet.articleservice.entity.*;
+import com.coconet.articleservice.entity.enums.ArticleType;
+import com.coconet.articleservice.entity.enums.EstimatedDuration;
+import com.coconet.articleservice.entity.enums.MeetingType;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.JPAExpressions;
@@ -14,16 +17,19 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
+import org.springframework.web.bind.annotation.GetMapping;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 import static com.coconet.articleservice.entity.QArticleEntity.articleEntity;
 import static com.coconet.articleservice.entity.QArticleRoleEntity.articleRoleEntity;
 import static com.coconet.articleservice.entity.QArticleStackEntity.articleStackEntity;
-import static com.coconet.articleservice.entity.QMemberEntity.memberEntity;
 import static com.coconet.articleservice.entity.QReplyEntity.replyEntity;
+import static com.coconet.articleservice.entity.QRoleEntity.roleEntity;
+import static com.coconet.articleservice.entity.QTechStackEntity.techStackEntity;
 import static org.springframework.util.ObjectUtils.isEmpty;
 
 @RequiredArgsConstructor
@@ -42,7 +48,6 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
                 .selectFrom(articleEntity)
                 .leftJoin(articleEntity.articleRoles, articleRoleEntity)
                 .leftJoin(articleEntity.articleStacks, articleStackEntity)
-                .leftJoin(articleEntity.member, memberEntity)
                 .where(articleEntity.articleUUID.eq(articleUUID))
                 .fetchOne();
 
@@ -53,7 +58,7 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
     }
 
     @Override
-    public Page<ArticleFormDto> getArticles(String keyword, String articleType, Pageable pageable) {
+    public Page<ArticleFormDto> getArticles(String keyword, ArticleType articleType, Pageable pageable) {
         List<ArticleEntity> articles = queryFactory
                 .selectFrom(articleEntity)
                 .distinct()
@@ -64,7 +69,7 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
                         articleEntity.status.eq((byte)1)
                                 .and(articleEntity.expiredAt.after(LocalDateTime.now())),
                         containsKeyword(keyword),
-                        articleTypeEquals(articleType)
+                        articleTypeEquals(articleType.name())
                 )
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
@@ -80,7 +85,7 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
                         articleEntity.status.eq((byte)1)
                                 .and(articleEntity.expiredAt.after(LocalDateTime.now())),
                         containsKeyword(keyword),
-                        articleTypeEquals(articleType)
+                        articleTypeEquals(articleType.name())
                 );
 
         return PageableExecutionUtils.getPage(contents, pageable, () -> countQuery.fetchCount());
@@ -165,7 +170,7 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
                         replyEntity.content,
                         replyEntity.repliedAt,
                         replyEntity.updatedAt,
-                        replyEntity.member.name))
+                        replyEntity.memberUUID))
                 .from(replyEntity)
                 .where(replyEntity.article.eq(article))
                 .fetch();
@@ -180,13 +185,13 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
                 .updateAt(article.getUpdatedAt())
                 .plannedStartAt(article.getPlannedStartAt())
                 .expiredAt(article.getExpiredAt())
-                .estimatedDuration(article.getEstimatedDuration())
+                .estimatedDuration(EstimatedDuration.valueOf(article.getEstimatedDuration()))
                 .viewCount(article.getViewCount())
                 .bookmarkCount(article.getBookmarkCount())
-                .articleType(article.getArticleType())
+                .articleType(ArticleType.valueOf(article.getArticleType()))
                 .status(article.getStatus())
-                .meetingType(article.getMeetingType())
-                .author(article.getMember().getName())
+                .meetingType(MeetingType.valueOf(article.getMeetingType()))
+                .memberUUID(article.getMemberUUID())
                 .articleRoleDtos(article.getArticleRoles().stream()
                         .map(role -> new ArticleRoleDto(role.getRole().getName(),
                                 role.getParticipant()))
@@ -201,8 +206,9 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
                                 reply.getContent(),
                                 reply.getRepliedAt(),
                                 reply.getUpdatedAt(),
-                                reply.getMember().getName()))
+                                reply.getMemberUUID()))
                         .toList())
                 .build();
     }
 }
+

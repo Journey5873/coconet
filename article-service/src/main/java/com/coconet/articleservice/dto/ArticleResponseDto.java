@@ -1,5 +1,8 @@
 package com.coconet.articleservice.dto;
 
+import com.coconet.articleservice.entity.enums.ArticleType;
+import com.coconet.articleservice.entity.enums.EstimatedDuration;
+import com.coconet.articleservice.entity.enums.MeetingType;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,7 +19,7 @@ import static lombok.AccessLevel.PROTECTED;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Getter
 @Builder
-@NoArgsConstructor(access = PROTECTED)
+@NoArgsConstructor
 @AllArgsConstructor
 public class ArticleResponseDto {
     private UUID articleUUID;
@@ -26,22 +29,22 @@ public class ArticleResponseDto {
     private LocalDateTime updateAt;
     private LocalDateTime plannedStartAt;
     private LocalDateTime expiredAt;
-    private String estimatedDuration;
+    private EstimatedDuration estimatedDuration;
     private int viewCount;
     private int bookmarkCount;
-    private String articleType;
+    private ArticleType articleType;
     private Byte status;
-    private String meetingType;
-    private String author;
+    private MeetingType meetingType;
+    private UUID memberUUID;
 
     private List<ArticleRoleDto> articleRoleDtos = new ArrayList<>();
     private List<ArticleStackDto> articleStackDtos = new ArrayList<>();
     private List<ReplyResponseDto> replyResponseDtos = new ArrayList<>();
 
     public ArticleResponseDto(String title, String content, LocalDateTime createdAt,
-                              LocalDateTime updateAt, LocalDateTime expiredAt, String estimatedDuration,
-                              int viewCount, int bookmarkCount, String articleType,
-                              Byte status, String meetingType, String author) {
+                              LocalDateTime updateAt, LocalDateTime expiredAt, EstimatedDuration estimatedDuration,
+                              int viewCount, int bookmarkCount, ArticleType articleType,
+                              Byte status, MeetingType meetingType, UUID memberUUID) {
         this.title = title;
         this.content = content;
         this.createdAt = createdAt;
@@ -53,6 +56,6 @@ public class ArticleResponseDto {
         this.articleType = articleType;
         this.status = status;
         this.meetingType = meetingType;
-        this.author = author;
+        this.memberUUID = memberUUID;
     }
 }

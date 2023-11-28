@@ -3,7 +3,6 @@ package com.coconet.articleservice.dto;
 import com.coconet.articleservice.entity.enums.ArticleType;
 import com.coconet.articleservice.entity.enums.EstimatedDuration;
 import com.coconet.articleservice.entity.enums.MeetingType;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -12,16 +11,12 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
-
-import static lombok.AccessLevel.PROTECTED;
 
 @Getter
 @Builder
-@NoArgsConstructor(access = PROTECTED)
+@NoArgsConstructor
 @AllArgsConstructor
-public class ArticleRequestDto {
-    private UUID articleUUID;
+public class ArticleCreateRequestDto {
     private String title;
     private String content;
     private LocalDate plannedStartAt;
@@ -29,6 +24,6 @@ public class ArticleRequestDto {
     private EstimatedDuration estimatedDuration;
     private ArticleType articleType;
     private MeetingType meetingType;
-    private List<ArticleRoleDto> articleRoleDtos = new ArrayList<>();
-    private List<ArticleStackDto> articleStackDtos = new ArrayList<>();
+    private List<ArticleRoleDto> Roles = new ArrayList<>();
+    private List<String> stacks = new ArrayList<>();
 }
