@@ -10,7 +10,7 @@ import { SelectValue } from '../../../pages/setting'
 import MultipleSelect from '../../atoms//Select/MultipleSelect'
 import axios from 'axios'
 
-type RegisterDto = {
+export type RegisterDto = {
   memberId: string
   name: string
   career: number
