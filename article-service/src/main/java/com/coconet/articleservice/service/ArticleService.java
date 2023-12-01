@@ -1,10 +1,11 @@
 package com.coconet.articleservice.service;
 
 import com.coconet.articleservice.client.MemberClient;
-import com.coconet.articleservice.common.response.Response;
 import com.coconet.articleservice.dto.*;
 import com.coconet.articleservice.entity.*;
 import com.coconet.articleservice.entity.enums.ArticleType;
+import com.coconet.articleservice.entity.enums.EstimatedDuration;
+import com.coconet.articleservice.entity.enums.MeetingType;
 import com.coconet.articleservice.entity.member.MemberResponse;
 import com.coconet.articleservice.repository.*;
 import jakarta.persistence.EntityManager;
@@ -17,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -28,7 +30,7 @@ public class ArticleService {
     private final ArticleRoleRepository articleRoleRepository;
     private final TechStackRepository techStackRepository;
     private final ArticleStackRepository articleStackRepository;
-    private final ReplyRepository replyRepository;
+    private final CommentRepository commentRepository;
     private final EntityManager em;
     private final BookmarkRepository bookmarkRepository;
     private final MemberClient memberClient;
@@ -78,6 +80,9 @@ public class ArticleService {
 
         em.clear();
         em.flush();
+
+        articleEntityToArticleResponse(savedArticle);
+
         return formDtoToResponseDto(articleRepository.getArticle(savedArticle.getArticleUUID()));
 
     }
@@ -252,88 +257,57 @@ public class ArticleService {
         }
     }
 
-    private ArticleResponseDto formDtoToResponseDto(ArticleFormDto articleFormDto){
-        return  ArticleResponseDto.builder()
-                .articleUUID(articleFormDto.getArticleUUID())
-                .title(articleFormDto.getTitle())
-                .content(articleFormDto.getContent())
-                .createdAt(articleFormDto.getCreatedAt())
-                .updateAt(articleFormDto.getUpdateAt())
-                .plannedStartAt(articleFormDto.getPlannedStartAt())
-                .expiredAt(articleFormDto.getExpiredAt())
-                .estimatedDuration(articleFormDto.getEstimatedDuration())
-                .viewCount(articleFormDto.getViewCount())
-                .bookmarkCount(articleFormDto.getBookmarkCount())
-                .articleType(articleFormDto.getArticleType())
-                .status(articleFormDto.getStatus())
-                .meetingType(articleFormDto.getMeetingType())
-                .memberUUID(articleFormDto.getMemberUUID())
-                .articleRoleDtos(articleFormDto.getArticleRoleDtos())
-                .articleStackDtos(articleFormDto.getArticleStackDtos())
-                .replyResponseDtos(articleFormDto.getReplyResponseDtos())
-                .build();
-    }
-
     /**
-     *  reply
+     *  comment
      */
-    public ReplyResponseDto write(ReplyRequestDto replyDto, UUID articleUUID, UUID memberUUID) {
+    public CommentResponseDto writeComment(CommentRequestDto request, UUID articleUUID, UUID memberUUID) {
 
-        ReplyEntity replyEntity = ReplyEntity.builder()
-                .content(replyDto.getContent())
-                .repliedAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
-
-                // TODO 멤버 설정 리팩토링 필요
+        CommentEntity commentEntity = CommentEntity.builder()
+                .content(request.getContent())
                 .memberUUID(memberUUID)
                 .article(articleRepository.findByArticleUUID(articleUUID)
                         .orElseThrow(() -> new IllegalArgumentException("Not Found Article")))
                 .build();
-        replyRepository.save(replyEntity);
+        commentRepository.save(commentEntity);
 
-        return ReplyResponseDto.builder()
-                .content(replyEntity.getContent())
-                .articleUUID(replyEntity.getArticle().getArticleUUID().toString())
-                .repliedAt(replyEntity.getRepliedAt())
-                .updatedAt(replyEntity.getUpdatedAt())
-//                .author(replyEntity.getMember().getName())
+        return CommentResponseDto.builder()
+                .content(commentEntity.getContent())
+                .createdAt(commentEntity.getCreatedAt())
+                .updatedAt(commentEntity.getUpdatedAt())
+                .memberUUID(commentEntity.getMemberUUID())
                 .build();
     }
 
-    public void deleteReply(Long replyId, UUID memberUUID) {
-        ReplyEntity replyEntity = replyRepository.findById(replyId)
-                .orElseThrow(() -> new IllegalArgumentException("Not Found Reply"));
+    public CommentResponseDto updateComment(Long commnetId, CommentRequestDto commentDto, UUID memberUUID) {
 
-        // TODO member 비교 리팩토링 필요함
-        if(replyEntity.getMemberUUID().equals(memberUUID)){
-            replyRepository.delete(replyEntity);
-        }else {
-            throw new IllegalArgumentException("Only replier can delete the reply.");
-        }
-    }
+        CommentEntity commentEntity = commentRepository.findById(commnetId).orElseThrow(() -> new IllegalArgumentException("Not Found Comment"));
 
-    public ReplyResponseDto updateReply(Long replyId, ReplyRequestDto replyDto, UUID memberUUID) {
-
-        ReplyEntity replyEntity = replyRepository.findById(replyId).orElseThrow(() -> new IllegalArgumentException("Not Found Reply"));
-
-        // TODO member 비교 리팩토링 필요
-        if(replyEntity.getMemberUUID().equals(memberUUID)){
+        if(commentEntity.getMemberUUID().equals(memberUUID)){
             // update
-            replyEntity.changeContent(replyDto.getContent());
-            replyEntity.changeUpdatedAt(LocalDateTime.now());
-            replyRepository.save(replyEntity);
+            commentEntity.changeContent(commentDto.getContent());
         }else {
-            throw new IllegalArgumentException("Only replier can update the reply.");
+            throw new IllegalArgumentException("Only commenter can update the Comment.");
         }
 
-        return ReplyResponseDto.builder()
-                .content(replyEntity.getContent())
-                .articleUUID(replyEntity.getArticle().getArticleUUID().toString())
-                .repliedAt(replyEntity.getRepliedAt())
-                .updatedAt(replyEntity.getUpdatedAt())
-//                .author(replyEntity.getMember().getName())
+        return CommentResponseDto.builder()
+                .content(commentEntity.getContent())
+                .createdAt(commentEntity.getCreatedAt())
+                .updatedAt(commentEntity.getUpdatedAt())
+                .memberUUID(commentEntity.getMemberUUID())
                 .build();
     }
+
+    public void deleteComment(Long commentId, UUID memberUUID) {
+        CommentEntity commentEntity = commentRepository.findById(commentId)
+                .orElseThrow(() -> new IllegalArgumentException("Not Found Comment"));
+
+        if(commentEntity.getMemberUUID().equals(memberUUID)){
+            commentRepository.delete(commentEntity);
+        }else {
+            throw new IllegalArgumentException("Only commenter can delete the Comment.");
+        }
+    }
+
 
     public BookmarkResponse updateBookmark(UUID articleUUID, UUID memberUUID) {
         ArticleEntity article = articleRepository.findByArticleUUID(articleUUID).orElseThrow();
@@ -381,5 +355,90 @@ public class ArticleService {
         }
 
         return response;
+    }
+
+    /**
+     * UTILS
+     */
+
+    private ArticleResponseDto formDtoToResponseDto(ArticleFormDto articleFormDto){
+        return  ArticleResponseDto.builder()
+                .articleUUID(articleFormDto.getArticleUUID())
+                .title(articleFormDto.getTitle())
+                .content(articleFormDto.getContent())
+                .createdAt(articleFormDto.getCreatedAt())
+                .updateAt(articleFormDto.getUpdateAt())
+                .plannedStartAt(articleFormDto.getPlannedStartAt())
+                .expiredAt(articleFormDto.getExpiredAt())
+                .estimatedDuration(articleFormDto.getEstimatedDuration())
+                .viewCount(articleFormDto.getViewCount())
+                .bookmarkCount(articleFormDto.getBookmarkCount())
+                .articleType(articleFormDto.getArticleType())
+                .status(articleFormDto.getStatus())
+                .meetingType(articleFormDto.getMeetingType())
+                .memberUUID(articleFormDto.getMemberUUID())
+                .articleRoleDtos(articleFormDto.getArticleRoleDtos())
+                .articleStackDtos(articleFormDto.getArticleStackDtos())
+                .commentResponseDtos(articleFormDto.getCommentResponseDtos())
+                .build();
+    }
+
+    private static void articleEntityToArticleResponse(ArticleEntity savedArticle) {
+        ArticleResponseDto articleResponseDto = ArticleResponseDto.builder()
+                .articleUUID(savedArticle.getArticleUUID())
+                .title(savedArticle.getTitle())
+                .content(savedArticle.getContent())
+                .createdAt(savedArticle.getCreatedAt())
+                .updateAt(savedArticle.getUpdatedAt())
+                .plannedStartAt(savedArticle.getPlannedStartAt())
+                .expiredAt(savedArticle.getExpiredAt())
+                .estimatedDuration(EstimatedDuration.valueOf(savedArticle.getEstimatedDuration()))
+                .viewCount(savedArticle.getViewCount())
+                .bookmarkCount(savedArticle.getBookmarkCount())
+                .articleType(ArticleType.valueOf(savedArticle.getArticleType()))
+                .status(savedArticle.getStatus())
+                .meetingType(MeetingType.valueOf(savedArticle.getMeetingType()))
+                .memberUUID(savedArticle.getMemberUUID())
+                .articleRoleDtos(getArticleRoleDtos(savedArticle))
+                .articleStackDtos(getArticleStackDtos(savedArticle))
+                .commentResponseDtos(getCommentResponseDtos(savedArticle))
+                .build();
+    }
+
+
+    private static List<ArticleRoleDto> getArticleRoleDtos(ArticleEntity savedArticle) {
+        List<ArticleRoleDto> articleRoleDtoList = savedArticle.getArticleRoles().stream()
+                .map(articleRoleEntity -> {
+                    return ArticleRoleDto.builder()
+                            .roleName(articleRoleEntity.getRole().getName())
+                            .participant(articleRoleEntity.getParticipant())
+                            .build();
+                }).collect(Collectors.toList());
+        return articleRoleDtoList;
+    }
+
+    private static List<ArticleStackDto> getArticleStackDtos(ArticleEntity savedArticle) {
+        List<ArticleStackDto> articleStackDtoList = savedArticle.getArticleStacks().stream()
+                .map(articleStackEntity -> {
+                    return ArticleStackDto.builder()
+                            .stackName(articleStackEntity.getTechStack().getName())
+                            .category(articleStackEntity.getTechStack().getCategory())
+                            .image(articleStackEntity.getTechStack().getImage())
+                            .build();
+                }).collect(Collectors.toList());
+        return articleStackDtoList;
+    }
+
+    private static List<CommentResponseDto> getCommentResponseDtos(ArticleEntity articleEntity) {
+        List<CommentResponseDto> commentResponseDtoList = articleEntity.getComments().stream()
+                .map(comment -> {
+                    return CommentResponseDto.builder()
+                            .content(comment.getContent())
+                            .createdAt(comment.getCreatedAt())
+                            .updatedAt(comment.getUpdatedAt())
+                            .memberUUID(comment.getMemberUUID())
+                            .build();
+                }).collect(Collectors.toList());
+        return commentResponseDtoList;
     }
 }
