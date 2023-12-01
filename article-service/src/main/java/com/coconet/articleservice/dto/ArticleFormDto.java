@@ -37,7 +37,7 @@ public class ArticleFormDto {
     private UUID memberUUID;
     private List<ArticleRoleDto> articleRoleDtos = new ArrayList<>();
     private List<ArticleStackDto> articleStackDtos = new ArrayList<>();
-    private List<ReplyResponseDto> replyResponseDtos = new ArrayList<>();
+    private List<CommentResponseDto> commentResponseDtos = new ArrayList<>();
 
     @QueryProjection
     public ArticleFormDto(UUID articleUUID, String title, String content,

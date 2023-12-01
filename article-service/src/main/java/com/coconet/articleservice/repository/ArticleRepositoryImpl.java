@@ -3,12 +3,11 @@ package com.coconet.articleservice.repository;
 import com.coconet.articleservice.dto.ArticleFormDto;
 import com.coconet.articleservice.dto.ArticleRoleDto;
 import com.coconet.articleservice.dto.ArticleStackDto;
-import com.coconet.articleservice.dto.ReplyResponseDto;
+import com.coconet.articleservice.dto.CommentResponseDto;
 import com.coconet.articleservice.entity.*;
 import com.coconet.articleservice.entity.enums.ArticleType;
 import com.coconet.articleservice.entity.enums.EstimatedDuration;
 import com.coconet.articleservice.entity.enums.MeetingType;
-import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQuery;
@@ -17,19 +16,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
-import org.springframework.web.bind.annotation.GetMapping;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 import static com.coconet.articleservice.entity.QArticleEntity.articleEntity;
 import static com.coconet.articleservice.entity.QArticleRoleEntity.articleRoleEntity;
 import static com.coconet.articleservice.entity.QArticleStackEntity.articleStackEntity;
-import static com.coconet.articleservice.entity.QReplyEntity.replyEntity;
-import static com.coconet.articleservice.entity.QRoleEntity.roleEntity;
-import static com.coconet.articleservice.entity.QTechStackEntity.techStackEntity;
 import static org.springframework.util.ObjectUtils.isEmpty;
 
 @RequiredArgsConstructor
@@ -163,19 +157,6 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
         return isEmpty(type) ? null : articleEntity.articleType.eq(type);
     }
 
-    private List<ReplyResponseDto> getReplyResponse(ArticleEntity article) {
-        return queryFactory
-                .select(Projections.constructor(ReplyResponseDto.class,
-                        replyEntity.replyId,
-                        replyEntity.content,
-                        replyEntity.repliedAt,
-                        replyEntity.updatedAt,
-                        replyEntity.memberUUID))
-                .from(replyEntity)
-                .where(replyEntity.article.eq(article))
-                .fetch();
-    }
-
     private ArticleFormDto entityToFormDto(ArticleEntity article){
         return ArticleFormDto.builder()
                 .articleUUID(article.getArticleUUID())
@@ -201,12 +182,12 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
                                 stack.getTechStack().getCategory(),
                                 stack.getTechStack().getImage()))
                         .toList())
-                .replyResponseDtos(article.getReplies().stream()
-                        .map(reply -> new ReplyResponseDto(reply.getReplyId(),
-                                reply.getContent(),
-                                reply.getRepliedAt(),
-                                reply.getUpdatedAt(),
-                                reply.getMemberUUID()))
+                .commentResponseDtos(article.getComments().stream()
+                        .map(comment -> new CommentResponseDto(comment.getCommentId(),
+                                comment.getContent(),
+                                comment.getCreatedAt(),
+                                comment.getUpdatedAt(),
+                                comment.getMemberUUID()))
                         .toList())
                 .build();
     }

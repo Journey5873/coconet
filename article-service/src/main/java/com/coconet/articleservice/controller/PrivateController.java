@@ -39,42 +39,39 @@ public class PrivateController {
         return articleService.deleteArticle(articleUUID, memberUUID);
     }
 
-    // reply
-    @PostMapping("/reply/{articleUUID}")
-    public ReplyResponseDto reply(
+    // comment
+    @PostMapping("/comment/{articleUUID}")
+    public Response<CommentResponseDto> writeComment(
             @PathVariable UUID articleUUID,
-            @RequestBody ReplyRequestDto replyDto,
+            @RequestBody CommentRequestDto commentRequestDto,
             @RequestHeader(value="memberId") UUID memberUUID
     ){
-        ReplyResponseDto response = articleService.write(replyDto, articleUUID, memberUUID);
-        return response;
+        CommentResponseDto response = articleService.writeComment(commentRequestDto, articleUUID, memberUUID);
+        return Response.OK(response);
     }
 
-    @PutMapping("/reply/{replyId}")
-    public ReplyResponseDto updateReply(
-            @PathVariable Long replyId,
-            @RequestBody ReplyRequestDto replyDto,
+    @PutMapping("/comment/{commentId}")
+    public Response<CommentResponseDto> updateComment(
+            @PathVariable Long commentId,
+            @RequestBody CommentRequestDto commentRequestDto,
             @RequestHeader(value="memberId") UUID memberUUID
     ){
-        ReplyResponseDto response = articleService.updateReply(replyId, replyDto, memberUUID);
-
-        return response;
+        CommentResponseDto response = articleService.updateComment(commentId, commentRequestDto, memberUUID);
+        return Response.OK(response);
     }
 
-    @DeleteMapping("/reply/{replyId}")
-    public void deleteReply(@PathVariable Long replyId, @RequestHeader(value="memberId") UUID memberUUID) {
-        articleService.deleteReply(replyId, memberUUID);
+    @DeleteMapping("/comment/{commentId}")
+    public void deleteComment(@PathVariable Long commentId, @RequestHeader(value="memberId") UUID memberUUID) {
+        articleService.deleteComment(commentId, memberUUID);
     }
 
     @PostMapping("/bookmark/{articleUUID}")
-    public Response<BookmarkResponse> updateBookmark(@PathVariable UUID articleUUID, @RequestHeader(value="memberId") UUID memberUUID) {
-        BookmarkResponse response = articleService.updateBookmark(articleUUID, memberUUID);
-        return Response.OK(response);
+    public BookmarkResponse updateBookmark(@PathVariable UUID articleUUID, @RequestHeader(value="memberId") UUID memberUUID) {
+        return articleService.updateBookmark(articleUUID, memberUUID);
     }
 
     @GetMapping("/bookmark")
-    public Response<List<BookmarkResponse>> getBookmarks(@RequestHeader(value="memberId") UUID memberUUID) {
-        List<BookmarkResponse> response = articleService.getBookmarks(memberUUID);
-        return Response.OK(response);
+    public List<BookmarkResponse> getBookmarks(@RequestHeader(value="memberId") UUID memberUUID) {
+        return articleService.getBookmarks(memberUUID);
     }
  }

@@ -1,5 +1,6 @@
 package com.coconet.articleservice.controller;
 
+import com.coconet.articleservice.common.response.Response;
 import com.coconet.articleservice.dto.ArticleResponseDto;
 import com.coconet.articleservice.service.ArticleService;
 import lombok.RequiredArgsConstructor;
@@ -26,8 +27,9 @@ public class PublicArticleController {
     }
 
     @GetMapping("/articles")
-    public Page<ArticleResponseDto> getArticles(String keyword, String articleType, Pageable pageable){
-        return articleService.getArticles(keyword, articleType, pageable);
+    public Response<Page<ArticleResponseDto>> getArticles(String keyword, String articleType, Pageable pageable){
+        Page<ArticleResponseDto> responseDtos = articleService.getArticles(keyword, articleType, pageable);
+        return Response.OK(responseDtos);
     }
 
     @GetMapping("/popular")

@@ -13,7 +13,7 @@ import static lombok.AccessLevel.PROTECTED;
 @Builder
 @NoArgsConstructor(access = PROTECTED)
 @AllArgsConstructor
-public class ReplyRequestDto {
+public class CommentRequestDto {
 
     private String content;
 
