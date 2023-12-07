@@ -11,25 +11,19 @@ import java.util.UUID;
 
 import static lombok.AccessLevel.PROTECTED;
 
-@Table(name = "reply")
+@Table(name = "comment")
 @Entity
 @Getter
 @SuperBuilder
 @NoArgsConstructor(access = PROTECTED)
 @AllArgsConstructor
-public class ReplyEntity {
+public class CommentEntity extends BaseEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long replyId;
+    private Long commentId;
 
     @Column(columnDefinition = "TEXT(500)", nullable = false)
     private String content;
-
-    @Column(nullable = false)
-    private LocalDateTime repliedAt;
-
-    @Column(nullable = false)
-    private LocalDateTime updatedAt;
 
     @Column(name = "member_UUID")
     private UUID memberUUID;
@@ -40,9 +34,5 @@ public class ReplyEntity {
 
     public void changeContent(String content) {
         this.content = content;
-    }
-
-    public void changeUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
     }
 }

@@ -14,8 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import static lombok.AccessLevel.PROTECTED;
-
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Getter
 @Builder
@@ -37,9 +35,9 @@ public class ArticleResponseDto {
     private MeetingType meetingType;
     private UUID memberUUID;
 
-    private List<ArticleRoleDto> articleRoleDtos = new ArrayList<>();
-    private List<ArticleStackDto> articleStackDtos = new ArrayList<>();
-    private List<ReplyResponseDto> replyResponseDtos = new ArrayList<>();
+    private List<ArticleRoleDto> roles = new ArrayList<>();
+    private List<ArticleStackDto> stacks = new ArrayList<>();
+    private List<ReplyResponseDto> replies = new ArrayList<>();
 
     public ArticleResponseDto(String title, String content, LocalDateTime createdAt,
                               LocalDateTime updateAt, LocalDateTime expiredAt, EstimatedDuration estimatedDuration,

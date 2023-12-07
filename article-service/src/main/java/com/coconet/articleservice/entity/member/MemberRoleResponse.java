@@ -14,4 +14,5 @@ import static lombok.AccessLevel.PROTECTED;
 @AllArgsConstructor
 public class MemberRoleResponse extends BaseEntity {
     private String name;
+
 }

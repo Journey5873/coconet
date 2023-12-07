@@ -3,7 +3,6 @@ package com.coconet.articleservice.dto;
 import com.coconet.articleservice.entity.enums.ArticleType;
 import com.coconet.articleservice.entity.enums.EstimatedDuration;
 import com.coconet.articleservice.entity.enums.MeetingType;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -29,6 +28,6 @@ public class ArticleRequestDto {
     private EstimatedDuration estimatedDuration;
     private ArticleType articleType;
     private MeetingType meetingType;
-    private List<ArticleRoleDto> articleRoleDtos = new ArrayList<>();
-    private List<ArticleStackDto> articleStackDtos = new ArrayList<>();
+    private List<ArticleRoleDto> roles = new ArrayList<>();
+    private List<ArticleStackDto> stacks = new ArrayList<>();
 }

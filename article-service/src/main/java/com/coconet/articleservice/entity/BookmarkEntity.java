@@ -27,5 +27,4 @@ public class BookmarkEntity extends BaseEntity{
 
     @Column(name = "article_id", nullable = false)
     private Long articleId;
-
 }

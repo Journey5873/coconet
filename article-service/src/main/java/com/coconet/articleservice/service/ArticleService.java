@@ -5,7 +5,9 @@ import com.coconet.articleservice.common.response.Response;
 import com.coconet.articleservice.dto.*;
 import com.coconet.articleservice.entity.*;
 import com.coconet.articleservice.entity.enums.ArticleType;
+import com.coconet.articleservice.entity.enums.MeetingType;
 import com.coconet.articleservice.entity.member.MemberResponse;
+import com.coconet.articleservice.entity.member.MemberRoleResponse;
 import com.coconet.articleservice.repository.*;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +30,7 @@ public class ArticleService {
     private final ArticleRoleRepository articleRoleRepository;
     private final TechStackRepository techStackRepository;
     private final ArticleStackRepository articleStackRepository;
-    private final ReplyRepository replyRepository;
+    private final CommentRepository commentRepository;
     private final EntityManager em;
     private final BookmarkRepository bookmarkRepository;
     private final MemberClient memberClient;
@@ -78,8 +80,8 @@ public class ArticleService {
 
         em.clear();
         em.flush();
-        return formDtoToResponseDto(articleRepository.getArticle(savedArticle.getArticleUUID()));
 
+        return formDtoToResponseDto(articleRepository.getArticle(savedArticle.getArticleUUID()));
     }
 
     public ArticleResponseDto getArticle(String articleUUID){
@@ -87,16 +89,31 @@ public class ArticleService {
         return formDtoToResponseDto(articleFormDto);
     }
 
-    public Page<ArticleResponseDto> getArticles(String keyword, String articleType, Pageable pageable) {
-        Page<ArticleFormDto> articleFormDtos = articleRepository.getArticles(keyword, ArticleType.valueOf(articleType), pageable);
-        return  articleFormDtos.map(this::formDtoToResponseDto);
+    public Page<ArticleResponseDto> getArticles(ArticleFilterDto condition, Pageable pageable){
+
+
+        List<RoleEntity> selectedRoles = roleRepository.getRoles(condition.getRoles());
+        List<TechStackEntity> selectedStacks = techStackRepository.getTechStacks(condition.getStacks());
+
+        String articleType = null;
+        if (condition.getArticleType() != null){
+            articleType = ArticleType.valueOf(condition.getArticleType().name()).toString();
+        }
+        String meetingType = null;
+        if (condition.getMeetingType() != null){
+            meetingType = MeetingType.valueOf(condition.getMeetingType().name()).toString();
+        }
+
+        Page<ArticleFormDto> filteredArticles = articleRepository.getArticles(selectedRoles, selectedStacks,
+                condition.getKeyword(), articleType, meetingType, condition.isBookmark(), pageable);
+
+
+        return filteredArticles.map(this::formDtoToResponseDto);
     }
 
     public ArticleResponseDto updateArticle(ArticleRequestDto articleRequestDto, UUID memberUUID){
         ArticleEntity article = articleRepository.findByArticleUUID(articleRequestDto.getArticleUUID())
                 .orElseThrow(() -> new IllegalArgumentException("Not found article"));
-
-        // check if the requester is the creater.
 
         article.changeTitle(articleRequestDto.getTitle());
         article.changeContent(articleRequestDto.getContent());
@@ -106,10 +123,11 @@ public class ArticleService {
         article.changeMeetingType(articleRequestDto.getMeetingType().name());
         article.changeArticleType(articleRequestDto.getArticleType().name());
 
-        updateRoles(articleRequestDto.getArticleRoleDtos(), article);
-        updateStacks(articleRequestDto.getArticleStackDtos(), article);
+        updateRoles(articleRequestDto.getRoles(), article);
+        updateStacks(articleRequestDto.getStacks(), article);
 
         ArticleFormDto returnArticle = articleRepository.getArticle(article.getArticleUUID());
+
         return formDtoToResponseDto(returnArticle);
     }
 
@@ -187,21 +205,26 @@ public class ArticleService {
     }
 
     public List<ArticleResponseDto> getSuggestions(UUID memberUUID){
-        // TODO refactoring about member-service connecting
+        Response<MemberResponse> memberInfo = memberClient.getMemberInfo(memberUUID);
         MemberResponse memberResponse = memberClient.getMemberInfo(memberUUID).getData();
 
-//        List<RoleEntity> memberRoles = roleRepository.getMemberRoles(memberResponse.getRoles());
-//        List<TechStackEntity> memberStacks = techStackRepository.getMemberStacks(memberResponse.getStacks());
+        List<String> roles = memberResponse.getRoles().stream()
+                .map(MemberRoleResponse::getName)
+                .toList();
+        List<RoleEntity> memberRoles = roleRepository.getRoles(roles);
 
-//        List<ArticleFormDto> suggestions = articleRepository.getSuggestions(memberRoles, memberStacks);
+        List<String> stacks = memberResponse.getStacks().stream()
+                .map(Objects::toString)
+                .toList();
+        List<TechStackEntity> memberStacks = techStackRepository.getTechStacks(stacks);
 
-//        return suggestions.stream()
-//                .sorted(Comparator.comparingInt(suggestion ->
-//                        calculatePriority(suggestion, memberRoles, memberStacks)))
-//                .map(this::formDtoToResponseDto)
-//                .toList();
+        List<ArticleFormDto> suggestions = articleRepository.getSuggestions(memberRoles, memberStacks);
 
-        return new ArrayList<>();
+        return suggestions.stream()
+                .sorted(Comparator.comparingInt(suggestion ->
+                        calculatePriority(suggestion, memberRoles, memberStacks)))
+                .map(this::formDtoToResponseDto)
+                .toList();
     }
 
     public List<ArticleResponseDto> getPopularPosts(){
@@ -218,13 +241,13 @@ public class ArticleService {
 
         // Check if there is any matching roles between the suggestion and user roles
         boolean hasRole = memberRoles.stream()
-                .anyMatch(role -> suggestion.getArticleRoleDtos().stream()
+                .anyMatch(role -> suggestion.getRoles().stream()
                         .map(ArticleRoleDto::getRoleName)
                         .anyMatch(roleName -> roleName.equals(role.getName())));
 
         // Check the number of matching stacks between the suggestion and user stacks
         long stackCount = memberStacks.stream()
-                .filter(techStack -> suggestion.getArticleStackDtos().stream()
+                .filter(techStack -> suggestion.getStacks().stream()
                         .map(ArticleStackDto::getStackName)
                         .anyMatch(stackName -> stackName.equals(techStack.getName())))
                 .count();
@@ -268,9 +291,9 @@ public class ArticleService {
                 .status(articleFormDto.getStatus())
                 .meetingType(articleFormDto.getMeetingType())
                 .memberUUID(articleFormDto.getMemberUUID())
-                .articleRoleDtos(articleFormDto.getArticleRoleDtos())
-                .articleStackDtos(articleFormDto.getArticleStackDtos())
-                .replyResponseDtos(articleFormDto.getReplyResponseDtos())
+                .roles(articleFormDto.getRoles())
+                .stacks(articleFormDto.getStacks())
+                .replies(articleFormDto.getReplies())
                 .build();
     }
 
@@ -279,34 +302,32 @@ public class ArticleService {
      */
     public ReplyResponseDto write(ReplyRequestDto replyDto, UUID articleUUID, UUID memberUUID) {
 
-        ReplyEntity replyEntity = ReplyEntity.builder()
+        CommentEntity replyEntity = CommentEntity.builder()
                 .content(replyDto.getContent())
-                .repliedAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
 
                 // TODO 멤버 설정 리팩토링 필요
                 .memberUUID(memberUUID)
                 .article(articleRepository.findByArticleUUID(articleUUID)
                         .orElseThrow(() -> new IllegalArgumentException("Not Found Article")))
                 .build();
-        replyRepository.save(replyEntity);
+        commentRepository.save(replyEntity);
 
         return ReplyResponseDto.builder()
                 .content(replyEntity.getContent())
                 .articleUUID(replyEntity.getArticle().getArticleUUID().toString())
-                .repliedAt(replyEntity.getRepliedAt())
+                .repliedAt(replyEntity.getCreatedAt())
                 .updatedAt(replyEntity.getUpdatedAt())
 //                .author(replyEntity.getMember().getName())
                 .build();
     }
 
     public void deleteReply(Long replyId, UUID memberUUID) {
-        ReplyEntity replyEntity = replyRepository.findById(replyId)
+        CommentEntity replyEntity = commentRepository.findById(replyId)
                 .orElseThrow(() -> new IllegalArgumentException("Not Found Reply"));
 
         // TODO member 비교 리팩토링 필요함
         if(replyEntity.getMemberUUID().equals(memberUUID)){
-            replyRepository.delete(replyEntity);
+            commentRepository.delete(replyEntity);
         }else {
             throw new IllegalArgumentException("Only replier can delete the reply.");
         }
@@ -314,14 +335,13 @@ public class ArticleService {
 
     public ReplyResponseDto updateReply(Long replyId, ReplyRequestDto replyDto, UUID memberUUID) {
 
-        ReplyEntity replyEntity = replyRepository.findById(replyId).orElseThrow(() -> new IllegalArgumentException("Not Found Reply"));
+        CommentEntity replyEntity = commentRepository.findById(replyId).orElseThrow(() -> new IllegalArgumentException("Not Found Reply"));
 
         // TODO member 비교 리팩토링 필요
         if(replyEntity.getMemberUUID().equals(memberUUID)){
             // update
             replyEntity.changeContent(replyDto.getContent());
-            replyEntity.changeUpdatedAt(LocalDateTime.now());
-            replyRepository.save(replyEntity);
+            commentRepository.save(replyEntity);
         }else {
             throw new IllegalArgumentException("Only replier can update the reply.");
         }
@@ -329,7 +349,7 @@ public class ArticleService {
         return ReplyResponseDto.builder()
                 .content(replyEntity.getContent())
                 .articleUUID(replyEntity.getArticle().getArticleUUID().toString())
-                .repliedAt(replyEntity.getRepliedAt())
+                .repliedAt(replyEntity.getCreatedAt())
                 .updatedAt(replyEntity.getUpdatedAt())
 //                .author(replyEntity.getMember().getName())
                 .build();

@@ -35,9 +35,9 @@ public class ArticleFormDto {
     private Byte status;
     private MeetingType meetingType;
     private UUID memberUUID;
-    private List<ArticleRoleDto> articleRoleDtos = new ArrayList<>();
-    private List<ArticleStackDto> articleStackDtos = new ArrayList<>();
-    private List<ReplyResponseDto> replyResponseDtos = new ArrayList<>();
+    private List<ArticleRoleDto> roles = new ArrayList<>();
+    private List<ArticleStackDto> stacks = new ArrayList<>();
+    private List<ReplyResponseDto> replies = new ArrayList<>();
 
     @QueryProjection
     public ArticleFormDto(UUID articleUUID, String title, String content,

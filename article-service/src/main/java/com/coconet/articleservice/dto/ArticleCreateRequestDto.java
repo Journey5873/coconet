@@ -24,6 +24,6 @@ public class ArticleCreateRequestDto {
     private EstimatedDuration estimatedDuration;
     private ArticleType articleType;
     private MeetingType meetingType;
-    private List<ArticleRoleDto> Roles = new ArrayList<>();
+    private List<ArticleRoleDto> roles = new ArrayList<>();
     private List<String> stacks = new ArrayList<>();
 }

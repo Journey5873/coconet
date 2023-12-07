@@ -17,19 +17,15 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
-import org.springframework.web.bind.annotation.GetMapping;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 import static com.coconet.articleservice.entity.QArticleEntity.articleEntity;
 import static com.coconet.articleservice.entity.QArticleRoleEntity.articleRoleEntity;
 import static com.coconet.articleservice.entity.QArticleStackEntity.articleStackEntity;
-import static com.coconet.articleservice.entity.QReplyEntity.replyEntity;
-import static com.coconet.articleservice.entity.QRoleEntity.roleEntity;
-import static com.coconet.articleservice.entity.QTechStackEntity.techStackEntity;
+import static com.coconet.articleservice.entity.QBookmarkEntity.bookmarkEntity;
 import static org.springframework.util.ObjectUtils.isEmpty;
 
 @RequiredArgsConstructor
@@ -58,37 +54,76 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
     }
 
     @Override
-    public Page<ArticleFormDto> getArticles(String keyword, ArticleType articleType, Pageable pageable) {
-        List<ArticleEntity> articles = queryFactory
-                .selectFrom(articleEntity)
+    public Page<ArticleFormDto> getArticles(List<RoleEntity> roles, List<TechStackEntity> stacks, String keyword,
+                                            String articleType, String meetingType, boolean bookmark, Pageable pageable) {
+        List<ArticleEntity> articles = queryFactory.selectFrom(articleEntity)
                 .distinct()
                 .leftJoin(articleEntity.articleRoles, articleRoleEntity)
                 .leftJoin(articleEntity.articleStacks, articleStackEntity)
-                .orderBy(articleEntity.createdAt.desc())
                 .where(
-                        articleEntity.status.eq((byte)1)
+                        articleEntity.status.eq((byte) 1)
                                 .and(articleEntity.expiredAt.after(LocalDateTime.now())),
                         containsKeyword(keyword),
-                        articleTypeEquals(articleType.name())
+                        articleTypeEquals(articleType),
+                        meetingTypeEquals(meetingType),
+                        articleRoleContains(roles),
+                        articleStackContains(stacks)
                 )
+                .orderBy(articleEntity.createdAt.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
+
 
         List<ArticleFormDto> contents = articles.stream()
                 .map(this::entityToFormDto)
                 .toList();
 
+
         JPAQuery<ArticleEntity> countQuery = queryFactory
                 .selectFrom(articleEntity)
                 .where(
-                        articleEntity.status.eq((byte)1)
+                        articleEntity.status.eq((byte) 1)
                                 .and(articleEntity.expiredAt.after(LocalDateTime.now())),
                         containsKeyword(keyword),
-                        articleTypeEquals(articleType.name())
+                        articleTypeEquals(articleType),
+                        meetingTypeEquals(meetingType),
+                        articleRoleContains(roles),
+                        articleStackContains(stacks)
                 );
 
+
         return PageableExecutionUtils.getPage(contents, pageable, () -> countQuery.fetchCount());
+    }
+
+    private BooleanExpression containsKeyword(String keyword){
+        return isEmpty(keyword) ? null : titleContains(keyword).or(contentContains(keyword));
+    }
+
+
+    private BooleanExpression titleContains(String title){
+        return isEmpty(title) ? null : articleEntity.title.contains(title);
+    }
+
+    private BooleanExpression contentContains(String content){
+        return isEmpty(content) ? null : articleEntity.content.contains(content);
+    }
+
+    private BooleanExpression articleTypeEquals(String type) {
+        return isEmpty(type) ? null : articleEntity.articleType.eq(type);
+    }
+
+    private BooleanExpression meetingTypeEquals(String type) {
+        return isEmpty(type) ? null : articleEntity.meetingType.eq(type);
+    }
+
+    private BooleanExpression articleRoleContains(List<RoleEntity> roles){
+        return isEmpty(roles) ? null : articleRoleEntity.role.in(roles);
+    }
+
+
+    private BooleanExpression articleStackContains(List<TechStackEntity> stacks){
+        return isEmpty(stacks) ? null : articleStackEntity.techStack.in(stacks);
     }
 
     @Override
@@ -147,33 +182,19 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
                 .toList();
     }
 
-    private BooleanExpression containsKeyword(String keyword){
-        return isEmpty(keyword) ? null : titleContains(keyword).or(contentContains(keyword));
-    }
-
-    private BooleanExpression titleContains(String title){
-        return isEmpty(title) ? null : articleEntity.title.contains(title);
-    }
-
-    private BooleanExpression contentContains(String content){
-        return isEmpty(content) ? null : articleEntity.content.contains(content);
-    }
-
-    private BooleanExpression articleTypeEquals(String type) {
-        return isEmpty(type) ? null : articleEntity.articleType.eq(type);
-    }
 
     private List<ReplyResponseDto> getReplyResponse(ArticleEntity article) {
-        return queryFactory
-                .select(Projections.constructor(ReplyResponseDto.class,
-                        replyEntity.replyId,
-                        replyEntity.content,
-                        replyEntity.repliedAt,
-                        replyEntity.updatedAt,
-                        replyEntity.memberUUID))
-                .from(replyEntity)
-                .where(replyEntity.article.eq(article))
-                .fetch();
+//        return queryFactory
+//                .select(Projections.constructor(ReplyResponseDto.class,
+//                        replyEntity.replyId,
+//                        replyEntity.content,
+//                        replyEntity.repliedAt,
+//                        replyEntity.updatedAt,
+//                        replyEntity.memberUUID))
+//                .from(replyEntity)
+//                .where(replyEntity.article.eq(article))
+//                .fetch();
+        return null;
     }
 
     private ArticleFormDto entityToFormDto(ArticleEntity article){
@@ -192,19 +213,19 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
                 .status(article.getStatus())
                 .meetingType(MeetingType.valueOf(article.getMeetingType()))
                 .memberUUID(article.getMemberUUID())
-                .articleRoleDtos(article.getArticleRoles().stream()
+                .roles(article.getArticleRoles().stream()
                         .map(role -> new ArticleRoleDto(role.getRole().getName(),
                                 role.getParticipant()))
                         .toList())
-                .articleStackDtos(article.getArticleStacks().stream()
+                .stacks(article.getArticleStacks().stream()
                         .map(stack -> new ArticleStackDto(stack.getTechStack().getName(),
                                 stack.getTechStack().getCategory(),
                                 stack.getTechStack().getImage()))
                         .toList())
-                .replyResponseDtos(article.getReplies().stream()
-                        .map(reply -> new ReplyResponseDto(reply.getReplyId(),
+                .replies(article.getReplies().stream()
+                        .map(reply -> new ReplyResponseDto(reply.getCommentId(),
                                 reply.getContent(),
-                                reply.getRepliedAt(),
+                                reply.getCreatedAt(),
                                 reply.getUpdatedAt(),
                                 reply.getMemberUUID()))
                         .toList())

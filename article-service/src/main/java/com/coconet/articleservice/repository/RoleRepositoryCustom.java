@@ -5,5 +5,5 @@ import com.coconet.articleservice.entity.RoleEntity;
 import java.util.List;
 
 public interface RoleRepositoryCustom {
-//    List<RoleEntity> getMemberRoles(MemberEntity member);
+    List<RoleEntity> getRoles(List<String> roles);
 }
