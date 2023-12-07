@@ -5,6 +5,7 @@ import com.coconet.articleservice.common.response.Response;
 import com.coconet.articleservice.dto.*;
 import com.coconet.articleservice.entity.*;
 import com.coconet.articleservice.entity.enums.ArticleType;
+import com.coconet.articleservice.entity.enums.EstimatedDuration;
 import com.coconet.articleservice.entity.enums.MeetingType;
 import com.coconet.articleservice.entity.member.MemberResponse;
 import com.coconet.articleservice.entity.member.MemberRoleResponse;
@@ -400,7 +401,7 @@ public class ArticleService {
                 .memberUUID(articleFormDto.getMemberUUID())
                 .roles(articleFormDto.getRoles())
                 .stacks(articleFormDto.getStacks())
-                .commentResponseDtos(articleFormDto.getCommentResponseDtos())
+                .comments(articleFormDto.getComments())
                 .build();
     }
 
@@ -420,9 +421,9 @@ public class ArticleService {
                 .status(savedArticle.getStatus())
                 .meetingType(MeetingType.valueOf(savedArticle.getMeetingType()))
                 .memberUUID(savedArticle.getMemberUUID())
-                .articleRoleDtos(getArticleRoleDtos(savedArticle))
-                .articleStackDtos(getArticleStackDtos(savedArticle))
-                .commentResponseDtos(getCommentResponseDtos(savedArticle))
+                .roles(getArticleRoleDtos(savedArticle))
+                .stacks(getArticleStackDtos(savedArticle))
+                .comments(getCommentResponseDtos(savedArticle))
                 .build();
     }
 

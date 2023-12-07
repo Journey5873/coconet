@@ -237,7 +237,7 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
                                 stack.getTechStack().getCategory(),
                                 stack.getTechStack().getImage()))
                         .toList())
-                .commentResponseDtos(article.getComments().stream()
+                .comments(article.getComments().stream()
                         .map(comment -> new CommentResponseDto(comment.getCommentId(),
                                 comment.getContent(),
                                 comment.getCreatedAt(),
@@ -249,5 +249,5 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
 }
 
 
-import com.coconet.articleservice.dto.CommentResponseDto;
+
 

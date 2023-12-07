@@ -1,9 +1,6 @@
 package com.coconet.articleservice.entity;
 
 
-import com.coconet.articleservice.entity.enums.ArticleType;
-import com.coconet.articleservice.entity.enums.EstimatedDuration;
-import com.coconet.articleservice.entity.enums.MeetingType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,7 +8,6 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -68,7 +64,7 @@ public class ArticleEntity extends BaseEntity{
     private List<ArticleStackEntity> articleStacks;
 
     @OneToMany(mappedBy = "article")
-    private List<CommentEntity> replies;
+    private List<CommentEntity> comments;
 
     @Column(columnDefinition = "BINARY(16)", name = "member_uuid",
             nullable = false, unique = true)
