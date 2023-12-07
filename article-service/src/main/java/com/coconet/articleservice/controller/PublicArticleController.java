@@ -1,12 +1,14 @@
 package com.coconet.articleservice.controller;
 
-import com.coconet.articleservice.dto.ArticleFilterDto;
 import com.coconet.articleservice.dto.ArticleResponseDto;
 import com.coconet.articleservice.service.ArticleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
