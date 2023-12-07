@@ -4,10 +4,7 @@ import com.coconet.memberservice.common.errorcode.ErrorCode;
 import com.coconet.memberservice.common.errorcode.ErrorCodeIfs;
 import com.coconet.memberservice.common.exception.ApiException;
 import com.coconet.memberservice.common.response.Response;
-import com.coconet.memberservice.dto.MemberIdDto;
-import com.coconet.memberservice.dto.MemberRegisterRequestDto;
-import com.coconet.memberservice.dto.MemberRequestDto;
-import com.coconet.memberservice.dto.MemberResponseDto;
+import com.coconet.memberservice.dto.*;
 import com.coconet.memberservice.entity.*;
 import com.coconet.memberservice.repository.*;
 import com.coconet.memberservice.security.auth.MemberPrincipal;
@@ -362,9 +359,23 @@ public class MemberServiceImpl implements MemberService {
     }
 
     public MemberIdDto getMemberId(UUID memberUUID) {
-        Long memberId = memberRepository.findByMemberUUID(memberUUID).orElseThrow(() -> new ApiException(ErrorCode.BAD_REQUEST, "No member found"))
-                .getId();
-        return new MemberIdDto(memberId);
+        MemberEntity member = memberRepository.findByMemberUUID(memberUUID)
+                .orElseThrow(() -> new ApiException(ErrorCode.BAD_REQUEST, "No member found"));
+        List<MemberRoleResponse> roles = member.getMemberRoles().stream()
+                .map(v -> MemberRoleResponse.builder()
+                        .name(v.getRole().getName())
+                        .build())
+                .toList();
+        List<MemberStackResponse> stacks = member.getMemberStacks().stream()
+                .map(v -> MemberStackResponse.builder()
+                        .name(v.getTechStack().getName())
+                        .category(v.getTechStack().getCategory())
+                        .image(v.getTechStack().getImage())
+                        .build())
+                .toList();
+        return new MemberIdDto(member.getEmail(), member.getName(), member.getMemberUUID(),
+                member.getProfileImage(), roles, stacks, member.getCreatedAt(), member.getUpdatedAt()
+        );
     }
 }
 
