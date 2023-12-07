@@ -9,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/article-service/open-api")
@@ -24,8 +25,9 @@ public class PublicArticleController {
     }
 
     @GetMapping("/articles")
-    public Page<ArticleResponseDto> getArticles(@RequestBody ArticleFilterDto condition, Pageable pageable){
-        return articleService.getArticles(condition, pageable);
+    public Page<ArticleResponseDto> getArticles(@RequestBody ArticleFilterDto condition,
+                                                Pageable pageable){
+        return articleService.getArticles(condition, null, pageable);
     }
 
     @GetMapping("/popular")

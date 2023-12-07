@@ -14,7 +14,7 @@ public interface ArticleRepositoryCustom {
 
     Page<ArticleFormDto> getArticles(
             List<RoleEntity> roles, List<TechStackEntity> stacks, String keyword,
-            String articleType, String meetingType, boolean bookmark, Pageable pageable
+            String articleType, String meetingType, boolean bookmark, UUID memberUUID, Pageable pageable
     );
     List<ArticleFormDto> getSuggestions(List<RoleEntity> roleEntities, List<TechStackEntity> stackEntities);
 

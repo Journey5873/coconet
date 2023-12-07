@@ -5,7 +5,9 @@ import com.coconet.articleservice.dto.ArticleFormDto;
 import com.coconet.articleservice.dto.ArticleRoleDto;
 import com.coconet.articleservice.dto.ArticleStackDto;
 import com.coconet.articleservice.dto.CommentResponseDto;
-import com.coconet.articleservice.entity.*;
+import com.coconet.articleservice.entity.ArticleEntity;
+import com.coconet.articleservice.entity.RoleEntity;
+import com.coconet.articleservice.entity.TechStackEntity;
 import com.coconet.articleservice.entity.enums.ArticleType;
 import com.coconet.articleservice.entity.enums.EstimatedDuration;
 import com.coconet.articleservice.entity.enums.MeetingType;
@@ -18,17 +20,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
 
-
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
-
 import static com.coconet.articleservice.entity.QArticleEntity.articleEntity;
 import static com.coconet.articleservice.entity.QArticleRoleEntity.articleRoleEntity;
 import static com.coconet.articleservice.entity.QArticleStackEntity.articleStackEntity;
-import static com.coconet.articleservice.entity.QRoleEntity.roleEntity;
-import static com.coconet.articleservice.entity.QTechStackEntity.techStackEntity;
+import static com.coconet.articleservice.entity.QBookmarkEntity.bookmarkEntity;
 import static org.springframework.util.ObjectUtils.isEmpty;
 
 
@@ -64,8 +63,9 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
 
     @Override
     public Page<ArticleFormDto> getArticles(List<RoleEntity> roles, List<TechStackEntity> stacks, String keyword,
-                                            String articleType, String meetingType, boolean bookmark, Pageable pageable) {
-        List<ArticleEntity> articles = queryFactory.selectFrom(articleEntity)
+                                            String articleType, String meetingType, boolean bookmark, UUID memberUUID, Pageable pageable) {
+
+        JPAQuery<ArticleEntity> query = queryFactory.selectFrom(articleEntity)
                 .distinct()
                 .leftJoin(articleEntity.articleRoles, articleRoleEntity)
                 .leftJoin(articleEntity.articleStacks, articleStackEntity)
@@ -77,21 +77,22 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
                         meetingTypeEquals(meetingType),
                         articleRoleContains(roles),
                         articleStackContains(stacks)
-                )
+                );
+
+        if (bookmark && !memberUUID.toString().isBlank()){
+            query.leftJoin(articleEntity.bookmarks, bookmarkEntity)
+                    .where(bookmarkEntity.memberUUID.eq(memberUUID));
+        }
+
+        List<ArticleEntity> articles = query
                 .orderBy(articleEntity.createdAt.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
 
-
-
-
         List<ArticleFormDto> contents = articles.stream()
                 .map(this::entityToFormDto)
                 .toList();
-
-
-
 
         JPAQuery<ArticleEntity> countQuery = queryFactory
                 .selectFrom(articleEntity)
@@ -113,9 +114,6 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
         return isEmpty(keyword) ? null : titleContains(keyword).or(contentContains(keyword));
     }
 
-
-
-
     private BooleanExpression titleContains(String title){
         return isEmpty(title) ? null : articleEntity.title.contains(title);
     }
@@ -125,32 +123,24 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
         return isEmpty(content) ? null : articleEntity.content.contains(content);
     }
 
-
     private BooleanExpression articleTypeEquals(String type) {
         return isEmpty(type) ? null : articleEntity.articleType.eq(type);
     }
-
 
     private BooleanExpression meetingTypeEquals(String type) {
         return isEmpty(type) ? null : articleEntity.meetingType.eq(type);
     }
 
-
     private BooleanExpression articleRoleContains(List<RoleEntity> roles){
         return isEmpty(roles) ? null : articleRoleEntity.role.in(roles);
     }
-
-
-
 
     private BooleanExpression articleStackContains(List<TechStackEntity> stacks){
         return isEmpty(stacks) ? null : articleStackEntity.techStack.in(stacks);
     }
 
-
     @Override
     public List<ArticleFormDto> getSuggestions(List<RoleEntity> memberRoles, List<TechStackEntity> memberStacks) {
-
 
         // A condition for filtering articles based on member's roles.
         BooleanExpression roleCondition = JPAExpressions.selectOne()
@@ -167,7 +157,6 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
                 .having(articleStackEntity.techStack.in(memberStacks).countDistinct().goe(2))
                 .exists();
 
-
         List<ArticleEntity> suggestions = queryFactory.selectFrom(articleEntity)
                 .leftJoin(articleEntity.articleRoles, articleRoleEntity)
                 .leftJoin(articleEntity.articleStacks, articleStackEntity)
@@ -180,12 +169,10 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
                 .distinct()
                 .fetch();
 
-
         return suggestions.stream()
                 .map(this::entityToFormDto)
                 .toList();
     }
-
 
     @Override
     public List<ArticleFormDto> getPopularPosts() {
@@ -203,14 +190,10 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
                 .distinct()
                 .fetch();
 
-
         return populars.stream()
                 .map(this::entityToFormDto)
                 .toList();
     }
-
-
-
 
     private ArticleFormDto entityToFormDto(ArticleEntity article){
         return ArticleFormDto.builder()

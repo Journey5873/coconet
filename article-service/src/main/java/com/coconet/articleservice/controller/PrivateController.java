@@ -4,6 +4,8 @@ import com.coconet.articleservice.common.response.Response;
 import com.coconet.articleservice.dto.*;
 import com.coconet.articleservice.service.ArticleService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,6 +18,14 @@ import java.util.UUID;
 public class PrivateController {
 
     private final ArticleService articleService;
+
+    @GetMapping("/articles")
+    public Page<ArticleResponseDto> getArticles(@RequestBody ArticleFilterDto condition,
+                                                @RequestHeader(value = "memberId") UUID memberUUID,
+                                                Pageable pageable
+    ){
+        return articleService.getArticles(condition, memberUUID, pageable);
+    }
 
     @GetMapping("/suggestions")
     public List<ArticleResponseDto> getSuggestions(@RequestHeader(value="memberId") UUID memberUUID){

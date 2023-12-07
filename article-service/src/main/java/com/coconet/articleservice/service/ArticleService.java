@@ -93,8 +93,10 @@ public class ArticleService {
         return formDtoToResponseDto(articleFormDto);
     }
 
-    public Page<ArticleResponseDto> getArticles(ArticleFilterDto condition, Pageable pageable){
-
+    public Page<ArticleResponseDto> getArticles(
+            ArticleFilterDto condition,
+            UUID memberUUID, Pageable pageable
+    ){
 
         List<RoleEntity> selectedRoles = roleRepository.getRoles(condition.getRoles());
         List<TechStackEntity> selectedStacks = techStackRepository.getTechStacks(condition.getStacks());
@@ -109,8 +111,7 @@ public class ArticleService {
         }
 
         Page<ArticleFormDto> filteredArticles = articleRepository.getArticles(selectedRoles, selectedStacks,
-                condition.getKeyword(), articleType, meetingType, condition.isBookmark(), pageable);
-
+                condition.getKeyword(), articleType, meetingType, condition.isBookmark(), memberUUID, pageable);
 
         return filteredArticles.map(this::formDtoToResponseDto);
     }
@@ -209,7 +210,6 @@ public class ArticleService {
     }
 
     public List<ArticleResponseDto> getSuggestions(UUID memberUUID){
-        Response<MemberResponse> memberInfo = memberClient.getMemberInfo(memberUUID);
         MemberResponse memberResponse = memberClient.getMemberInfo(memberUUID).getData();
 
         List<String> roles = memberResponse.getRoles().stream()
@@ -345,14 +345,14 @@ public class ArticleService {
 //        articleRepository.save(article);
 
         BookmarkEntity newBookmark = BookmarkEntity.builder()
-                .articleId(article.getId())
+                .article(article)
                 .memberUUID(memberUUID)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .build();
 
         BookmarkEntity responseBookmark = bookmarkRepository.save(newBookmark);
-        ArticleEntity responseArticle = articleRepository.findById(responseBookmark.getArticleId()).orElseThrow();
+        ArticleEntity responseArticle = articleRepository.findById(responseBookmark.getArticle().getId()).orElseThrow();
 
         return BookmarkResponse.builder()
                 .title(responseArticle.getTitle())
@@ -367,7 +367,7 @@ public class ArticleService {
         List<BookmarkResponse> response = new ArrayList<>();
 
         for (BookmarkEntity bookmarkEntity : bookmarkList) {
-            ArticleEntity article = articleRepository.findById(bookmarkEntity.getArticleId()).orElseThrow();
+            ArticleEntity article = articleRepository.findById(bookmarkEntity.getArticle().getId()).orElseThrow();
             response.add(BookmarkResponse.builder()
                     .articleUUID(article.getArticleUUID())
                     .title(article.getTitle())

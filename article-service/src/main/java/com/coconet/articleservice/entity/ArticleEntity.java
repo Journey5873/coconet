@@ -64,6 +64,9 @@ public class ArticleEntity extends BaseEntity{
     private List<ArticleStackEntity> articleStacks;
 
     @OneToMany(mappedBy = "article")
+    private List<BookmarkEntity> bookmarks;
+
+    @OneToMany(mappedBy = "article")
     private List<CommentEntity> comments;
 
     @Column(columnDefinition = "BINARY(16)", name = "member_uuid",

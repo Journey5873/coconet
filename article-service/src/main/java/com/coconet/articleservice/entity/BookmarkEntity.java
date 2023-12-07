@@ -25,6 +25,7 @@ public class BookmarkEntity extends BaseEntity{
     @Column(columnDefinition = "BINARY(16)", name = "member_UUID", nullable = false)
     private UUID memberUUID;
 
-    @Column(name = "article_id", nullable = false)
-    private Long articleId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "article_id", nullable = false)
+    private ArticleEntity article;
 }
