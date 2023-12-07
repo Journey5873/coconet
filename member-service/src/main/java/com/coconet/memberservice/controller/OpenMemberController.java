@@ -262,7 +262,7 @@ public class OpenMemberController {
         return "Hello world";
     }
 
-    @GetMapping("/get-member-id/{memberId}")
+    @GetMapping("/{memberId}")
     public Response<MemberIdDto> getMemberId(@PathVariable UUID memberId) {
         MemberIdDto memberIdDto = memberServiceImpl.getMemberId(memberId);
         return Response.OK(memberIdDto);
