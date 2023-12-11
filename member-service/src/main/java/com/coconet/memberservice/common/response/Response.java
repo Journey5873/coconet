@@ -24,13 +24,6 @@ public class Response<T> {
         return response;
     }
 
-    public static Response<Object> ERROR(Result result) {
-        Response<Object> response = new Response<>();
-//        response.resultCode 는 exHandeler에서 설정해줌
-        response.result = result;
-        return response;
-    }
-
     public static Response<Object> ERROR(ErrorCodeIfs errorCodeIfs) {
         Response<Object> response = new Response<>();
         response.result = Result.ERROR(errorCodeIfs);
@@ -43,6 +36,4 @@ public class Response<T> {
         response.result = Result.ERROR(errorCode, errorDescription);
         return response;
     }
-
-
 }

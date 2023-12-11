@@ -1,4 +1,4 @@
-package com.coconet.memberservice.security.oauth.model;
+package com.coconet.memberservice.security.oauthModel;
 
 public enum AuthProvider {
     google,

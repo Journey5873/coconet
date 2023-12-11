@@ -13,9 +13,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.stream.Collectors;
 
 @Configuration
 @Slf4j
@@ -44,7 +41,6 @@ public class EncryptionConfig {
     private String getJasyptEncryptorPassword() {
         try {
             ClassPathResource resource = new ClassPathResource("jasypt-encryptor-password.txt");
-            String resultContent = "";
             InputStream inputStream = resource.getInputStream();
             BufferedReader br = new BufferedReader(new InputStreamReader(inputStream, "utf-8"));
 
@@ -55,11 +51,10 @@ public class EncryptionConfig {
                 builder.append(line);
             }
 
-            resultContent = builder.toString();
-            return resultContent;
+            return builder.toString();
 
         } catch (IOException e) {
-            throw new RuntimeException("Not 123 found Jasypt password file.");
+            throw new RuntimeException("Not found Jasypt password file.");
         }
     }
 }

@@ -2,10 +2,10 @@ package com.coconet.memberservice.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.springframework.beans.factory.annotation.Value;
 
 @AllArgsConstructor
 @Getter
+// refactor : github <+> google <+> kakao merge
 public class AccessGoogleTokenRequest {
 
     private String client_id;

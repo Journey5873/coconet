@@ -2,7 +2,6 @@ package com.coconet.memberservice.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.springframework.beans.factory.annotation.Value;
 
 @AllArgsConstructor
 @Getter

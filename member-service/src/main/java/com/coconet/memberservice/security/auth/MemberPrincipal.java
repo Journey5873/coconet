@@ -1,20 +1,23 @@
 package com.coconet.memberservice.security.auth;
 
 import com.coconet.memberservice.entity.MemberEntity;
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 @Getter
 @Setter
 @NoArgsConstructor
+
+// Refactor: memberpricipal delete => 바로 엔티티 받으시게끔..
 public class MemberPrincipal implements UserDetails, OAuth2User{
 
     private MemberEntity member;

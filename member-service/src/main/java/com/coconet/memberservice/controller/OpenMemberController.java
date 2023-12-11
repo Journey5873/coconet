@@ -3,9 +3,9 @@ package com.coconet.memberservice.controller;
 import com.coconet.memberservice.common.response.Response;
 import com.coconet.memberservice.dto.AccessGoogleTokenRequest;
 import com.coconet.memberservice.dto.AccessTokenRequest;
-import com.coconet.memberservice.dto.MemberIdDto;
+import com.coconet.memberservice.dto.client.MemberClientDto;
 import com.coconet.memberservice.dto.MemberRegisterRequestDto;
-import com.coconet.memberservice.security.oauth.model.AuthProvider;
+import com.coconet.memberservice.security.oauthModel.AuthProvider;
 import com.coconet.memberservice.security.token.dto.TokenResponse;
 import com.coconet.memberservice.service.MemberServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
@@ -69,6 +69,7 @@ public class OpenMemberController {
             }
     )
     @GetMapping("/github")
+    // Refactor: Response
     public ResponseEntity<TokenResponse> githubCallback(@RequestParam("code") String code) {
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
@@ -123,6 +124,7 @@ public class OpenMemberController {
             }
     )
     @GetMapping("/google")
+    // Refactor: Response
     public ResponseEntity<TokenResponse> googleCallback(@RequestParam("code") String code) {
         HttpHeaders headers = new HttpHeaders();
         HttpEntity<AccessGoogleTokenRequest> entity = new HttpEntity<>(new AccessGoogleTokenRequest(googleClientId, googleSecret, code, "authorization_code"
@@ -166,6 +168,7 @@ public class OpenMemberController {
             }
     )
     @GetMapping("/kakao")
+    // Refactor: Response
     public ResponseEntity<TokenResponse> kakaoCallback(@RequestParam("code") String code){
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-type", "application/x-www-form-urlencoded;charset=utf-8");
@@ -207,6 +210,7 @@ public class OpenMemberController {
         }
 
         TokenResponse result = memberServiceImpl.login(email);
+
         if(result.getMemberId() != null)
             return ResponseEntity.status(HttpStatus.FOUND)
                     .location(URI.create("http://localhost:3000?memberId=" + result.getMemberId().toString()))
@@ -263,8 +267,8 @@ public class OpenMemberController {
     }
 
     @GetMapping("/{memberId}")
-    public Response<MemberIdDto> getMemberId(@PathVariable UUID memberId) {
-        MemberIdDto memberIdDto = memberServiceImpl.getMemberId(memberId);
-        return Response.OK(memberIdDto);
+    public Response<MemberClientDto> getMemberId(@PathVariable UUID memberId) {
+        MemberClientDto memberClientDto = memberServiceImpl.getMemberId(memberId);
+        return Response.OK(memberClientDto);
     }
 }

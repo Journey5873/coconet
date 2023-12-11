@@ -1,14 +1,15 @@
 package com.coconet.memberservice.service;
 
 import com.coconet.memberservice.common.errorcode.ErrorCode;
-import com.coconet.memberservice.common.errorcode.ErrorCodeIfs;
 import com.coconet.memberservice.common.exception.ApiException;
-import com.coconet.memberservice.common.response.Response;
 import com.coconet.memberservice.dto.*;
+import com.coconet.memberservice.dto.client.MemberClientDto;
+import com.coconet.memberservice.dto.client.MemberRoleResponse;
+import com.coconet.memberservice.dto.client.MemberStackResponse;
 import com.coconet.memberservice.entity.*;
 import com.coconet.memberservice.repository.*;
 import com.coconet.memberservice.security.auth.MemberPrincipal;
-import com.coconet.memberservice.security.oauth.model.AuthProvider;
+import com.coconet.memberservice.security.oauthModel.AuthProvider;
 import com.coconet.memberservice.security.token.TokenProvider;
 import com.coconet.memberservice.security.token.converter.TokenConverter;
 import com.coconet.memberservice.security.token.dto.TokenDto;
@@ -26,12 +27,12 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 @Transactional
+// Refactor: 유틸method 분리.
 public class MemberServiceImpl implements MemberService {
     private final MemberRepository memberRepository;
     private final MemberRoleRepository memberRoleRepository;
@@ -42,7 +43,13 @@ public class MemberServiceImpl implements MemberService {
     private final TokenConverter tokenConverter;
 
     public boolean existMember(String email) {
-        return memberRepository.findByEmail(email).isPresent();
+        List<MemberEntity> members = memberRepository.findAllByEmail(email);
+
+        for(MemberEntity member: members) {
+            if(member.getIsActivated() == 1) return true;
+        }
+
+        return false;
     }
     public UUID preRegister(AuthProvider provider, String email) {
         MemberEntity user = MemberEntity.builder()
@@ -81,7 +88,8 @@ public class MemberServiceImpl implements MemberService {
     public TokenResponse register(MemberRegisterRequestDto requestDto) {
         MemberEntity preRegisterMember = memberRepository.findByMemberUUID(requestDto.getMemberId())
                 .orElseThrow(() -> new ApiException(ErrorCode.BAD_REQUEST, "No member found"));
-
+        // Fix : list<> => 1이상시 에러 리
+        // Fix : status == 1 애들만 추출.
         if(memberRepository.findByName(requestDto.getName()).stream().findAny().isPresent()) {
             throw new ApiException(ErrorCode.BAD_REQUEST, "The name is already used");
         }
@@ -102,8 +110,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
     List<String> addRoles(MemberEntity member, List<String> roles) {
-
-        if (roles == null){
+        if (roles == null || roles.size() == 0){
             throw new ApiException(ErrorCode.BAD_REQUEST, "You need to choose at least one role.");
         }
 
@@ -124,7 +131,7 @@ public class MemberServiceImpl implements MemberService {
     }
     List<String> addStacks(MemberEntity member, List<String> stacks) {
 
-        if (stacks == null){
+        if (stacks == null || stacks.size() == 0){
             throw new ApiException(ErrorCode.BAD_REQUEST, "You need to choose at least one stack.");
         }
 
@@ -155,6 +162,11 @@ public class MemberServiceImpl implements MemberService {
 
         if( !member.getName().equals(requestDto.getName()) && memberRepository.findByName(requestDto.getName()).stream().findAny().isPresent()) {
             throw new ApiException(ErrorCode.BAD_REQUEST, "The name is already used");
+        }
+
+        if(requestDto.getRoles() == null || requestDto.getRoles().size() == 0 ||
+        requestDto.getStacks() == null || requestDto.getStacks().size() == 0) {
+            throw new ApiException(ErrorCode.BAD_REQUEST, "Member must have at least one stack and role");
         }
 
         member.changeName(requestDto.getName());
@@ -313,7 +325,7 @@ public class MemberServiceImpl implements MemberService {
         return new String(decoder.decode(chunks[1]));
     }
 
-    public MemberIdDto getMemberId(UUID memberUUID) {
+    public MemberClientDto getMemberId(UUID memberUUID) {
         MemberEntity member = memberRepository.findByMemberUUID(memberUUID)
                 .orElseThrow(() -> new ApiException(ErrorCode.BAD_REQUEST, "No member found"));
         List<MemberRoleResponse> roles = member.getMemberRoles().stream()
@@ -328,7 +340,7 @@ public class MemberServiceImpl implements MemberService {
                         .image(v.getTechStack().getImage())
                         .build())
                 .toList();
-        return new MemberIdDto(member.getEmail(), member.getName(), member.getMemberUUID(),
+        return new MemberClientDto(member.getEmail(), member.getName(), member.getMemberUUID(),
                 member.getProfileImage(), roles, stacks, member.getCreatedAt(), member.getUpdatedAt()
         );
     }

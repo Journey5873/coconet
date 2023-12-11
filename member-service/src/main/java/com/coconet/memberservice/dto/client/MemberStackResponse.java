@@ -1,4 +1,4 @@
-package com.coconet.memberservice.dto;
+package com.coconet.memberservice.dto.client;
 
 import lombok.Builder;
 import lombok.Getter;

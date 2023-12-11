@@ -1,4 +1,4 @@
-package com.coconet.memberservice.dto;
+package com.coconet.memberservice.dto.client;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,7 +9,7 @@ import java.util.UUID;
 
 @AllArgsConstructor
 @Getter
-public class MemberIdDto {
+public class MemberClientDto {
     private String email;
     private String name;
     private UUID memberUUID;

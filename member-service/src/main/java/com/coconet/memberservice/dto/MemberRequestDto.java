@@ -12,6 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 @Getter
 @Schema(name = "Member request", description = "Member request")
+// Refactor: customise validation
 public class MemberRequestDto {
     @Size(min = 2, max = 8)
     @NotNull
@@ -22,10 +23,12 @@ public class MemberRequestDto {
     @NotNull
     @Schema(example = "3")
     private int career;
-    @NotNull
+    @NotNull(message = "You must have at least one role")
+    @NotEmpty(message = "You must have at least one role")
     @Schema(type = "array", example = "[\"Backend\", \"Frontend\"]")
     private List<String> roles;
-    @NotNull
+    @NotNull(message = "You must have at least one stack")
+    @NotEmpty(message = "You must have at least one stack")
     @Schema(type = "array", example = "[\"Java\"]")
     private List<String> stacks;
     @Size(max = 50)

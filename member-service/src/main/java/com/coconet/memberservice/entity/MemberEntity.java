@@ -1,6 +1,6 @@
 package com.coconet.memberservice.entity;
 
-import com.coconet.memberservice.security.oauth.model.AuthProvider;
+import com.coconet.memberservice.security.oauthModel.AuthProvider;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;

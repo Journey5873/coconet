@@ -1,14 +1,12 @@
 package com.coconet.memberservice.controller;
 
 import com.coconet.memberservice.common.response.Response;
-import com.coconet.memberservice.dto.MemberIdDto;
 import com.coconet.memberservice.dto.MemberRequestDto;
 import com.coconet.memberservice.dto.MemberResponseDto;
 import com.coconet.memberservice.service.MemberServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.media.SchemaProperty;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -42,8 +40,8 @@ public class PrivateMemberController {
             }
     )
     @GetMapping("/my-profile")
-    public Response<MemberResponseDto> getUserInfo(@RequestHeader(value="memberId") UUID memberId) {
-        MemberResponseDto memberResponseDto = memberServiceImpl.getUserInfo(memberId);
+    public Response<MemberResponseDto> getUserInfo(@RequestHeader(value="memberUUID") UUID memberUUID) {
+        MemberResponseDto memberResponseDto = memberServiceImpl.getUserInfo(memberUUID);
         return Response.OK(memberResponseDto);
     }
 
@@ -64,8 +62,8 @@ public class PrivateMemberController {
             }
     )
     @PutMapping("/my-profile")
-    public Response<MemberResponseDto> updateUserInfo(@RequestPart("requestDto") MemberRequestDto requestDto, @RequestPart("imageFile") MultipartFile imageFile, @RequestHeader(value="memberId") UUID memberId) {
-        MemberResponseDto memberResponseDto = memberServiceImpl.updateUserInfo(memberId, requestDto, imageFile);
+    public Response<MemberResponseDto> updateUserInfo(@RequestPart("requestDto") MemberRequestDto requestDto, @RequestPart("imageFile") MultipartFile imageFile, @RequestHeader(value="memberUUID") UUID memberUUID) {
+        MemberResponseDto memberResponseDto = memberServiceImpl.updateUserInfo(memberUUID, requestDto, imageFile);
         return Response.OK(memberResponseDto);
     }
 
@@ -86,8 +84,8 @@ public class PrivateMemberController {
             }
     )
     @DeleteMapping("/delete")
-    public Response<MemberResponseDto> deleteUser(@RequestHeader(value="memberId") UUID memberId) {
-        MemberResponseDto memberResponseDto = memberServiceImpl.deleteUser(memberId);
+    public Response<MemberResponseDto> deleteUser(@RequestHeader(value="memberUUID") UUID memberUUID) {
+        MemberResponseDto memberResponseDto = memberServiceImpl.deleteUser(memberUUID);
         return Response.OK(memberResponseDto);
     }
 }

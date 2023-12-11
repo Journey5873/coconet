@@ -1,7 +1,5 @@
 package com.coconet.memberservice.security.config;
 
-import com.coconet.memberservice.security.jwthandler.JwtAccessDeniedHandler;
-import com.coconet.memberservice.security.token.TokenProvider;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -10,10 +8,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.SecurityFilterChain;
-
-import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -28,7 +23,7 @@ public class SecurityConfig {
         return http
                 .httpBasic(AbstractHttpConfigurer::disable) //rest api를 사용하므로 비활성화
                 .csrf(AbstractHttpConfigurer::disable)  // token을 사용하므로 비활성화
-                .cors(AbstractHttpConfigurer::disable)        //cors 추후 활성화 필요
+                .cors(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .logout(AbstractHttpConfigurer::disable)
                 .sessionManagement(configurer -> {
@@ -42,11 +37,6 @@ public class SecurityConfig {
                 .oauth2Login(oauth2Configurer -> oauth2Configurer
                         .authorizationEndpoint(cus -> cus.baseUri("/member-service/open-api/oauth2/authorize"))
                 )
-
-            .exceptionHandling(configurer -> {
-                configurer.accessDeniedHandler(new JwtAccessDeniedHandler(objectMapper));
-            })
             .build();
     }
 }
-

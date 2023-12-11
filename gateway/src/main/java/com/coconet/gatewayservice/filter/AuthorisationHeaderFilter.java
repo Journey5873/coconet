@@ -46,7 +46,7 @@ public class AuthorisationHeaderFilter extends AbstractGatewayFilterFactory<Auth
                     return onError(exchange, "Jwt is invalid", HttpStatus.BAD_REQUEST);
                 }
 
-                request.mutate().header("memberId", memberId);
+                request.mutate().header("memberUUID", memberId);
 
                 return chain.filter(exchange);
 
@@ -77,12 +77,11 @@ public class AuthorisationHeaderFilter extends AbstractGatewayFilterFactory<Auth
 
     public String validationTokenWithUserId(String authorizationToken) throws SignatureException, ExpiredJwtException, Exception{
         Map<String, Object> data = validationTokenWithThrow(authorizationToken);
-        Object userEmail = data.get("memberId");
+        Object userEmail = data.get("memberUUID");
         return userEmail.toString();
     }
 
-
-
+    // refactor: Display error message.
     private Mono<Void> onError(ServerWebExchange exchange, String errorMessage, HttpStatus httpStatus) {
         ServerHttpResponse response = exchange.getResponse();
         response.setStatusCode(httpStatus);

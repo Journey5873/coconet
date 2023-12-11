@@ -1,10 +1,7 @@
 package com.coconet.memberservice.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -14,6 +11,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Getter
 @Schema(name = "Member Register Request", description = "same request but with MemberId")
+// Refactor: customise validation
 public class MemberRegisterRequestDto {
 
     @NotNull
@@ -28,10 +26,12 @@ public class MemberRegisterRequestDto {
     @NotNull
     @Schema(example = "3")
     private int career;
-    @NotNull
+    @NotNull(message = "You must have at least one role")
+    @NotEmpty(message = "You must have at least one role")
     @Schema(type = "array", example = "[\"Backend\", \"Frontend\"]")
     private List<String> roles;
-    @NotNull
+    @NotNull(message = "You must have at least one stack")
+    @NotEmpty(message = "You must have at least one stack")
     @Schema(type = "array", example = "[\"Java\"]")
     private List<String> stacks;
     @Size(max = 50)

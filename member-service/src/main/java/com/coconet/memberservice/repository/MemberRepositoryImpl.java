@@ -2,14 +2,8 @@ package com.coconet.memberservice.repository;
 
 import com.coconet.memberservice.common.errorcode.ErrorCode;
 import com.coconet.memberservice.common.exception.ApiException;
-import com.coconet.memberservice.dto.MemberIdDto;
 import com.coconet.memberservice.dto.MemberInfoDto;
-import com.coconet.memberservice.dto.MemberRegisterRequestDto;
 import com.coconet.memberservice.entity.MemberEntity;
-import com.coconet.memberservice.entity.QMemberEntity;
-import com.coconet.memberservice.entity.QMemberRoleEntity;
-import com.coconet.memberservice.entity.QMemberStackEntity;
-import com.coconet.memberservice.security.token.dto.TokenResponse;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 
