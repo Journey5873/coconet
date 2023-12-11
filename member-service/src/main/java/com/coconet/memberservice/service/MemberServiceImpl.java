@@ -93,42 +93,67 @@ public class MemberServiceImpl implements MemberService {
                         requestDto.getNotionLink(),
                 requestDto.getBio());
 
-        List<String> returnRoles = addRoles(preRegisterMember, requestDto.getRoles());
-        List<String> returnStacks = addStacks(preRegisterMember, requestDto.getStacks());
+        addRoles(preRegisterMember, requestDto.getRoles());
+        addStacks(preRegisterMember, requestDto.getStacks());
+
         MemberEntity returnedMember = memberRepository.save(preRegisterMember);
 
         return login(returnedMember.getEmail());
     }
 
+    List<String> addRoles(MemberEntity member, List<String> roles) {
+
+        if (roles == null){
+            throw new ApiException(ErrorCode.BAD_REQUEST, "You need to choose at least one role.");
+        }
+
+        List<RoleEntity> inputRoles = roles.stream()
+                .map(roleName -> roleRepository.findByName(roleName)
+                        .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "No role found"))
+                )
+                .toList();
+
+        List<MemberRoleEntity> memberRoleEntities = inputRoles.stream()
+                .map(role -> new MemberRoleEntity(member, role))
+                .toList();
+
+        List<MemberRoleEntity> returnEntities = memberRoleRepository.saveAll(memberRoleEntities);
+        return returnEntities.stream()
+                .map(entity -> entity.getRole().getName())
+                .toList();
+    }
+    List<String> addStacks(MemberEntity member, List<String> stacks) {
+
+        if (stacks == null){
+            throw new ApiException(ErrorCode.BAD_REQUEST, "You need to choose at least one stack.");
+        }
+
+        List<TechStackEntity> inputStacks = stacks.stream()
+                .map(stackName -> techStackRepository.findByName(stackName)
+                        .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "No stack found"))
+                )
+                .toList();
+
+        List<MemberStackEntity> memberStackMembers = inputStacks.stream()
+                .map(stack -> new MemberStackEntity(member, stack))
+                .toList();
+
+        List<MemberStackEntity> returnEntites = memberStackRepository.saveAll(memberStackMembers);
+        return returnEntites.stream()
+                .map(entity -> entity.getTechStack().getName())
+                .toList();
+    }
+
     public MemberResponseDto getUserInfo(UUID memberId){
-        MemberEntity member = memberRepository.findByMemberUUID(memberId)
-                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "No member found"));
-
-        List<String> returnRoles = getAllRoles(member).stream()
-                .map(RoleEntity::getName)
-                .toList();
-        List<String> returnStacks = getAllStacks(member).stream()
-                .map(TechStackEntity::getName)
-                .toList();
-
-        return MemberResponseDto.builder()
-                .name(member.getName())
-                .career(Integer.parseInt(member.getCareer()))
-                .profileImg(member.getProfileImage())
-                .bio(member.getBio())
-                .roles(returnRoles)
-                .stacks(returnStacks)
-                .githubLink(member.getGithubLink())
-                .blogLink(member.getBlogLink())
-                .notionLink(member.getNotionLink())
-                .build();
+        MemberInfoDto userInfo = memberRepository.getUserInfo(memberId);
+        return DtoToResponseDto(userInfo);
     }
 
     public MemberResponseDto updateUserInfo(UUID memberId, MemberRequestDto requestDto, MultipartFile imageFile) {
         MemberEntity member = memberRepository.findByMemberUUID(memberId)
                                                     .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "No member found"));
 
-        if(memberRepository.findByName(requestDto.getName()).stream().findAny().isPresent()) {
+        if( !member.getName().equals(requestDto.getName()) && memberRepository.findByName(requestDto.getName()).stream().findAny().isPresent()) {
             throw new ApiException(ErrorCode.BAD_REQUEST, "The name is already used");
         }
 
@@ -140,22 +165,77 @@ public class MemberServiceImpl implements MemberService {
         member.changeNotionLink(requestDto.getNotionLink());
         member.changeBio(requestDto.getBio());
 
-        MemberEntity returnMember = memberRepository.save(member);
+        updateRoles(member, requestDto.getRoles());
+        updateStacks(member, requestDto.getStacks());
 
-        List<String> returnRoles = updateRoles(member, requestDto.getRoles());
-        List<String> returnStacks = updateStacks(member, requestDto.getStacks());
+        MemberInfoDto userInfo = memberRepository.getUserInfo(memberId);
 
-        return MemberResponseDto.builder()
-                .name(returnMember.getName())
-                .career(Integer.parseInt(returnMember.getCareer()))
-                .profileImg(returnMember.getProfileImage())
-                .roles(returnRoles)
-                .stacks(returnStacks)
-                .bio(returnMember.getBio())
-                .githubLink(returnMember.getGithubLink())
-                .blogLink(returnMember.getBlogLink())
-                .notionLink(returnMember.getNotionLink())
-                .build();
+        return DtoToResponseDto(userInfo);
+    }
+
+    public void updateRoles(MemberEntity member, List<String> requestedRoleNames) {
+
+        // Get current roles
+        List<MemberRoleEntity> currentRoles = memberRoleRepository.getAllRoles(member);
+
+        List<RoleEntity> requestedRoles = roleRepository.findByNameIn(requestedRoleNames);
+
+        List<String> currentRoleNames = currentRoles.stream()
+                .map(role -> role.getRole().getName())
+                .toList();
+
+        // Identify new roles to add
+        List<RoleEntity> rolesToAdd = requestedRoles.stream()
+                .filter(role -> !currentRoleNames.contains(role.getName()))
+                .toList();
+
+        // Identify roles to remove
+        List<MemberRoleEntity> rolesToRemove = currentRoles.stream()
+                .filter(role -> !requestedRoleNames.contains(role.getRole().getName()))
+                .toList();
+
+        // Create MemberRoleEntity to add
+        List<MemberRoleEntity> memberRoleEntities = rolesToAdd.stream()
+                .map(role -> new MemberRoleEntity(member, role))
+                .toList();
+
+        // save
+        memberRoleRepository.saveAll(memberRoleEntities);
+        // remove
+        memberRoleRepository.deleteAllInBatch(rolesToRemove);
+    }
+
+    void updateStacks(MemberEntity member, List<String> requestedStackNames){
+
+        // Get current stacks
+        List<MemberStackEntity> currentStacks = memberStackRepository.getAllStacks(member);
+
+        // Requested Stacks
+        List<TechStackEntity> requestedStacks = techStackRepository.findByNameIn(requestedStackNames);
+
+        List<String> currentStackNames = currentStacks.stream()
+                .map(stack -> stack.getTechStack().getName())
+                .toList();
+
+        // Identify new stacks to add
+        List<TechStackEntity> stacksToAdd = requestedStacks.stream()
+                .filter(stack -> !currentStackNames.contains(stack.getName()))
+                .toList();
+
+        // Identify stacks to remove
+        List<MemberStackEntity> stacksToRemove = currentStacks.stream()
+                .filter(stack -> !requestedStackNames.contains(stack.getTechStack().getName()))
+                .toList();
+
+        // Create MemberStackEntity to add
+        List<MemberStackEntity> memberStackEntities = stacksToAdd.stream()
+                .map(stack -> new MemberStackEntity(member, stack))
+                .toList();
+
+        // Save new stacks
+        memberStackRepository.saveAll(memberStackEntities);
+        // Delete stacks
+        memberStackRepository.deleteAllInBatch(stacksToRemove);
     }
 
     public MemberResponseDto deleteUser(UUID memberId) {
@@ -164,50 +244,31 @@ public class MemberServiceImpl implements MemberService {
 
         member.deleteUser();
 
-        MemberEntity returnMember = memberRepository.save(member);
+        List<MemberRoleEntity> rolesToRemove = memberRoleRepository.getAllRoles(member);
+        List<MemberStackEntity> stacksToRemove = memberStackRepository.getAllStacks(member);
 
-        List<String> returnRoles = getAllRoles(member).stream()
-                .map(RoleEntity::getName)
-                .toList();
-        List<String> returnStacks = getAllStacks(member).stream()
-                .map(TechStackEntity::getName)
-                .toList();
+        memberRoleRepository.deleteAllInBatch(rolesToRemove);
+        memberStackRepository.deleteAllInBatch(stacksToRemove);
 
         return MemberResponseDto.builder()
-                .name(returnMember.getName())
-                .career(Integer.parseInt(returnMember.getCareer()))
-                .profileImg(returnMember.getProfileImage())
-                .roles(returnRoles)
-                .bio(returnMember.getBio())
-                .stacks(returnStacks)
-                .githubLink(returnMember.getGithubLink())
-                .blogLink(returnMember.getBlogLink())
-                .notionLink(returnMember.getNotionLink())
+                .name(member.getName())
+                .career(Integer.parseInt(member.getCareer()))
+                .profileImg(member.getProfileImage())
+                .roles(
+                        rolesToRemove.stream()
+                        .map(role -> role.getRole().getName())
+                        .toList()
+                )
+                .bio(member.getBio())
+                .stacks(
+                        stacksToRemove.stream()
+                        .map(stack -> stack.getTechStack().getName())
+                        .toList()
+                )
+                .githubLink(member.getGithubLink())
+                .blogLink(member.getBlogLink())
+                .notionLink(member.getNotionLink())
                 .build();
-    }
-
-    public List<RoleEntity> getAllRoles(MemberEntity member) {
-        List<MemberRoleEntity> roleEntities = memberRoleRepository.findAllByMemberId(member.getId());
-
-        if(roleEntities.size() == 0) {
-            throw new ApiException(ErrorCode.BAD_REQUEST, "Member must at least have one role");
-        }
-
-        return roleEntities.stream()
-                .map(MemberRoleEntity::getRole)
-                .toList();
-    }
-
-    public List<TechStackEntity> getAllStacks(MemberEntity member){
-        List<MemberStackEntity> stackEntities = memberStackRepository.findByMemberId(member.getId());
-
-        if(stackEntities.size() == 0) {
-            throw new ApiException(ErrorCode.BAD_REQUEST, "Member must at least have one stack");
-        }
-
-        return stackEntities.stream()
-                .map(MemberStackEntity::getTechStack)
-                .toList();
     }
 
     public String updateProfilePic(MemberEntity member, MultipartFile image) {
@@ -233,112 +294,6 @@ public class MemberServiceImpl implements MemberService {
                 previousFile.delete();
             return path + "/basic_image.png";
         }
-    }
-
-    public List<String> updateRoles(MemberEntity member, List<String> roles) {
-
-        List<RoleEntity> inputRoles = roles.stream()
-                .map(roleName -> roleRepository.findByName(roleName)
-                        .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "No role found"))
-                )
-                .toList();
-
-        // Get current roles
-        List<RoleEntity> currentRoles = getAllRoles(member);
-
-        // Identify new roles to add
-        List<RoleEntity> rolesToAdd = inputRoles.stream()
-                .filter(role -> !currentRoles.contains(role))
-                .toList();
-
-        // Identify roles to remove
-        List<RoleEntity> rolesToRemove = currentRoles.stream()
-                .filter(role -> !inputRoles.contains(role))
-                .toList();
-
-        // Create MemberRoleEntity to add
-        List<MemberRoleEntity> memberRoleEntities = rolesToAdd.stream()
-                .map(role -> new MemberRoleEntity(member, role))
-                .toList();
-
-        // save
-        memberRoleRepository.saveAll(memberRoleEntities);
-
-        // remove
-        memberRoleRepository.deleteByMemberIdAndRoleIdIn(member.getId(), rolesToRemove.stream().map(role -> role.getId()).toList());
-
-        return memberRoleRepository.findByMemberId(member.getId()).stream()
-                .map(memberRoleEntity -> memberRoleEntity.getRole().getName())
-                .toList();
-    }
-
-    List<String> addRoles(MemberEntity member, List<String> roles) {
-        List<RoleEntity> inputRoles = roles.stream()
-                .map(roleName -> roleRepository.findByName(roleName)
-                        .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "No role found"))
-                )
-                .toList();
-
-        List<MemberRoleEntity> memberRoleEntities = inputRoles.stream()
-                .map(role -> new MemberRoleEntity(member, role))
-                .toList();
-
-        List<MemberRoleEntity> returnEntities = memberRoleRepository.saveAll(memberRoleEntities);
-        return returnEntities.stream()
-                .map(entity -> entity.getRole().getName())
-                .toList();
-    }
-    List<String> addStacks(MemberEntity member, List<String> stacks) {
-        List<TechStackEntity> inputStacks = stacks.stream()
-                .map(stackName -> techStackRepository.findByName(stackName)
-                        .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "No stack found"))
-                )
-                .toList();
-
-        List<MemberStackEntity> memberStackMembers = inputStacks.stream()
-                .map(stack -> new MemberStackEntity(member, stack))
-                .toList();
-
-        List<MemberStackEntity> returnEntites = memberStackRepository.saveAll(memberStackMembers);
-        return returnEntites.stream()
-                .map(entity -> entity.getTechStack().getName())
-                .toList();
-    }
-
-    List<String> updateStacks(MemberEntity member, List<String> stacks){
-        List<TechStackEntity> inputStacks = stacks.stream()
-                .map(stackName -> techStackRepository.findByName(stackName)
-                        .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "No stack found"))
-                )
-                .toList();
-
-        // Get current stacks
-        List<TechStackEntity> currentStacks = getAllStacks(member);
-
-        // Identify new stacks to add
-        List<TechStackEntity> stacksToAdd = inputStacks.stream()
-                .filter(stack -> !currentStacks.contains(stack))
-                .toList();
-
-        // Identify stacks to remove
-        List<TechStackEntity> stacksToRemove = currentStacks.stream()
-                .filter(stack -> !inputStacks.contains(stack))
-                .toList();
-
-        // Create MemberStackEntity to add
-        List<MemberStackEntity> memberStackEntities = stacksToAdd.stream()
-                .map(stack -> new MemberStackEntity(member, stack))
-                .toList();
-
-        // Save new stacks
-        memberStackRepository.saveAll(memberStackEntities);
-
-        // Delete stacks
-        memberStackRepository.deleteByMemberIdAndTechStackIdIn(member.getId(), stacksToRemove.stream().map(stack -> stack.getId()).toList());
-
-        return memberStackRepository.findByMemberId(member.getId()).stream()
-                .map(memberStackEntity -> memberStackEntity.getTechStack().getName())
-                .toList();
     }
 
     public String getJsonValue(String jsonStr, String key) {
@@ -376,6 +331,20 @@ public class MemberServiceImpl implements MemberService {
         return new MemberIdDto(member.getEmail(), member.getName(), member.getMemberUUID(),
                 member.getProfileImage(), roles, stacks, member.getCreatedAt(), member.getUpdatedAt()
         );
+    }
+
+    private MemberResponseDto DtoToResponseDto(MemberInfoDto member){
+        return MemberResponseDto.builder()
+                .name(member.getName())
+                .career(member.getCareer())
+                .profileImg(member.getProfileImg())
+                .bio(member.getBio())
+                .roles(member.getRoles())
+                .stacks(member.getStacks())
+                .githubLink(member.getGithubLink())
+                .blogLink(member.getBlogLink())
+                .notionLink(member.getNotionLink())
+                .build();
     }
 }
 

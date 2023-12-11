@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
-public interface MemberRoleRepository extends JpaRepository<MemberRoleEntity, Long> {
+public interface MemberRoleRepository extends JpaRepository<MemberRoleEntity, Long>, MemberRoleRepositoryCustom {
 
     List<MemberRoleEntity> findByMemberId(Long memberId);
 
