@@ -1,20 +1,19 @@
-import { Dispatch, SetStateAction, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import Loader from '../../components/atoms/Loader'
-import { Link, useNavigate, useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import styled from 'styled-components'
 import { ReactComponent as ArrowBack } from '../../components/assets/images/arrowBack.svg'
 import { ReactComponent as CoconutIcon } from '../../components/assets/images/coconutIcon.svg'
 import { FiEye } from 'react-icons/fi'
 import { FaRegThumbsUp } from 'react-icons/fa'
 import { imageMap, dateFormat } from '../../utils/utils'
-import posts from '../../data/dummy.json'
 import SupportButtonModal from '../../components/molecules/SupportButtonModal'
 import { DummyData, dummyData } from '../../data/data'
 
 const PostDetail = () => {
   const [isVisible, setIsVisible] = useState(false)
 
-  const { postId } = useParams()
+  const { id } = useParams()
   const [post, setPost] = useState<DummyData | null>(null)
   const navigate = useNavigate()
 
@@ -22,15 +21,22 @@ const PostDetail = () => {
     setIsVisible(!isVisible)
   }
 
+  const savePostIdToLocalStorage = (postId: string) => {
+    if (!postId) return
+
+    const postIds = JSON.parse(localStorage.getItem('postIds') || '[]')
+
+    if (!postIds.includes(postId)) {
+      postIds.push(postId)
+      localStorage.setItem('postIds', JSON.stringify(postIds))
+    }
+  }
+
   //게시글 GET
   useEffect(() => {
-    // fetch(`http://localhost:8000/article-service/open--api/article/${postId}`)
-    //   .then((res) => res.json())
-    //   .then((data) => {
-    //     setPost(data.post[0])
-    //   })
     setPost(dummyData)
-  }, [postId])
+    savePostIdToLocalStorage(id || '')
+  }, [id])
 
   if (!post) return null
 

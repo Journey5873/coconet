@@ -1,4 +1,5 @@
 import styled from 'styled-components'
+import newIcon from '../../assets/images/newIcon.svg'
 import { FaBookmark, FaRegBookmark, FaEye } from 'react-icons/fa'
 import { DummyData } from '../../../data/data'
 import { typeMap, imageMap, dateFormat } from '../../../utils/utils'
@@ -21,8 +22,21 @@ const Card = ({ item }: Props) => {
     meetingType,
     author,
   } = item
+
+  const isPostIdInLocalStorage = (articleId: number): boolean => {
+    const postIds = JSON.parse(localStorage.getItem('postIds') || '[]')
+
+    return postIds.includes(articleId.toString())
+  }
+
   return (
     <StyledCardContainer onClick={() => navigation(`/post/${articleId}`)}>
+      <StyledNewIconWrapper>
+        {!isPostIdInLocalStorage(articleId) && (
+          <img width={30} height={30} src={newIcon} />
+        )}
+      </StyledNewIconWrapper>
+
       <StyledRowBetweenWrapper>
         <StyledRowWrapper>
           <StyledArticleType>{typeMap.get(articleType)}</StyledArticleType>
@@ -62,7 +76,8 @@ const Card = ({ item }: Props) => {
 export default Card
 
 const StyledCardContainer = styled.div`
-  width: 100%;
+  position: relative;
+  width: 300px;
   padding: 16px 20px;
   border: 2px solid #8caf8e;
   border-radius: 30px;
@@ -73,6 +88,12 @@ const StyledCardContainer = styled.div`
   &:hover {
     scale: 1.05;
   }
+`
+
+const StyledNewIconWrapper = styled.div`
+  position: absolute;
+  top: -10px;
+  left: -5px;
 `
 
 const StyledCardExpired = styled.div`

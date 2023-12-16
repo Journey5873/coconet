@@ -1,7 +1,6 @@
 import React, { useState, useCallback, useMemo } from 'react'
-import { DummyData, dummyData } from '../data/data'
+import { dummyData, dummyData2 } from '../data/data'
 import { useSearchParams, useNavigate } from 'react-router-dom'
-import useFetch from '../hooks/useFetch'
 import MultiStackSelector from '../components/organisms/multiStackSelector/multiStackSelector'
 import CustomCarousel from '../components/organisms/Carousel'
 import styled from 'styled-components'
@@ -85,7 +84,7 @@ const Index = () => {
                 /> */}
               </div>
               <StyledItemWrpper>
-                {[dummyData].map((item) => (
+                {[dummyData, dummyData2].map((item) => (
                   <Card item={item} />
                 ))}
               </StyledItemWrpper>
@@ -115,4 +114,5 @@ const StyledItemWrpper = styled.div`
   margin-top: 1rem;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
+  gap: 2rem;
 `
