@@ -8,6 +8,7 @@ import { StyledFlexRowBox } from '../../common/common'
 import SingleSelect from '../../atoms/Select/SingleSelect'
 import { SelectValue } from '../../../pages/setting'
 import MultipleSelect from '../../atoms//Select/MultipleSelect'
+import apiService from '../../../utils/apiService'
 import axios from 'axios'
 
 export type RegisterDto = {
@@ -72,18 +73,8 @@ const AdditionalModal = ({ open, handleClose, memberId }: Props) => {
         notionLink: '',
       }
       console.log(registerInfo, 'registerInfo')
-      const response = await fetch(
-        'http://localhost:8000/member-service/open-api/register',
-        {
-          body: JSON.stringify(registerInfo),
-          method: 'post',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        },
-      )
-
-      const result = await response.json()
+      const response = await apiService.register(registerInfo)
+      const result = await response.data
 
       console.log(result)
     } catch (error) {

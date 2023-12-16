@@ -40,8 +40,31 @@ class ApiService {
     )
   }
 
+  /**
+   * 임시 로그인
+   * @returns
+   */
+  public async login() {
+    return {
+      token: '123',
+      name: 'hello1',
+      career: 10,
+      profileImg: 'member-service/src/main/resources/memberProfilePics/70.png',
+      bio: 'hello1-updated',
+      githubLink: 'github link',
+      blogLink: 'blog_link',
+      notionLink: 'notion_link',
+      roles: ['Backend', 'Frontend'],
+      stacks: ['Git', 'Java', 'Mysql'],
+    }
+  }
+
   public async register(regiserInfo: RegisterDto, config?: IConfig) {
-    return this.api.post('', regiserInfo, config)
+    return this.api.post(
+      '/member-service/open-api/register',
+      regiserInfo,
+      config,
+    )
   }
 
   public async getProfile(config?: IConfig) {
