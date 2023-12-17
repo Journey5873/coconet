@@ -7,6 +7,7 @@ import MyLikes from './pages/myLikes'
 import PostDetail from './pages/postDetail'
 import { dummyData } from './data/data'
 import PostNew from './pages/postNew'
+import ChattingPage from './pages/chat'
 
 export const routes = [
   {
@@ -37,6 +38,16 @@ export const routes = [
       {
         path: '/myLikes',
         element: <MyLikes />,
+        index: true,
+      },
+      {
+        path: '/myLikes',
+        element: <MyLikes />,
+        index: true,
+      },
+      {
+        path: '/chat',
+        element: <ChattingPage />,
         index: true,
       },
     ],

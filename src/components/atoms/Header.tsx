@@ -3,38 +3,15 @@ import Logo from '../assets/images/Logo.svg'
 import chatIcon from '../assets/images/chatIcon.svg'
 import notificationIcon from '../assets/images/notificationIcon.svg'
 import coconutIcon from '../assets/images/coconutIcon.svg'
-import LoginModal from './LoginModal'
 import { ReactComponent as Polygon } from '../assets/images/polygon.svg'
 import { Link, useNavigate } from 'react-router-dom'
 import { useState } from 'react'
+import LoginModal from './LoginModal'
 import { RxHamburgerMenu } from 'react-icons/rx'
-import { useAppDispatch, useAppSelector } from '../../store/RootReducer'
-import { setToken, removeToken } from '../../store/authSlice'
-import apiService from '../../utils/apiService'
 
 export default function Header() {
   const [openDropdownbar, setOpenDropdownbar] = useState(false)
   const [openLoginModal, setOpenLoginModal] = useState(false)
-  const navigator = useNavigate()
-  const dispatch = useAppDispatch()
-  const token = useAppSelector((state) => state.reducer.auth.token || '')
-
-  /**
-   * 임시 로그인
-   */
-  const handleLogin = async () => {
-    const userInfo = await apiService.login()
-    localStorage.setItem('userInfo', JSON.stringify(userInfo))
-    dispatch(setToken(userInfo))
-  }
-
-  /**
-   * 임시 로그인
-   */
-  const handleLogout = async () => {
-    localStorage.removeItem('userInfo')
-    dispatch(removeToken())
-  }
 
   const handleDropdownbar = () => {
     setOpenDropdownbar((openDropdownbar) => !openDropdownbar)
@@ -49,34 +26,26 @@ export default function Header() {
     { link: '/setting', content: '설정' },
     { link: '/', content: '로그아웃' },
   ]
+
+  const navigation = useNavigate()
   return (
     <StyledHeaderWrapper>
       <Link to="/">
         <StyledLogoImg src={Logo} />
       </Link>
       <StyledMenuWrapper>
-        {token && (
-          <StyledPostRegister onClick={handleLogout}>
-            임시 로그아웃
-          </StyledPostRegister>
-        )}
-        {!token && (
-          <StyledPostRegister onClick={handleLogin}>
-            임시 로그인
-          </StyledPostRegister>
-        )}
-        <StyledPostRegister
-          onClick={
-            token ? () => navigator('/post/new') : () => handleOpenLoginModal()
-          }
-        >
+        <StyledPostRegister onClick={() => handleOpenLoginModal()}>
           새 글 쓰기
         </StyledPostRegister>
         {openLoginModal && (
           <LoginModal handleLoginModalVisible={handleOpenLoginModal} />
         )}
         <StyledMenuImage>
-          <img src={chatIcon} alt="chatIcon" />
+          <img
+            src={chatIcon}
+            alt="chatIcon"
+            onClick={() => navigation(`/chat`)}
+          />
         </StyledMenuImage>
         <StyledMenuImage>
           <img src={notificationIcon} alt="notificationIcon" />
