@@ -137,7 +137,7 @@ const PostRegisterWrapper = styled.div`
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
-  padding: 60px 16px;
+  padding: 125px 16px;
   width: 100%;
   margin: 0 auto;
   color: #333;

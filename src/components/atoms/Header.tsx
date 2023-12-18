@@ -30,60 +30,74 @@ export default function Header() {
   const navigation = useNavigate()
   return (
     <StyledHeaderWrapper>
-      <Link to="/">
-        <StyledLogoImg src={Logo} />
-      </Link>
-      <StyledMenuWrapper>
-        <StyledPostRegister onClick={() => handleOpenLoginModal()}>
-          새 글 쓰기
-        </StyledPostRegister>
-        {openLoginModal && (
-          <LoginModal handleLoginModalVisible={handleOpenLoginModal} />
-        )}
-        <StyledMenuImage>
-          <img
-            src={chatIcon}
-            alt="chatIcon"
-            onClick={() => navigation(`/chat`)}
-          />
-        </StyledMenuImage>
-        <StyledMenuImage>
-          <img src={notificationIcon} alt="notificationIcon" />
-        </StyledMenuImage>
-        <StyledLoginUser onClick={() => handleDropdownbar()}>
-          <StyledLoginUserImg src={coconutIcon} alt="coconutIcon" />
-          <RxHamburgerMenu className="mobileMenu" size={23} />
-          <StyledPolygon />
-          <StyledDropdownBar openDropdownbar={openDropdownbar}>
-            <StyledDropDownBarMenu>
-              {dropdownbarItem.map((item, i) => {
-                return (
-                  <StyledDropDownBarMenuItem key={i}>
-                    <Link
-                      to={item.link}
-                      onClick={() => console.log('페이지 이동')}
-                    >
-                      {item.content}
-                    </Link>
-                  </StyledDropDownBarMenuItem>
-                )
-              })}
-            </StyledDropDownBarMenu>
-          </StyledDropdownBar>
-        </StyledLoginUser>
-      </StyledMenuWrapper>
+      <StyledHeaderInner>
+        <Link to="/">
+          <StyledLogoImg src={Logo} />
+        </Link>
+        <StyledMenuWrapper>
+          <StyledPostRegister onClick={() => handleOpenLoginModal()}>
+            새 글 쓰기
+          </StyledPostRegister>
+          {openLoginModal && (
+            <LoginModal handleLoginModalVisible={handleOpenLoginModal} />
+          )}
+          <StyledMenuImage>
+            <img
+              src={chatIcon}
+              alt="chatIcon"
+              onClick={() => navigation(`/chat`)}
+            />
+          </StyledMenuImage>
+          <StyledMenuImage>
+            <img src={notificationIcon} alt="notificationIcon" />
+          </StyledMenuImage>
+          <StyledLoginUser onClick={() => handleDropdownbar()}>
+            <StyledLoginUserImg src={coconutIcon} alt="coconutIcon" />
+            <RxHamburgerMenu className="mobileMenu" size={23} />
+            <StyledPolygon />
+            <StyledDropdownBar openDropdownbar={openDropdownbar}>
+              <StyledDropDownBarMenu>
+                {dropdownbarItem.map((item, i) => {
+                  return (
+                    <StyledDropDownBarMenuItem key={i}>
+                      <Link
+                        to={item.link}
+                        onClick={() => console.log('페이지 이동')}
+                      >
+                        {item.content}
+                      </Link>
+                    </StyledDropDownBarMenuItem>
+                  )
+                })}
+              </StyledDropDownBarMenu>
+            </StyledDropdownBar>
+          </StyledLoginUser>
+        </StyledMenuWrapper>
+      </StyledHeaderInner>
     </StyledHeaderWrapper>
   )
 }
 
-const StyledHeaderWrapper = styled.nav`
+const StyledHeaderWrapper = styled.div`
+  height: 85px;
+  background: rgb(255, 255, 255);
+  margin: auto;
+  border-bottom: 1px solid rgb(242, 243, 246);
+  z-index: 999;
+  width: 100%;
+  position: fixed;
+  box-sizing: border-box;
+`
+
+const StyledHeaderInner = styled.nav`
   margin: auto;
   max-width: 1180px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  height: 85px;
+  box-sizing: border-box;
   padding: 0 10px;
+  height: 100%;
 
   @media screen and (max-width: 575px) {
     position: relative;

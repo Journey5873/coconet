@@ -7,7 +7,7 @@ import SendMessage from '../../components/molecules/SendMessage'
 
 export default function ChattingPage() {
   return (
-    <div style={{ background: '#f2f3f6' }}>
+    <div style={{ background: '#f2f3f6', paddingTop: 85 }}>
       <StyledMainWrapper>
         <StyledChatListWrapper>
           <StyledMyProfile>코코넷</StyledMyProfile>

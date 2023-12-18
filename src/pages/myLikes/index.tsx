@@ -1,19 +1,19 @@
-import { useState } from 'react';
-import { BiSolidBookBookmark, BiSolidHeart } from 'react-icons/bi';
-import styled from 'styled-components';
+import { useState } from 'react'
+import { BiSolidBookBookmark, BiSolidHeart } from 'react-icons/bi'
+import styled from 'styled-components'
 
-import Tabs from '../../components/organisms/customTabs/Tabs';
+import Tabs from '../../components/organisms/customTabs/Tabs'
 
-import Tab from '../../components/organisms/customTabs/Tab';
+import Tab from '../../components/organisms/customTabs/Tab'
 
 const MyLikes = () => {
-  const [isActive, setIsActive] = useState<boolean>(false);
+  const [isActive, setIsActive] = useState<boolean>(false)
 
-  const [value, setValue] = useState('one');
+  const [value, setValue] = useState('one')
 
   const handleChange = (event: any, newValue: string) => {
-    setValue(newValue);
-  };
+    setValue(newValue)
+  }
 
   return (
     <StyledMyPostsPageWrapper>
@@ -57,13 +57,13 @@ const MyLikes = () => {
         </StyledMypostsMain>
       </StyledMypostsMyLikes>
     </StyledMyPostsPageWrapper>
-  );
-};
-export default MyLikes;
+  )
+}
+export default MyLikes
 
 const StyledMyPostsPageWrapper = styled.section`
-  padding-top: 5rem;
-`;
+  padding-top: 125px;
+`
 
 const StyledMypostsMyLikes = styled.div`
   width: 1300px;
@@ -76,9 +76,9 @@ const StyledMypostsMyLikes = styled.div`
   @media screen and (max-width: 1024px) {
     width: calc(100% - 2rem);
   }
-`;
+`
 
 const StyledMypostsMain = styled.main`
   display: flex;
   flex-direction: column;
-`;
+`

@@ -56,7 +56,7 @@ const Index = () => {
 
   return (
     <>
-      <div>
+      <div style={{ paddingTop: 125 }}>
         <StyledContents>
           <CustomCarousel />
           <Tabs

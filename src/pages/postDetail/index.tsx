@@ -203,7 +203,7 @@ const StyledPostDetail = styled.div`
   display: flex;
   flex-direction: column;
   margin: 0 auto;
-  padding: 1.5rem 1.5rem 5rem;
+  padding: 85px 24px;
 `
 
 const StyledPostHeader = styled.section`
