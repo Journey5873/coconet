@@ -358,5 +358,9 @@ public class MemberServiceImpl implements MemberService {
                 .notionLink(member.getNotionLink())
                 .build();
     }
+
+    public Boolean checkMemberNickName(String nickName) {
+        return memberRepository.findByName(nickName).isPresent();
+    }
 }
 
