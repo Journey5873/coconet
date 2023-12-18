@@ -1,8 +1,9 @@
 import styled from 'styled-components'
-import ChatContentRight from '../../components/molecules/ChatContentRight'
-import ChatContentLeft from '../../components/molecules/ChatContentLeft'
+import io from 'socket.io-client'
 import ChatList from '../../components/molecules/ChatLists'
 import ChatForm from '../../components/atoms/ChatForm'
+import ReceiveMessage from '../../components/molecules/ReceiveMessage'
+import SendMessage from '../../components/molecules/SendMessage'
 
 export default function ChattingPage() {
   return (
@@ -25,8 +26,8 @@ export default function ChattingPage() {
                 <StyledDayDivider>
                   <StyledDateText>2023년 8월12일</StyledDateText>
                 </StyledDayDivider>
-                <ChatContentLeft />
-                <ChatContentRight />
+                <ReceiveMessage />
+                <SendMessage />
               </StyledChatContent>
               <ChatForm />
             </StyledChattingBox>

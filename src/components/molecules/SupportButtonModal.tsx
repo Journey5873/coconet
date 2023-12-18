@@ -1,10 +1,10 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { SelectValue } from '../../pages/setting'
 import SingleSelect from '../atoms/Select/SingleSelect'
 import LinkList from '../organisms/LinkList'
 import CloseIcon from '@mui/icons-material/Close'
 import { ReactComponent as CoconetLogo } from '../assets/images/Logo.svg'
-import { ReactComponent as ArrowBack } from '../../components/assets/images/arrowBack.svg'
+import { IoIosArrowBack } from 'react-icons/io'
 import styled from 'styled-components'
 
 interface SupportButtonModalProps {
@@ -27,6 +27,14 @@ export default function SupportButtonModal({
   })
 
   const handleCarrer = (value: SelectValue) => setCarrer(value)
+
+  useEffect(() => {
+    if (isVisible) {
+      setNextModalVisible(true)
+    }
+  }, [isVisible])
+
+  console.log(isVisible)
   return (
     <>
       {isVisible && (
@@ -53,16 +61,24 @@ export default function SupportButtonModal({
                 </div>
               ) : (
                 <div>
-                  <ArrowBack onClick={handleNextModal} />
+                  <IoIosArrowBack
+                    size={30}
+                    style={{ cursor: 'pointer' }}
+                    onClick={handleNextModal}
+                  />
                   <div style={{ textAlign: 'center', marginTop: 20 }}>
-                    <h2>지원하실 포지션을 선택해주세요!</h2>
-                    <StyledSingleSelect
-                      label="포지션"
-                      onChange={handleCarrer}
-                      value={carrer}
-                      placeholder={'프론트엔드, 백엔드...'}
-                    />
-                    <LinkList onSubmit={() => console.log('submit')} />
+                    <StyledSelectPositionTitle>
+                      지원하실 포지션을 선택해주세요!
+                    </StyledSelectPositionTitle>
+                    <StyledSelectPositionWrapper>
+                      <SingleSelect
+                        label="직무"
+                        onChange={handleCarrer}
+                        value={carrer}
+                        placeholder={'프론트엔드, 백엔드...'}
+                      />
+                      <LinkList onSubmit={() => console.log('submit')} />
+                    </StyledSelectPositionWrapper>
                   </div>
                 </div>
               )}
@@ -154,10 +170,11 @@ const StyledSupportButton = styled.button`
   cursor: pointer;
 `
 
-const StyledSingleSelect = styled(SingleSelect)`
-  .singleSelect {
-    flex-direction: row;
-    margin: 0 auto;
-    margin-top: 60px;
-  }
+const StyledSelectPositionTitle = styled.h2`
+  margin-bottom: 32px;
+`
+
+const StyledSelectPositionWrapper = styled.div`
+  padding: 0 60px;
+  text-align: left;
 `

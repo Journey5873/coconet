@@ -1,16 +1,16 @@
 import styled from 'styled-components'
 
-export default function ChatContentLeft() {
+export default function ReceiveMessage({}) {
   return (
-    <StyledContentLeft>
+    <StyledReceiveMessage>
       <StyledProfileImageSmall src="/static/media/coconutIcon.4f2890a9909daf761c319c4573be165e.svg" />
       <StyledMessageBox>안녕하세요 프로젝트 참여하고 싶어요!</StyledMessageBox>
       <StyledMessageDate>오전 7:14</StyledMessageDate>
-    </StyledContentLeft>
+    </StyledReceiveMessage>
   )
 }
 
-const StyledContentLeft = styled.div`
+const StyledReceiveMessage = styled.div`
   display: flex;
   justify-content: start;
   padding: 4px;

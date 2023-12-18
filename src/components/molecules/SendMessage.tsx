@@ -1,17 +1,24 @@
 import styled from 'styled-components'
 
-export default function ChatContentRight() {
+export default function SendMessage() {
   return (
-    <StyledContentRight>
+    <StyledSendMessage>
       <StyledMessageDate>오전 10:39</StyledMessageDate>
       <StyledUserMessageWrapper>
         <StyledUserMessageBox>
           안녕하세요! 지원해주셔서 감사합니다!
         </StyledUserMessageBox>
       </StyledUserMessageWrapper>
-    </StyledContentRight>
+    </StyledSendMessage>
   )
 }
+
+const StyledSendMessage = styled.div`
+  margin-top: 20px;
+  display: flex;
+  justify-content: flex-end;
+  padding: 4px;
+`
 
 const StyledMessageDate = styled.div`
   display: flex;
@@ -22,12 +29,6 @@ const StyledMessageDate = styled.div`
   line-height: 150%;
   letter-spacing: -0.02em;
   color: #868b94;
-`
-const StyledContentRight = styled.div`
-  margin-top: 20px;
-  display: flex;
-  justify-content: flex-end;
-  padding: 4px;
 `
 
 const StyledUserMessageWrapper = styled.div`
