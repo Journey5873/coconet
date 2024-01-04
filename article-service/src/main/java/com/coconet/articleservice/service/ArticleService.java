@@ -1,7 +1,8 @@
 package com.coconet.articleservice.service;
 
 import com.coconet.articleservice.client.MemberClient;
-import com.coconet.articleservice.common.response.Response;
+import com.coconet.articleservice.common.errorcode.ErrorCode;
+import com.coconet.articleservice.common.exception.ApiException;
 import com.coconet.articleservice.dto.*;
 import com.coconet.articleservice.entity.*;
 import com.coconet.articleservice.entity.enums.ArticleType;
@@ -38,6 +39,10 @@ public class ArticleService {
     private final MemberClient memberClient;
 
     public ArticleResponseDto createArticle(ArticleCreateRequestDto request, UUID memberUUID) {
+        if (memberUUID == null){
+            throw new ApiException(ErrorCode.BAD_REQUEST, "You need to login in first.");
+        }
+
         ArticleEntity articleEntitye = ArticleEntity.builder()
                 .articleUUID(UUID.randomUUID())
                 .title(request.getTitle())
@@ -83,13 +88,14 @@ public class ArticleService {
         em.clear();
         em.flush();
 
-        articleEntityToArticleResponse(savedArticle);
-
-        return formDtoToResponseDto(articleRepository.getArticle(savedArticle.getArticleUUID()));
+        return articleEntityToArticleResponse(savedArticle, articleRoleEntityList, articleStackEntityList);
     }
 
     public ArticleResponseDto getArticle(String articleUUID){
         ArticleFormDto articleFormDto = articleRepository.getArticle(UUID.fromString(articleUUID));
+        if (articleFormDto == null){
+            throw new ApiException(ErrorCode.NOT_FOUND, "No Post found");
+        }
         return formDtoToResponseDto(articleFormDto);
     }
 
@@ -116,9 +122,18 @@ public class ArticleService {
         return filteredArticles.map(this::formDtoToResponseDto);
     }
 
+    public Page<ArticleResponseDto> getMyArticles(UUID memberUUID, Pageable pageable){
+        Page<ArticleFormDto> myArticles = articleRepository.getMyArticles(memberUUID, pageable);
+        return myArticles.map(this::formDtoToResponseDto);
+    }
+
     public ArticleResponseDto updateArticle(ArticleRequestDto articleRequestDto, UUID memberUUID){
         ArticleEntity article = articleRepository.findByArticleUUID(articleRequestDto.getArticleUUID())
-                .orElseThrow(() -> new IllegalArgumentException("Not found article"));
+                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "No Post found"));
+
+        if (!article.getMemberUUID().equals(memberUUID)){
+            new ApiException(ErrorCode.FORBIDDEN_ERROR, "Only author can edit this post.");
+        }
 
         article.changeTitle(articleRequestDto.getTitle());
         article.changeContent(articleRequestDto.getContent());
@@ -142,7 +157,7 @@ public class ArticleService {
                 .toList();
 
         List<ArticleStackEntity> currentArticleStacks = articleStackRepository.getArticleStacks(article);
-        List<TechStackEntity> requestedStacks = articleStackRepository.getArticleStacksNameIn(requestedStackNames);
+        List<TechStackEntity> requestedStacks = articleStackRepository.getArticleStackNamesIn(requestedStackNames);
 
         List<String> currentArticleStackNames = currentArticleStacks.stream()
                 .map(stack -> stack.getTechStack().getName())
@@ -185,7 +200,7 @@ public class ArticleService {
             }
             if (!roleExists){
                 RoleEntity role = roleRepository.findByName(req.getRoleName())
-                        .orElseThrow(() -> new IllegalArgumentException("Not found role"));
+                        .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "Not Found Role"));
                 rolesToAdd.add(
                         ArticleRoleEntity.builder()
                                 .article(article)
@@ -210,6 +225,10 @@ public class ArticleService {
     }
 
     public List<ArticleResponseDto> getSuggestions(UUID memberUUID){
+        if (memberUUID == null){
+            throw new ApiException(ErrorCode.BAD_REQUEST, "You need to login in first.");
+        }
+
         MemberResponse memberResponse = memberClient.getMemberInfo(memberUUID).getData();
 
         List<String> roles = memberResponse.getRoles().stream()
@@ -267,16 +286,19 @@ public class ArticleService {
     }
 
     public String deleteArticle(UUID articleUUID, UUID memberUUID){
-        ArticleEntity article = articleRepository.findByArticleUUID(articleUUID)
-                .orElseThrow();
-
-        // TODO refactoring about member-service connecting
-        if (article.getMemberUUID().equals(memberUUID)){
-            article.changeStatus((byte)0);
-            return "Successfully deleted";
-        }else{
-            return "Only the author can delete the article";
+        if (memberUUID == null){
+            throw new ApiException(ErrorCode.BAD_REQUEST, "You need to login in first.");
         }
+
+        ArticleEntity article = articleRepository.findByArticleUUID(articleUUID)
+                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "Not Found Post"));
+
+        if (!article.getMemberUUID().equals(memberUUID)){
+            throw new ApiException(ErrorCode.BAD_REQUEST, "Only the author can delete the post.");
+        }
+
+        article.changeStatus((byte)0);
+        return "Successfully deleted";
     }
 
     /**
@@ -288,7 +310,7 @@ public class ArticleService {
                 .content(request.getContent())
                 .memberUUID(memberUUID)
                 .article(articleRepository.findByArticleUUID(articleUUID)
-                        .orElseThrow(() -> new IllegalArgumentException("Not Found Article")))
+                        .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "Not Found Article")))
                 .build();
         commentRepository.save(commentEntity);
 
@@ -300,15 +322,16 @@ public class ArticleService {
                 .build();
     }
 
-    public CommentResponseDto updateComment(Long commnetId, CommentRequestDto commentDto, UUID memberUUID) {
+    public CommentResponseDto updateComment(CommentRequestDto commentDto, UUID memberUUID) {
 
-        CommentEntity commentEntity = commentRepository.findById(commnetId).orElseThrow(() -> new IllegalArgumentException("Not Found Comment"));
+        CommentEntity commentEntity = commentRepository.findById(commentDto.getCommentId())
+                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "Not Found Comment"));
 
         if(commentEntity.getMemberUUID().equals(memberUUID)){
             // update
             commentEntity.changeContent(commentDto.getContent());
         }else {
-            throw new IllegalArgumentException("Only commenter can update the Comment.");
+            throw new ApiException(ErrorCode.FORBIDDEN_ERROR, "Only commenter can update the Comment.");
         }
 
         return CommentResponseDto.builder()
@@ -321,28 +344,27 @@ public class ArticleService {
 
     public void deleteComment(Long commentId, UUID memberUUID) {
         CommentEntity commentEntity = commentRepository.findById(commentId)
-                .orElseThrow(() -> new IllegalArgumentException("Not Found Comment"));
+                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "Not Found Comment"));
 
         if(commentEntity.getMemberUUID().equals(memberUUID)){
             commentRepository.delete(commentEntity);
         }else {
-            throw new IllegalArgumentException("Only commenter can delete the Comment.");
+            throw new ApiException(ErrorCode.FORBIDDEN_ERROR, "Only commenter can delete the Comment.");
         }
     }
 
 
     public BookmarkResponse updateBookmark(UUID articleUUID, UUID memberUUID) {
-        ArticleEntity article = articleRepository.findByArticleUUID(articleUUID).orElseThrow();
+        ArticleEntity article = articleRepository.findByArticleUUID(articleUUID)
+                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "No Post Found"));
 
         Optional<BookmarkEntity> bookmark = bookmarkRepository.findByArticleIdAndMemberUUID(article.getId(), memberUUID);
 
         if(bookmark.isPresent()) {
             bookmarkRepository.delete(bookmark.get());
+            article.deleteBookmark();
             return null;
         }
-
-//        article.setBookmark();
-//        articleRepository.save(article);
 
         BookmarkEntity newBookmark = BookmarkEntity.builder()
                 .article(article)
@@ -351,14 +373,14 @@ public class ArticleService {
                 .updatedAt(LocalDateTime.now())
                 .build();
 
-        BookmarkEntity responseBookmark = bookmarkRepository.save(newBookmark);
-        ArticleEntity responseArticle = articleRepository.findById(responseBookmark.getArticle().getId()).orElseThrow();
+        bookmarkRepository.save(newBookmark);
+        article.setBookmark();
 
         return BookmarkResponse.builder()
-                .title(responseArticle.getTitle())
-                .articleUUID(responseArticle.getArticleUUID())
-                .plannedStartAt(responseArticle.getPlannedStartAt())
-                .expiredAt(responseArticle.getExpiredAt())
+                .title(article.getTitle())
+                .articleUUID(article.getArticleUUID())
+                .plannedStartAt(article.getPlannedStartAt())
+                .expiredAt(article.getExpiredAt())
                 .build();
     }
 
@@ -378,6 +400,7 @@ public class ArticleService {
 
         return response;
     }
+
 
     /**
      * UTILS
@@ -405,8 +428,8 @@ public class ArticleService {
                 .build();
     }
 
-    private static void articleEntityToArticleResponse(ArticleEntity savedArticle) {
-        ArticleResponseDto articleResponseDto = ArticleResponseDto.builder()
+    private ArticleResponseDto articleEntityToArticleResponse(ArticleEntity savedArticle, List<ArticleRoleEntity> articleRoleEntities, List<ArticleStackEntity> articleStackEntities) {
+        ArticleResponseDto.ArticleResponseDtoBuilder builder = ArticleResponseDto.builder()
                 .articleUUID(savedArticle.getArticleUUID())
                 .title(savedArticle.getTitle())
                 .content(savedArticle.getContent())
@@ -420,16 +443,23 @@ public class ArticleService {
                 .articleType(ArticleType.valueOf(savedArticle.getArticleType()))
                 .status(savedArticle.getStatus())
                 .meetingType(MeetingType.valueOf(savedArticle.getMeetingType()))
-                .memberUUID(savedArticle.getMemberUUID())
-                .roles(getArticleRoleDtos(savedArticle))
-                .stacks(getArticleStackDtos(savedArticle))
-                .comments(getCommentResponseDtos(savedArticle))
-                .build();
+                .memberUUID(savedArticle.getMemberUUID());
+
+        if (!articleRoleEntities.isEmpty()){
+            builder.roles(getArticleRoleDtos(articleRoleEntities));
+        }
+
+        if (!articleRoleEntities.isEmpty()){
+            builder.stacks(getArticleStackDtos(articleStackEntities));
+        }
+
+        return builder.build();
     }
 
 
-    private static List<ArticleRoleDto> getArticleRoleDtos(ArticleEntity savedArticle) {
-        List<ArticleRoleDto> articleRoleDtoList = savedArticle.getArticleRoles().stream()
+
+    private static List<ArticleRoleDto> getArticleRoleDtos(List<ArticleRoleEntity> articleRoleEntities) {
+        List<ArticleRoleDto> articleRoleDtoList = articleRoleEntities.stream()
                 .map(articleRoleEntity -> {
                     return ArticleRoleDto.builder()
                             .roleName(articleRoleEntity.getRole().getName())
@@ -439,8 +469,8 @@ public class ArticleService {
         return articleRoleDtoList;
     }
 
-    private static List<ArticleStackDto> getArticleStackDtos(ArticleEntity savedArticle) {
-        List<ArticleStackDto> articleStackDtoList = savedArticle.getArticleStacks().stream()
+    private static List<ArticleStackDto> getArticleStackDtos(List<ArticleStackEntity> articleStackEntities) {
+        List<ArticleStackDto> articleStackDtoList = articleStackEntities.stream()
                 .map(articleStackEntity -> {
                     return ArticleStackDto.builder()
                             .stackName(articleStackEntity.getTechStack().getName())

@@ -9,5 +9,5 @@ import java.util.List;
 public interface ArticleStackRepositoryCustom {
     List<ArticleStackEntity> getArticleStacks(ArticleEntity article);
 
-    List<TechStackEntity> getArticleStacksNameIn(List<String> stacksNames);
+    List<TechStackEntity> getArticleStackNamesIn(List<String> stacksNames);
 }

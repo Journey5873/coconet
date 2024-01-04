@@ -26,7 +26,7 @@ public class ArticleStackRepositoryImpl implements ArticleStackRepositoryCustom{
     }
 
     @Override
-    public List<TechStackEntity> getArticleStacksNameIn(List<String> stacksNames) {
+    public List<TechStackEntity> getArticleStackNamesIn(List<String> stacksNames) {
         return queryFactory.select(techStackEntity)
                 .from(techStackEntity)
                 .where(techStackEntity.name.in(stacksNames))

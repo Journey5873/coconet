@@ -11,6 +11,7 @@ import com.coconet.articleservice.entity.TechStackEntity;
 import com.coconet.articleservice.entity.enums.ArticleType;
 import com.coconet.articleservice.entity.enums.EstimatedDuration;
 import com.coconet.articleservice.entity.enums.MeetingType;
+import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQuery;
@@ -39,25 +40,17 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
     @Override
     public ArticleFormDto getArticle(UUID articleUUID) {
 
-
         queryFactory.update(articleEntity)
                 .set(articleEntity.viewCount, articleEntity.viewCount.add(1))
                 .where(articleEntity.articleUUID.eq(articleUUID))
                 .execute();
 
-
         ArticleEntity article = queryFactory
                 .selectFrom(articleEntity)
-                .leftJoin(articleEntity.articleRoles, articleRoleEntity)
-                .leftJoin(articleEntity.articleStacks, articleStackEntity)
                 .where(articleEntity.articleUUID.eq(articleUUID))
                 .fetchOne();
 
-
-        if (article != null) {
-            return entityToFormDto(article);
-        }
-        return null;
+        return entityToFormDto(article);
     }
 
 
@@ -65,19 +58,19 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
     public Page<ArticleFormDto> getArticles(List<RoleEntity> roles, List<TechStackEntity> stacks, String keyword,
                                             String articleType, String meetingType, boolean bookmark, UUID memberUUID, Pageable pageable) {
 
+        Predicate condition = articleEntity.status.eq((byte) 1)
+                .and(articleEntity.expiredAt.after(LocalDateTime.now()))
+                .and(containsKeyword(keyword))
+                .and(articleTypeEquals(articleType))
+                .and(meetingTypeEquals(meetingType))
+                .and(articleRoleContains(roles))
+                .and(articleStackContains(stacks));
+
         JPAQuery<ArticleEntity> query = queryFactory.selectFrom(articleEntity)
                 .distinct()
                 .leftJoin(articleEntity.articleRoles, articleRoleEntity)
                 .leftJoin(articleEntity.articleStacks, articleStackEntity)
-                .where(
-                        articleEntity.status.eq((byte) 1)
-                                .and(articleEntity.expiredAt.after(LocalDateTime.now())),
-                        containsKeyword(keyword),
-                        articleTypeEquals(articleType),
-                        meetingTypeEquals(meetingType),
-                        articleRoleContains(roles),
-                        articleStackContains(stacks)
-                );
+                .where(condition);
 
         if (bookmark && !memberUUID.toString().isBlank()){
             query.leftJoin(articleEntity.bookmarks, bookmarkEntity)
@@ -85,7 +78,7 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
         }
 
         List<ArticleEntity> articles = query
-                .orderBy(articleEntity.createdAt.desc())
+                .orderBy(articleEntity.updatedAt.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
@@ -96,19 +89,33 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
 
         JPAQuery<ArticleEntity> countQuery = queryFactory
                 .selectFrom(articleEntity)
-                .where(
-                        articleEntity.status.eq((byte) 1)
-                                .and(articleEntity.expiredAt.after(LocalDateTime.now())),
-                        containsKeyword(keyword),
-                        articleTypeEquals(articleType),
-                        meetingTypeEquals(meetingType),
-                        articleRoleContains(roles),
-                        articleStackContains(stacks)
-                );
+                .where(condition);
 
         return PageableExecutionUtils.getPage(contents, pageable, () -> countQuery.fetchCount());
     }
 
+    @Override
+    public Page<ArticleFormDto> getMyArticles(UUID memberUUID, Pageable pageable) {
+
+        List<ArticleEntity> articles = queryFactory.selectFrom(articleEntity)
+                .distinct()
+                .leftJoin(articleEntity.articleRoles, articleRoleEntity)
+                .leftJoin(articleEntity.articleStacks, articleStackEntity)
+                .where(articleEntity.memberUUID.eq(memberUUID).and(articleEntity.status.eq((byte)1)))
+                .orderBy(articleEntity.updatedAt.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        List<ArticleFormDto> contents = articles.stream()
+                .map(this::entityToFormDto)
+                .toList();
+
+        JPAQuery<ArticleEntity> countQuery = queryFactory
+                .selectFrom(articleEntity);
+
+        return PageableExecutionUtils.getPage(contents, pageable, () -> countQuery.fetchCount());
+    }
 
     private BooleanExpression containsKeyword(String keyword){
         return isEmpty(keyword) ? null : titleContains(keyword).or(contentContains(keyword));
@@ -145,16 +152,21 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
         // A condition for filtering articles based on member's roles.
         BooleanExpression roleCondition = JPAExpressions.selectOne()
                 .from(articleRoleEntity)
-                .where(articleRoleEntity.article.eq(articleEntity))
-                .groupBy(articleEntity)
-                .having(articleRoleEntity.role.in(memberRoles).countDistinct().goe(1))
+                .where(articleRoleEntity.article.eq(articleEntity)
+                        .and(articleRoleEntity.role.id.in(
+                                memberRoles.stream().map(RoleEntity::getId).toList())))
+                .groupBy(articleRoleEntity.article)
+                .having(articleRoleEntity.role.count().goe(1))
                 .exists();
-        // A condition for filtering articles based on member's tacks.
+
+        // A condition for filtering articles based on member's stacks.
         BooleanExpression stackCondition = JPAExpressions.selectOne()
                 .from(articleStackEntity)
-                .where(articleStackEntity.article.eq(articleEntity))
-                .groupBy(articleEntity)
-                .having(articleStackEntity.techStack.in(memberStacks).countDistinct().goe(2))
+                .where(articleStackEntity.article.eq(articleEntity)
+                        .and(articleStackEntity.techStack.id.in(
+                                memberStacks.stream().map(TechStackEntity::getId).toList())))
+                .groupBy(articleStackEntity.article)
+                .having(articleStackEntity.techStack.count().goe(2))
                 .exists();
 
         List<ArticleEntity> suggestions = queryFactory.selectFrom(articleEntity)
@@ -165,9 +177,10 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
                                 .and(articleEntity.expiredAt.after(LocalDateTime.now()))
                                 .and(roleCondition.or(stackCondition))
                 )
-                .orderBy(articleEntity.createdAt.desc())
+                .orderBy(articleEntity.updatedAt.desc())
                 .distinct()
                 .fetch();
+
 
         return suggestions.stream()
                 .map(this::entityToFormDto)

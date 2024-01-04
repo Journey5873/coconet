@@ -12,5 +12,4 @@ public interface ArticleRepository extends JpaRepository<ArticleEntity, Long>, A
     Optional<ArticleEntity> findByArticleUUID(UUID uuid);
 
     Optional<ArticleEntity> findById(Long id);
-
 }
