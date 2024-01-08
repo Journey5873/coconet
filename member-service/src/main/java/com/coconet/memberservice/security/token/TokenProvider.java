@@ -34,7 +34,7 @@ public class TokenProvider {
     public TokenDto issueAccessToken(MemberPrincipal principal) {
 
         Map<String, Object> data = new HashMap<>();
-        data.put("memberId", principal.getMember().getMemberUUID());
+        data.put("memberUUID", principal.getMember().getMemberUUID());
         data.put("email", principal.getMember().getEmail());
 
         LocalDateTime expiredLocalDateTime = LocalDateTime.now().plusHours(accessTokenPlusHour);
@@ -63,7 +63,7 @@ public class TokenProvider {
     public TokenDto issueRefreshToken(MemberPrincipal principal) {
 
         Map<String, Object> data = new HashMap<>();
-        data.put("memberId", principal.getMember().getId());
+        data.put("memberUUID", principal.getMember().getId());
         data.put("email", principal.getMember().getEmail());
 
         LocalDateTime expiredLocalDateTime = LocalDateTime.now().plusHours(refreshTokenPlusHour);
