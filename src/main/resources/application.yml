@@ -1,0 +1,53 @@
+server:
+  port: ${GATEWAY_PORT}
+spring:
+  application:
+    name: gateway
+  cloud:
+    gateway:
+      routes:
+        - id: Member-service
+          uri: lb://MEMBER-SERVICE
+          predicates:
+            - Path=${MEMBER_OPEN_URL}
+        - id: Member-service
+          uri: lb://MEMBER-SERVICE
+          predicates:
+            - Path = ${MEMBER_PRIVATE_URL}
+          filters:
+            - AuthorisationHeaderFilter
+        - id: Article-service
+          uri: lb://ARTICLE-SERVICE
+          predicates:
+            - Path=${ARTICLE_OPEN_URL}
+        - id: Article-service
+          uri: lb://ARTICLE-SERVICE
+          predicates:
+            - Path=${ARTICLE_PRIVATE_URL}
+          filters:
+            - AuthorisationHeaderFilter
+      default-filters:
+        - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin
+      globalcors:
+        corsConfigurations:
+          ?[/**]?:
+            allowedOrigins: ${CLIENT_URL}
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+            allowedHeaders: ?*?
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_URL}
+
+#Token
+token:
+  secret:
+    key: ${TOKEN_KEY}
+  access-token:
+    plus-hour: ${ACCESS_TOKEN_TIME}
+  refresh-token:
+    plus-hour: ${REFRESH_TOKEN_TIME}
