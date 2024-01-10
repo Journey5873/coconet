@@ -1,0 +1,73 @@
+server:
+  port: ${MEMBER_SERVICE_PORT}
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${GOOGLE_CLIENT_ID}
+            client-secret: ${GOOGLE_SECRET_ID}
+            redirect-uri: ${GOOGLE_REDIRECT_URI}
+            scope:
+              - email
+              - profile
+          github:
+            client-id: ${GITHUB_CLIENT_ID}
+            client-secret: ${GITHUB_SECRET_ID}
+            redirect-uri: ${GITHUB_REDIRECT_URI}
+          kakao:
+            client-id: ${KAKAO_CLIENT_ID}
+            client-secret: ${KAKAO_SRCRET_ID}
+            redirect-uri: ${KAKAO_REDIRECT_URI}
+            authorization-grant-type: authorization_code
+        provider:
+          kakao:
+            authorization-uri: ${KAKAO_AUTH_URI}
+            token-uri: https://kauth.kakao.com/oauth/token
+  datasource:
+    url: ${DB_URI}
+    username: ${DB_ID}
+    password: ${DB_PW}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+    properties:
+      hibernate:
+        default_batch_fetch_size: 1000
+  application:
+    name: Member-service
+
+#Token
+token:
+  secret:
+    key: ${TOKEN_KEY}
+  access-token:
+    plus-hour: ${TOKEN_ACCESS_HOUR}
+  refresh-token:
+    plus-hour: ${TOKEN_REFRESH_HOUR}
+# Swagger
+springdoc:
+  packages-to-scan: com.coconet.memberservice.controller
+  default-consumes-media-type: application/json;charset=UTF-8
+  default-produces-media-type: application/json;charset=UTF-8
+  swagger-ui:
+    path: /swagger
+    disable-swagger-default-url: true
+    display-request-duration: true
+# Eureka
+eureka:
+  client:
+    service-url:
+      default_zone: ${EUREKA_URI}
+  instance:
+    hostname: localhost
+# Jasypt
+jasypt:
+  encryptor:
+    bean: jasyptStringEncryptor
+    algorithm: ${ENCRYPTOR_ALGORITHM}
+    pool-size: ${ENCRYPTOR_POOL_SIZE}
+    string-output-type: base64
+    key-obtention-iterations: ${ENCRYPTOR_ITERATIONS}
