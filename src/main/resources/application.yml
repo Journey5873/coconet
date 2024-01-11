@@ -13,7 +13,7 @@ spring:
         - id: Member-service
           uri: lb://MEMBER-SERVICE
           predicates:
-            - Path = ${MEMBER_PRIVATE_URL}
+            - Path=${MEMBER_PRIVATE_URL}
           filters:
             - AuthorisationHeaderFilter
         - id: Article-service
