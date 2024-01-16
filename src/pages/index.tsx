@@ -10,11 +10,14 @@ import Card from '../components/molecules/card/card'
 import FilterSelect from '../components/atoms/Select/filterSelect'
 import AdditionalModal from '../components/organisms/modal/additionalModal'
 
+import { useUserService } from '../api/services/userService'
+
 const Index = () => {
   const navigate = useNavigate()
   const [selected, setSelected] = useState<string[]>([])
   const [selectedPosition, setSelectedPosition] = useState<string>('')
   const [searchParams] = useSearchParams()
+  const userService = useUserService()
 
   const memberId = useMemo(
     () => searchParams.get('memberId') || '',
