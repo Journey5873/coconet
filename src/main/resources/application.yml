@@ -16,5 +16,3 @@ eureka:
   client:
     service-url:
       default_zone: ${EUREKA_URI}
-  instance:
-    hostname: localhost
