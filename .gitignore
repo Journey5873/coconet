@@ -39,7 +39,3 @@ out/
 ### gradle
 /.gradle
 /.idea
-/gradle
-/gradlew
-/gradlew.bat
-
