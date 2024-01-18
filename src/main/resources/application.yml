@@ -55,7 +55,7 @@ token:
 jasypt:
   encryptor:
     bean: jasyptStringEncryptor
-    algorithm: ${algorithm}
+    algorithm: ${ALGORITHM}
     pool-size: 2
     string-output-type: base64
     key-obtention-iterations: 10000
