@@ -6,6 +6,8 @@ import com.coconet.memberservice.dto.client.MemberRoleResponse;
 import com.coconet.memberservice.dto.client.MemberStackResponse;
 import com.coconet.memberservice.security.token.dto.TokenResponse;
 import com.coconet.memberservice.service.MemberServiceImpl;
+import com.coconet.memberservice.service.MemberTokenService;
+import com.coconet.memberservice.service.MemberValidationService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -44,6 +46,10 @@ class OpenMemberControllerTest {
     ObjectMapper objectMapper;
     @MockBean
     MemberServiceImpl memberService;
+    @MockBean
+    MemberValidationService memberValidationService;
+    @MockBean
+    MemberTokenService memberTokenService;
 
     @Test
     @WithMockUser
