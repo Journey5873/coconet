@@ -1,5 +1,6 @@
 package com.coconet.memberservice.dto;
 
+import com.coconet.memberservice.entity.MemberEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -30,4 +31,21 @@ public class MemberResponseDto {
     private List<String> roles;
     @Schema(type = "array", example = "[\"Java\"]")
     private List<String> stacks;
+
+    public static MemberResponseDto toEntity(MemberEntity member) {
+        return MemberResponseDto.builder()
+                .name(member.getName())
+                .career(Integer.parseInt(member.getCareer()))
+                .profileImg(member.getProfileImage())
+                .roles(member.getMemberRoles().stream().map(role -> role.getRole().getName())
+                        .toList())
+                .bio(member.getBio())
+                .stacks(member.getMemberStacks().stream().map(stack -> stack.getTechStack().getName())
+                        .toList())
+                .githubLink(member.getGithubLink())
+                .blogLink(member.getBlogLink())
+                .notionLink(member.getNotionLink())
+                .build();
+    }
+
 }

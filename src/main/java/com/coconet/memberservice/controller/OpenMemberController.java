@@ -1,17 +1,14 @@
 package com.coconet.memberservice.controller;
 
-import com.coconet.memberservice.common.errorcode.ErrorCode;
-import com.coconet.memberservice.common.errorcode.ErrorCodeIfs;
-import com.coconet.memberservice.common.exception.ApiException;
 import com.coconet.memberservice.common.response.Response;
-import com.coconet.memberservice.dto.AccessGoogleTokenRequest;
 import com.coconet.memberservice.dto.AccessTokenRequest;
-import com.coconet.memberservice.dto.MemberRequestDto;
-import com.coconet.memberservice.dto.client.MemberClientDto;
 import com.coconet.memberservice.dto.MemberRegisterRequestDto;
+import com.coconet.memberservice.dto.client.MemberClientDto;
 import com.coconet.memberservice.security.oauthModel.AuthProvider;
 import com.coconet.memberservice.security.token.dto.TokenResponse;
 import com.coconet.memberservice.service.MemberServiceImpl;
+import com.coconet.memberservice.service.MemberTokenService;
+import com.coconet.memberservice.service.MemberValidationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -23,15 +20,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.net.URI;
 import java.util.Collections;
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -41,6 +35,8 @@ import java.util.UUID;
 public class OpenMemberController {
 
     private final MemberServiceImpl memberServiceImpl;
+    private final MemberValidationService memberValidationService;
+    private final MemberTokenService memberTokenService;
     private final RestTemplate restTemplate;
 
     @Value("${spring.security.oauth2.client.registration.google.client-id}")
@@ -78,18 +74,22 @@ public class OpenMemberController {
             }
     )
     @GetMapping("/github")
-    // Refactor: Response
     public ResponseEntity<TokenResponse> githubCallback(@RequestParam("code") String code) {
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-        HttpEntity<AccessTokenRequest> entity = new HttpEntity<>(new AccessTokenRequest(githubClientId, githubSecret, code), headers);
+        AccessTokenRequest accessTokenRequest = AccessTokenRequest.builder()
+                .client_id(githubClientId)
+                .client_secret(githubSecret)
+                .code(code)
+                .build();
+        HttpEntity<AccessTokenRequest> entity = new HttpEntity<>(accessTokenRequest, headers);
 
         String response = restTemplate.postForObject(
                 "https://github.com/login/oauth/access_token",
                 entity,
                 String.class);
 
-        String accessToken = memberServiceImpl.getJsonValue(response, "access_token");
+        String accessToken = memberTokenService.getJsonValue(response, "access_token");
 
         headers.setBearerAuth(accessToken);
         HttpEntity<Void> request = new HttpEntity<>(headers);
@@ -101,10 +101,10 @@ public class OpenMemberController {
                 String.class
         ).getBody();
 
-        String email = memberServiceImpl.getJsonValue(response, "login");
+        String email = memberTokenService.getJsonValue(response, "login");
         email += "@github.com";
 
-        if(!memberServiceImpl.existMember(email)) {
+        if(!memberValidationService.existMember(email)) {
             UUID memberId = memberServiceImpl.preRegister(AuthProvider.github, email);
             return ResponseEntity.status(HttpStatus.FOUND)
                     .location(URI.create("http://localhost:3000?memberId=" + memberId.toString()))
@@ -133,22 +133,27 @@ public class OpenMemberController {
             }
     )
     @GetMapping("/google")
-    // Refactor: Response
     public ResponseEntity<TokenResponse> googleCallback(@RequestParam("code") String code) {
         HttpHeaders headers = new HttpHeaders();
-        HttpEntity<AccessGoogleTokenRequest> entity = new HttpEntity<>(new AccessGoogleTokenRequest(googleClientId, googleSecret, code, "authorization_code"
-                , googleRedirectUri), headers);
+        AccessTokenRequest accessTokenRequest = AccessTokenRequest.builder()
+                .client_id(googleClientId)
+                .client_secret(googleSecret)
+                .code(code)
+                .grant_type("authorization_code")
+                .redirect_uri(googleRedirectUri)
+                .build();
+        HttpEntity<AccessTokenRequest> entity = new HttpEntity<>(accessTokenRequest, headers);
 
         String response = restTemplate.postForObject(
                 "https://oauth2.googleapis.com/token",
                 entity,
                 String.class);
 
-        String accessToken = memberServiceImpl.getJsonValue(response, "id_token");
-        String payload = memberServiceImpl.decodeJwt(accessToken);
-        String email = memberServiceImpl.getJsonValue(payload, "email");
+        String accessToken = memberTokenService.getJsonValue(response, "id_token");
+        String payload = memberTokenService.decodeJwt(accessToken);
+        String email = memberTokenService.getJsonValue(payload, "email");
 
-        if(!memberServiceImpl.existMember(email)) {
+        if(!memberValidationService.existMember(email)) {
             UUID memberId = memberServiceImpl.preRegister(AuthProvider.google, email);
             return ResponseEntity.status(HttpStatus.FOUND)
                     .location(URI.create("http://localhost:3000?memberId=" + memberId.toString()))
@@ -177,7 +182,6 @@ public class OpenMemberController {
             }
     )
     @GetMapping("/kakao")
-    // Refactor: Response
     public ResponseEntity<TokenResponse> kakaoCallback(@RequestParam("code") String code){
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-type", "application/x-www-form-urlencoded;charset=utf-8");
@@ -196,7 +200,7 @@ public class OpenMemberController {
                 kakaoRequest,
                 String.class);
 
-        String accessToken = memberServiceImpl.getJsonValue(response, "access_token");
+        String accessToken = memberTokenService.getJsonValue(response, "access_token");
 
         headers.add("Authorization", "Bearer " + accessToken);
         kakaoRequest = new HttpEntity<>(headers);
@@ -207,11 +211,11 @@ public class OpenMemberController {
                 kakaoRequest,
                 String.class).getBody();
 
-        String accountInfo = memberServiceImpl.getJsonValue(response, "kakao_account");
-        String email = memberServiceImpl.getJsonValue(accountInfo, "email");
+        String accountInfo = memberTokenService.getJsonValue(response, "kakao_account");
+        String email = memberTokenService.getJsonValue(accountInfo, "email");
         email = email.substring(0, email.indexOf("@")) + "@kakao.com";
 
-        if(!memberServiceImpl.existMember(email)) {
+        if(!memberValidationService.existMember(email)) {
             UUID memberId = memberServiceImpl.preRegister(AuthProvider.kakao, email);
             return ResponseEntity.status(HttpStatus.FOUND)
                     .location(URI.create("http://localhost:3000?memberId=" + memberId.toString()))

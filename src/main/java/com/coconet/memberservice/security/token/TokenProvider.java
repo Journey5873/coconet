@@ -1,8 +1,9 @@
 package com.coconet.memberservice.security.token;
 
-import com.coconet.memberservice.security.auth.MemberPrincipal;
+import com.coconet.memberservice.dto.MemberTokenDto;
 import com.coconet.memberservice.security.token.dto.TokenDto;
-import io.jsonwebtoken.*;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,7 +18,6 @@ import java.util.Map;
 
 @Component
 @Slf4j
-// Refactor: delete memberPricinpal, add entity instead
 public class TokenProvider {
 
     @Value("${token.secret.key}")
@@ -29,13 +29,11 @@ public class TokenProvider {
     @Value("${token.refresh-token.plus-hour}")
     private Long refreshTokenPlusHour;
 
-
-
-    public TokenDto issueAccessToken(MemberPrincipal principal) {
+    public TokenDto issueAccessToken(MemberTokenDto memberTokenDto) {
 
         Map<String, Object> data = new HashMap<>();
-        data.put("memberUUID", principal.getMember().getMemberUUID());
-        data.put("email", principal.getMember().getEmail());
+        data.put("memberUUID", memberTokenDto.getMemberUUID());
+        data.put("email", memberTokenDto.getEmail());
 
         LocalDateTime expiredLocalDateTime = LocalDateTime.now().plusHours(accessTokenPlusHour);
 
@@ -60,11 +58,11 @@ public class TokenProvider {
 
     }
 
-    public TokenDto issueRefreshToken(MemberPrincipal principal) {
+    public TokenDto issueRefreshToken(MemberTokenDto memberTokenDto) {
 
         Map<String, Object> data = new HashMap<>();
-        data.put("memberUUID", principal.getMember().getId());
-        data.put("email", principal.getMember().getEmail());
+        data.put("memberUUID", memberTokenDto.getMemberUUID());
+        data.put("email", memberTokenDto.getEmail());
 
         LocalDateTime expiredLocalDateTime = LocalDateTime.now().plusHours(refreshTokenPlusHour);
 

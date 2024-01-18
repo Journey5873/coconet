@@ -2,12 +2,11 @@ package com.coconet.memberservice.repository;
 
 import com.coconet.memberservice.common.errorcode.ErrorCode;
 import com.coconet.memberservice.common.exception.ApiException;
-import com.coconet.memberservice.dto.MemberInfoDto;
+import com.coconet.memberservice.dto.MemberResponseDto;
 import com.coconet.memberservice.entity.MemberEntity;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 
-import javax.swing.text.html.Option;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -21,7 +20,7 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom{
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public MemberInfoDto getUserInfo(UUID memberUUID) {
+    public MemberResponseDto getUserInfo(UUID memberUUID) {
 
         MemberEntity member = queryFactory.selectFrom(memberEntity)
                 .leftJoin(memberEntity.memberRoles, memberRoleEntity)
@@ -33,7 +32,7 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom{
             throw new ApiException(ErrorCode.NOT_FOUND, "No member found");
         }
 
-        return entityToDto(member);
+        return MemberResponseDto.toEntity(member);
     }
 
     @Override
@@ -59,24 +58,5 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom{
             return Optional.empty();
 
         return Optional.of(member);
-    }
-
-
-    private MemberInfoDto entityToDto(MemberEntity member){
-        return MemberInfoDto.builder()
-                .name(member.getName())
-                .career(Integer.parseInt(member.getCareer()))
-                .profileImg(member.getProfileImage())
-                .bio(member.getBio())
-                .githubLink(member.getGithubLink())
-                .blogLink(member.getBlogLink())
-                .notionLink(member.getNotionLink())
-                .roles(member.getMemberRoles().stream()
-                        .map(memberRole -> memberRole.getRole().getName())
-                        .toList())
-                .stacks(member.getMemberStacks().stream()
-                        .map(memberStack -> memberStack.getTechStack().getName())
-                        .toList())
-                .build();
     }
 }

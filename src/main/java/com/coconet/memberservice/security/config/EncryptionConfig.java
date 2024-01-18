@@ -15,7 +15,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 
 @Configuration
-@Slf4j
 @EnableEncryptableProperties
 public class EncryptionConfig {
     @Value("${jasypt.encryptor.algorithm}")
@@ -40,7 +39,7 @@ public class EncryptionConfig {
 
     private String getJasyptEncryptorPassword() {
         try {
-            ClassPathResource resource = new ClassPathResource("jasypt-encryptor-password.txt");
+            ClassPathResource resource = new ClassPathResource("member-encryptor-password.txt");
             InputStream inputStream = resource.getInputStream();
             BufferedReader br = new BufferedReader(new InputStreamReader(inputStream, "utf-8"));
 
