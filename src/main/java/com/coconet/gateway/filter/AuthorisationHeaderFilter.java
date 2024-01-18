@@ -2,6 +2,7 @@ package com.coconet.gateway.filter;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
 import org.springframework.core.env.Environment;
@@ -21,11 +22,12 @@ import java.util.Map;
 
 @Component
 public class AuthorisationHeaderFilter extends AbstractGatewayFilterFactory<AuthorisationHeaderFilter.Config> {
-    private Environment env;
 
-    public AuthorisationHeaderFilter(Environment env) {
+    @Value("${token.secret.key}")
+    private String secretKey;
+
+    public AuthorisationHeaderFilter() {
         super(Config.class);
-        this.env = env;
     }
 
     @Override
@@ -65,7 +67,7 @@ public class AuthorisationHeaderFilter extends AbstractGatewayFilterFactory<Auth
     }
 
     private Map<String, Object> validationTokenWithThrow(String jwt) throws SignatureException, ExpiredJwtException, Exception {
-        SecretKey key = Keys.hmacShaKeyFor(env.getProperty("token.secret.key").getBytes());
+        SecretKey key = Keys.hmacShaKeyFor(secretKey.getBytes());
 
         JwtParser parser = Jwts.parserBuilder()
                 .setSigningKey(key)
@@ -81,16 +83,13 @@ public class AuthorisationHeaderFilter extends AbstractGatewayFilterFactory<Auth
         return userEmail.toString();
     }
 
-    // refactor: Display error message.
     private Mono<Void> onError(ServerWebExchange exchange, String errorMessage, HttpStatus httpStatus) {
         ServerHttpResponse response = exchange.getResponse();
         response.setStatusCode(httpStatus);
 
         byte[] bytes = errorMessage.getBytes();
         DataBuffer buffer = response.bufferFactory().wrap(bytes);
-        response.writeWith(Flux.just(buffer));
-
-        return response.setComplete();
+        return exchange.getResponse().writeWith(Flux.just(buffer));
     }
 
     public static class Config {
