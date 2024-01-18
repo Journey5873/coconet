@@ -16,3 +16,12 @@ eureka:
   client:
     service-url:
       default_zone: ${EUREKA_URI}
+
+# Jasypt
+jasypt:
+  encryptor:
+    bean: jasyptStringEncryptor
+    algorithm: ${ALGORITHM}
+    pool-size: 2
+    string-output-type: base64
+    key-obtention-iterations: 10000

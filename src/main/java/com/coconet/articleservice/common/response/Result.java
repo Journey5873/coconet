@@ -30,14 +30,6 @@ public class Result {
                 .build();
     }
 
-    public static Result FOUND() {
-        return Result.builder()
-                .resultCode(ErrorCode.FOUND.getErrorCode())
-                .resultMessage(ErrorCode.FOUND.getErrorDescription())
-                .resultDescription("FOUND")
-                .build();
-    }
-
     public static Result ERROR(ErrorCodeIfs errorCodeIfs){
         return Result.builder()
                 .resultCode(errorCodeIfs.getErrorCode())

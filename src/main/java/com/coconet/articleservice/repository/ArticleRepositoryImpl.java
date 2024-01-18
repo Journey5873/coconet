@@ -1,10 +1,7 @@
 package com.coconet.articleservice.repository;
 
 
-import com.coconet.articleservice.dto.ArticleFormDto;
-import com.coconet.articleservice.dto.ArticleRoleDto;
-import com.coconet.articleservice.dto.ArticleStackDto;
-import com.coconet.articleservice.dto.CommentResponseDto;
+import com.coconet.articleservice.dto.*;
 import com.coconet.articleservice.entity.ArticleEntity;
 import com.coconet.articleservice.entity.RoleEntity;
 import com.coconet.articleservice.entity.TechStackEntity;
@@ -38,7 +35,7 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
 
 
     @Override
-    public ArticleFormDto getArticle(UUID articleUUID) {
+    public ArticleResponseDto getArticle(UUID articleUUID) {
 
         queryFactory.update(articleEntity)
                 .set(articleEntity.viewCount, articleEntity.viewCount.add(1))
@@ -50,12 +47,14 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
                 .where(articleEntity.articleUUID.eq(articleUUID))
                 .fetchOne();
 
-        return entityToFormDto(article);
+        return ArticleResponseDto.builder()
+                .articleEntity(article)
+                .build();
     }
 
 
     @Override
-    public Page<ArticleFormDto> getArticles(List<RoleEntity> roles, List<TechStackEntity> stacks, String keyword,
+    public Page<ArticleResponseDto> getArticles(List<RoleEntity> roles, List<TechStackEntity> stacks, String keyword,
                                             String articleType, String meetingType, boolean bookmark, UUID memberUUID, Pageable pageable) {
 
         Predicate condition = articleEntity.status.eq((byte) 1)
@@ -83,8 +82,10 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
                 .limit(pageable.getPageSize())
                 .fetch();
 
-        List<ArticleFormDto> contents = articles.stream()
-                .map(this::entityToFormDto)
+        List<ArticleResponseDto> contents = articles.stream()
+                .map(a -> ArticleResponseDto.builder()
+                        .articleEntity(a)
+                        .build())
                 .toList();
 
         JPAQuery<ArticleEntity> countQuery = queryFactory
@@ -95,7 +96,7 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
     }
 
     @Override
-    public Page<ArticleFormDto> getMyArticles(UUID memberUUID, Pageable pageable) {
+    public Page<ArticleResponseDto> getMyArticles(UUID memberUUID, Pageable pageable) {
 
         List<ArticleEntity> articles = queryFactory.selectFrom(articleEntity)
                 .distinct()
@@ -107,8 +108,10 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
                 .limit(pageable.getPageSize())
                 .fetch();
 
-        List<ArticleFormDto> contents = articles.stream()
-                .map(this::entityToFormDto)
+        List<ArticleResponseDto> contents = articles.stream()
+                .map(a -> ArticleResponseDto.builder()
+                        .articleEntity(a)
+                        .build())
                 .toList();
 
         JPAQuery<ArticleEntity> countQuery = queryFactory
@@ -147,7 +150,7 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
     }
 
     @Override
-    public List<ArticleFormDto> getSuggestions(List<RoleEntity> memberRoles, List<TechStackEntity> memberStacks) {
+    public List<ArticleResponseDto> getSuggestions(List<RoleEntity> memberRoles, List<TechStackEntity> memberStacks) {
 
         // A condition for filtering articles based on member's roles.
         BooleanExpression roleCondition = JPAExpressions.selectOne()
@@ -183,12 +186,14 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
 
 
         return suggestions.stream()
-                .map(this::entityToFormDto)
+                .map(a -> ArticleResponseDto.builder()
+                        .articleEntity(a)
+                        .build())
                 .toList();
     }
 
     @Override
-    public List<ArticleFormDto> getPopularPosts() {
+    public List<ArticleResponseDto> getPopularPosts() {
         List<ArticleEntity> populars = queryFactory.selectFrom(articleEntity)
                 .where(
                         articleEntity.status.eq((byte) 1)
@@ -204,43 +209,10 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
                 .fetch();
 
         return populars.stream()
-                .map(this::entityToFormDto)
+                .map(a -> ArticleResponseDto.builder()
+                        .articleEntity(a)
+                        .build())
                 .toList();
-    }
-
-    private ArticleFormDto entityToFormDto(ArticleEntity article){
-        return ArticleFormDto.builder()
-                .articleUUID(article.getArticleUUID())
-                .title(article.getTitle())
-                .content(article.getContent())
-                .createdAt(article.getCreatedAt())
-                .updateAt(article.getUpdatedAt())
-                .plannedStartAt(article.getPlannedStartAt())
-                .expiredAt(article.getExpiredAt())
-                .estimatedDuration(EstimatedDuration.valueOf(article.getEstimatedDuration()))
-                .viewCount(article.getViewCount())
-                .bookmarkCount(article.getBookmarkCount())
-                .articleType(ArticleType.valueOf(article.getArticleType()))
-                .status(article.getStatus())
-                .meetingType(MeetingType.valueOf(article.getMeetingType()))
-                .memberUUID(article.getMemberUUID())
-                .roles(article.getArticleRoles().stream()
-                        .map(role -> new ArticleRoleDto(role.getRole().getName(),
-                                role.getParticipant()))
-                        .toList())
-                .stacks(article.getArticleStacks().stream()
-                        .map(stack -> new ArticleStackDto(stack.getTechStack().getName(),
-                                stack.getTechStack().getCategory(),
-                                stack.getTechStack().getImage()))
-                        .toList())
-                .comments(article.getComments().stream()
-                        .map(comment -> new CommentResponseDto(comment.getCommentId(),
-                                comment.getContent(),
-                                comment.getCreatedAt(),
-                                comment.getUpdatedAt(),
-                                comment.getMemberUUID()))
-                        .toList())
-                .build();
     }
 }
 

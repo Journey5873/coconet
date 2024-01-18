@@ -56,31 +56,6 @@ public class PrivateArticleController {
         return Response.OK(articleService.deleteArticle(articleUUID, memberUUID));
     }
 
-    // comment
-    @PostMapping("/comment/{articleUUID}")
-    public Response<CommentResponseDto> writeComment(
-            @PathVariable UUID articleUUID,
-            @RequestBody CommentRequestDto commentRequestDto,
-            @RequestHeader(value="memberUUID") UUID memberUUID
-    ){
-        CommentResponseDto response = articleService.writeComment(commentRequestDto, articleUUID, memberUUID);
-        return Response.OK(response);
-    }
-
-    @PutMapping("/comment")
-    public Response<CommentResponseDto> updateComment(
-            @RequestBody CommentRequestDto commentRequestDto,
-            @RequestHeader(value="memberUUID") UUID memberUUID
-    ){
-        CommentResponseDto response = articleService.updateComment(commentRequestDto, memberUUID);
-        return Response.OK(response);
-    }
-
-    @DeleteMapping("/comment")
-    public void deleteComment(@RequestBody CommentRequestDto commentRequestDto, @RequestHeader(value="memberUUID") UUID memberUUID) {
-        articleService.deleteComment(commentRequestDto.getCommentId(), memberUUID);
-    }
-
     @PostMapping("/bookmark/{articleUUID}")
     public Response<BookmarkResponse> updateBookmark(@PathVariable UUID articleUUID, @RequestHeader(value="memberUUID") UUID memberUUID) {
         return Response.OK(articleService.updateBookmark(articleUUID, memberUUID));

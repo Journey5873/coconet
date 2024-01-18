@@ -24,13 +24,6 @@ public class Response<T> {
         return response;
     }
 
-    public static <T> Response<T> FOUND(T result){
-        Response<T> response = new Response<>();
-        response.result = Result.FOUND();
-        response.data = result;
-        return response;
-    }
-
     public static Response<Object> ERROR(Result result) {
         Response<Object> response = new Response<>();
 //        response.resultCode 는 exHandeler에서 설정해줌

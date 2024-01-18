@@ -1,6 +1,6 @@
 package com.coconet.articleservice.repository;
 
-import com.coconet.articleservice.dto.ArticleFormDto;
+import com.coconet.articleservice.dto.ArticleResponseDto;
 import com.coconet.articleservice.entity.RoleEntity;
 import com.coconet.articleservice.entity.TechStackEntity;
 import org.springframework.data.domain.Page;
@@ -10,15 +10,15 @@ import java.util.List;
 import java.util.UUID;
 
 public interface ArticleRepositoryCustom {
-    ArticleFormDto getArticle(UUID articleUUID);
+    ArticleResponseDto getArticle(UUID articleUUID);
 
-    Page<ArticleFormDto> getArticles(
+    Page<ArticleResponseDto> getArticles(
             List<RoleEntity> roles, List<TechStackEntity> stacks, String keyword,
             String articleType, String meetingType, boolean bookmark, UUID memberUUID, Pageable pageable
     );
-    List<ArticleFormDto> getSuggestions(List<RoleEntity> roleEntities, List<TechStackEntity> stackEntities);
+    List<ArticleResponseDto> getSuggestions(List<RoleEntity> roleEntities, List<TechStackEntity> stackEntities);
 
-    List<ArticleFormDto> getPopularPosts();
+    List<ArticleResponseDto> getPopularPosts();
 
-    Page<ArticleFormDto> getMyArticles(UUID memberUUID, Pageable pageable);
+    Page<ArticleResponseDto> getMyArticles(UUID memberUUID, Pageable pageable);
 }

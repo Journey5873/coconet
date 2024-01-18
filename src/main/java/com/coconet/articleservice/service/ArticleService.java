@@ -43,22 +43,8 @@ public class ArticleService {
             throw new ApiException(ErrorCode.BAD_REQUEST, "You need to login in first.");
         }
 
-        ArticleEntity articleEntitye = ArticleEntity.builder()
-                .articleUUID(UUID.randomUUID())
-                .title(request.getTitle())
-                .content(request.getContent())
-                .plannedStartAt(request.getPlannedStartAt().atTime(LocalTime.MAX))
-                .expiredAt(request.getExpiredAt().atTime(LocalTime.MAX))
-                .estimatedDuration(request.getEstimatedDuration().name())
-                .viewCount(0)
-                .bookmarkCount(0)
-                .articleType(request.getArticleType().name())
-                .status((byte) 1)
-                .meetingType(request.getMeetingType().name())
-                .memberUUID(memberUUID)
-                .build();
-
-        ArticleEntity savedArticle = articleRepository.save(articleEntitye);
+        ArticleEntity articleEntity = request.toEntity(memberUUID);
+        ArticleEntity savedArticle = articleRepository.save(articleEntity);
 
         List<ArticleRoleEntity> articleRoleEntityList = request.getRoles()
                 .stream()
@@ -88,15 +74,19 @@ public class ArticleService {
         em.clear();
         em.flush();
 
-        return articleEntityToArticleResponse(savedArticle, articleRoleEntityList, articleStackEntityList);
+        return ArticleResponseDto.builder().articleEntity(articleEntity)
+                .roles(articleRoleEntityList)
+                .stacks(articleStackEntityList)
+                .build();
     }
 
     public ArticleResponseDto getArticle(String articleUUID){
-        ArticleFormDto articleFormDto = articleRepository.getArticle(UUID.fromString(articleUUID));
-        if (articleFormDto == null){
+        ArticleResponseDto articleResponseDto = articleRepository.getArticle(UUID.fromString(articleUUID));
+        if (articleResponseDto == null){
             throw new ApiException(ErrorCode.NOT_FOUND, "No Post found");
         }
-        return formDtoToResponseDto(articleFormDto);
+
+        return articleResponseDto;
     }
 
     public Page<ArticleResponseDto> getArticles(
@@ -116,15 +106,12 @@ public class ArticleService {
             meetingType = MeetingType.valueOf(condition.getMeetingType().name()).toString();
         }
 
-        Page<ArticleFormDto> filteredArticles = articleRepository.getArticles(selectedRoles, selectedStacks,
+        return articleRepository.getArticles(selectedRoles, selectedStacks,
                 condition.getKeyword(), articleType, meetingType, condition.isBookmark(), memberUUID, pageable);
-
-        return filteredArticles.map(this::formDtoToResponseDto);
     }
 
     public Page<ArticleResponseDto> getMyArticles(UUID memberUUID, Pageable pageable){
-        Page<ArticleFormDto> myArticles = articleRepository.getMyArticles(memberUUID, pageable);
-        return myArticles.map(this::formDtoToResponseDto);
+        return articleRepository.getMyArticles(memberUUID, pageable);
     }
 
     public ArticleResponseDto updateArticle(ArticleRequestDto articleRequestDto, UUID memberUUID){
@@ -146,9 +133,7 @@ public class ArticleService {
         updateRoles(articleRequestDto.getRoles(), article);
         updateStacks(articleRequestDto.getStacks(), article);
 
-        ArticleFormDto returnArticle = articleRepository.getArticle(article.getArticleUUID());
-
-        return formDtoToResponseDto(returnArticle);
+        return articleRepository.getArticle(article.getArticleUUID());
     }
 
     public void updateStacks(List<ArticleStackDto> requestedStackDtos, ArticleEntity article){
@@ -241,23 +226,21 @@ public class ArticleService {
                 .toList();
         List<TechStackEntity> memberStacks = techStackRepository.getTechStacks(stacks);
 
-        List<ArticleFormDto> suggestions = articleRepository.getSuggestions(memberRoles, memberStacks);
+        List<ArticleResponseDto> suggestions = articleRepository.getSuggestions(memberRoles, memberStacks);
 
         return suggestions.stream()
                 .sorted(Comparator.comparingInt(suggestion ->
                         calculatePriority(suggestion, memberRoles, memberStacks)))
-                .map(this::formDtoToResponseDto)
                 .toList();
     }
 
     public List<ArticleResponseDto> getPopularPosts(){
         return articleRepository.getPopularPosts().stream()
-                .map(this::formDtoToResponseDto)
                 .toList();
     }
 
     int calculatePriority(
-            ArticleFormDto suggestion,
+            ArticleResponseDto suggestion,
             List<RoleEntity> memberRoles,
             List<TechStackEntity> memberStacks
     ) {
@@ -405,81 +388,6 @@ public class ArticleService {
     /**
      * UTILS
      */
-
-    private ArticleResponseDto formDtoToResponseDto(ArticleFormDto articleFormDto){
-        return  ArticleResponseDto.builder()
-                .articleUUID(articleFormDto.getArticleUUID())
-                .title(articleFormDto.getTitle())
-                .content(articleFormDto.getContent())
-                .createdAt(articleFormDto.getCreatedAt())
-                .updateAt(articleFormDto.getUpdateAt())
-                .plannedStartAt(articleFormDto.getPlannedStartAt())
-                .expiredAt(articleFormDto.getExpiredAt())
-                .estimatedDuration(articleFormDto.getEstimatedDuration())
-                .viewCount(articleFormDto.getViewCount())
-                .bookmarkCount(articleFormDto.getBookmarkCount())
-                .articleType(articleFormDto.getArticleType())
-                .status(articleFormDto.getStatus())
-                .meetingType(articleFormDto.getMeetingType())
-                .memberUUID(articleFormDto.getMemberUUID())
-                .roles(articleFormDto.getRoles())
-                .stacks(articleFormDto.getStacks())
-                .comments(articleFormDto.getComments())
-                .build();
-    }
-
-    private ArticleResponseDto articleEntityToArticleResponse(ArticleEntity savedArticle, List<ArticleRoleEntity> articleRoleEntities, List<ArticleStackEntity> articleStackEntities) {
-        ArticleResponseDto.ArticleResponseDtoBuilder builder = ArticleResponseDto.builder()
-                .articleUUID(savedArticle.getArticleUUID())
-                .title(savedArticle.getTitle())
-                .content(savedArticle.getContent())
-                .createdAt(savedArticle.getCreatedAt())
-                .updateAt(savedArticle.getUpdatedAt())
-                .plannedStartAt(savedArticle.getPlannedStartAt())
-                .expiredAt(savedArticle.getExpiredAt())
-                .estimatedDuration(EstimatedDuration.valueOf(savedArticle.getEstimatedDuration()))
-                .viewCount(savedArticle.getViewCount())
-                .bookmarkCount(savedArticle.getBookmarkCount())
-                .articleType(ArticleType.valueOf(savedArticle.getArticleType()))
-                .status(savedArticle.getStatus())
-                .meetingType(MeetingType.valueOf(savedArticle.getMeetingType()))
-                .memberUUID(savedArticle.getMemberUUID());
-
-        if (!articleRoleEntities.isEmpty()){
-            builder.roles(getArticleRoleDtos(articleRoleEntities));
-        }
-
-        if (!articleRoleEntities.isEmpty()){
-            builder.stacks(getArticleStackDtos(articleStackEntities));
-        }
-
-        return builder.build();
-    }
-
-
-
-    private static List<ArticleRoleDto> getArticleRoleDtos(List<ArticleRoleEntity> articleRoleEntities) {
-        List<ArticleRoleDto> articleRoleDtoList = articleRoleEntities.stream()
-                .map(articleRoleEntity -> {
-                    return ArticleRoleDto.builder()
-                            .roleName(articleRoleEntity.getRole().getName())
-                            .participant(articleRoleEntity.getParticipant())
-                            .build();
-                }).collect(Collectors.toList());
-        return articleRoleDtoList;
-    }
-
-    private static List<ArticleStackDto> getArticleStackDtos(List<ArticleStackEntity> articleStackEntities) {
-        List<ArticleStackDto> articleStackDtoList = articleStackEntities.stream()
-                .map(articleStackEntity -> {
-                    return ArticleStackDto.builder()
-                            .stackName(articleStackEntity.getTechStack().getName())
-                            .category(articleStackEntity.getTechStack().getCategory())
-                            .image(articleStackEntity.getTechStack().getImage())
-                            .build();
-                }).collect(Collectors.toList());
-        return articleStackDtoList;
-    }
 
     private static List<CommentResponseDto> getCommentResponseDtos(ArticleEntity articleEntity) {
         List<CommentResponseDto> commentResponseDtoList = articleEntity.getComments().stream()
