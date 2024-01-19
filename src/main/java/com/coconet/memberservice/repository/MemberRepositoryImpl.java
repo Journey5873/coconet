@@ -11,8 +11,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static com.coconet.memberservice.entity.QMemberEntity.*;
-import static com.coconet.memberservice.entity.QMemberRoleEntity.memberRoleEntity;
-import static com.coconet.memberservice.entity.QMemberStackEntity.memberStackEntity;
 
 @RequiredArgsConstructor
 public class MemberRepositoryImpl implements MemberRepositoryCustom{
@@ -23,8 +21,6 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom{
     public MemberResponseDto getUserInfo(UUID memberUUID) {
 
         MemberEntity member = queryFactory.selectFrom(memberEntity)
-                .leftJoin(memberEntity.memberRoles, memberRoleEntity)
-                .leftJoin(memberEntity.memberStacks, memberStackEntity)
                 .where(memberEntity.memberUUID.eq(memberUUID))
                 .fetchOne();
 
@@ -39,11 +35,15 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom{
     public Optional<MemberEntity> findByName(String name) {
 
         MemberEntity member = queryFactory.selectFrom(memberEntity)
-                .where(memberEntity.isActivated.eq((byte) 1), memberEntity.name.eq(name))
+                .where(
+                        memberEntity.isActivated.eq((byte) 1),
+                        memberEntity.name.eq(name)
+                )
                 .fetchFirst();
 
-        if(member == null)
+        if(member == null){
             return Optional.empty();
+        }
 
         return Optional.of(member);
     }
@@ -51,11 +51,15 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom{
     @Override
     public Optional<MemberEntity> findByEmail(String email) {
         MemberEntity member = queryFactory.selectFrom(memberEntity)
-                .where(memberEntity.isActivated.eq((byte) 1), memberEntity.email.eq(email))
+                .where(
+                        memberEntity.isActivated.eq((byte) 1),
+                        memberEntity.email.eq(email)
+                )
                 .fetchFirst();
 
-        if(member == null)
+        if(member == null){
             return Optional.empty();
+        }
 
         return Optional.of(member);
     }
