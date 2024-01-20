@@ -25,24 +25,24 @@ public class MemberRegisterService {
     private final MemberRoleRepository memberRoleRepository;
     private final MemberStackRepository memberStackRepository;
 
-    public List<String> addRoles(MemberEntity member, List<String> roles) {
-        if (roles == null || roles.size() == 0){
+    public List<String> addRoles(MemberEntity memberEntity, List<String> roles) {
+        if (roles == null || roles.isEmpty()){
             throw new ApiException(ErrorCode.BAD_REQUEST, "You need to choose at least one role.");
         }
 
-        List<RoleEntity> inputRoles = roles.stream()
-                .map(roleName -> roleRepository.findByName(roleName)
-                        .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "No role found"))
-                )
-                .toList();
+        List<RoleEntity> inputRoleEntities = roleRepository.findByNameIn(roles);
+        if (inputRoleEntities.size() != roles.size()){
+            throw new ApiException(ErrorCode.NOT_FOUND, "Some roles can not be found.");
+        }
 
-        List<MemberRoleEntity> memberRoleEntities = inputRoles.stream()
-                .map(role -> new MemberRoleEntity(member, role))
-                .toList();
+        List<MemberRoleEntity> memberRoleEntities = memberRoleRepository.saveAll(
+                inputRoleEntities.stream()
+                        .map(roleEntity -> new MemberRoleEntity(memberEntity, roleEntity))
+                        .toList()
+        );
 
-        List<MemberRoleEntity> returnEntities = memberRoleRepository.saveAll(memberRoleEntities);
-        return returnEntities.stream()
-                .map(entity -> entity.getRole().getName())
+        return memberRoleEntities.stream()
+                .map(memberRoleEntity -> memberRoleEntity.getRole().getName())
                 .toList();
     }
 
