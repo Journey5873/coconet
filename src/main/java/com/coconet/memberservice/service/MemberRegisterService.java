@@ -46,25 +46,24 @@ public class MemberRegisterService {
                 .toList();
     }
 
-    public List<String> addStacks(MemberEntity member, List<String> stacks) {
-
-        if (stacks == null || stacks.size() == 0){
+    public List<String> addStacks(MemberEntity memberEntity, List<String> stacks) {
+        if (stacks == null || stacks.isEmpty()){
             throw new ApiException(ErrorCode.BAD_REQUEST, "You need to choose at least one stack.");
         }
 
-        List<TechStackEntity> inputStacks = stacks.stream()
-                .map(stackName -> techStackRepository.findByName(stackName)
-                        .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "No stack found"))
-                )
-                .toList();
+        List<TechStackEntity> inputStackEntities = techStackRepository.findByNameIn(stacks);
+        if (inputStackEntities.size() != stacks.size()){
+            throw new ApiException(ErrorCode.NOT_FOUND, "Some tech stacks can not be found.");
+        }
 
-        List<MemberStackEntity> memberStackMembers = inputStacks.stream()
-                .map(stack -> new MemberStackEntity(member, stack))
-                .toList();
+        List<MemberStackEntity> memberStackEntities = memberStackRepository.saveAll(
+                inputStackEntities.stream()
+                        .map(stackEntity -> new MemberStackEntity(memberEntity, stackEntity))
+                        .toList()
+        );
 
-        List<MemberStackEntity> returnEntites = memberStackRepository.saveAll(memberStackMembers);
-        return returnEntites.stream()
-                .map(entity -> entity.getTechStack().getName())
+        return memberStackEntities.stream()
+                .map(memberStackEntity -> memberStackEntity.getTechStack().getName())
                 .toList();
     }
 
