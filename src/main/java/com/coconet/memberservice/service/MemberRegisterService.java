@@ -10,10 +10,7 @@ import com.coconet.memberservice.repository.TechStackRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.List;
 
 @Service
@@ -67,35 +64,34 @@ public class MemberRegisterService {
                 .toList();
     }
 
-    public void updateRoles(MemberEntity member, List<String> requestedRoleNames) {
+    public void updateRoles(MemberEntity memberEntity, List<String> requestedRoleNames) {
 
-        // Get current roles
-        List<MemberRoleEntity> currentRoles = memberRoleRepository.getAllRoles(member);
+        // Get current all member's roles
+        List<MemberRoleEntity> currentRoleEntities = memberRoleRepository.getAllRoles(memberEntity);
 
-        List<RoleEntity> requestedRoles = roleRepository.findByNameIn(requestedRoleNames);
-
-        List<String> currentRoleNames = currentRoles.stream()
-                .map(role -> role.getRole().getName())
-                .toList();
+        // Retrieve requested role entities
+        List<RoleEntity> requestedRoleEntities = roleRepository.findByNameIn(requestedRoleNames);
 
         // Identify new roles to add
-        List<RoleEntity> rolesToAdd = requestedRoles.stream()
-                .filter(role -> !currentRoleNames.contains(role.getName()))
+        List<RoleEntity> rolesToAdd = requestedRoleEntities.stream()
+                .filter(requestedRole -> currentRoleEntities.stream()
+                        .noneMatch(currentRole -> currentRole.getRole().getName().equals(requestedRole.getName())))
                 .toList();
 
         // Identify roles to remove
-        List<MemberRoleEntity> rolesToRemove = currentRoles.stream()
-                .filter(role -> !requestedRoleNames.contains(role.getRole().getName()))
+        List<MemberRoleEntity> rolesToRemove = currentRoleEntities.stream()
+                .filter(currentRole -> requestedRoleEntities.stream()
+                        .noneMatch(requestedRole -> requestedRole.getName().equals(currentRole.getRole().getName())))
                 .toList();
 
-        // Create MemberRoleEntity to add
-        List<MemberRoleEntity> memberRoleEntities = rolesToAdd.stream()
-                .map(role -> new MemberRoleEntity(member, role))
-                .toList();
+        // Create MemberRoleEntities and Save
+        memberRoleRepository.saveAll(
+                rolesToAdd.stream()
+                        .map(roleEntity -> new MemberRoleEntity(memberEntity, roleEntity))
+                        .toList()
+        );
 
-        // save
-        memberRoleRepository.saveAll(memberRoleEntities);
-        // remove
+        // Remove MemberRoleEntities
         memberRoleRepository.deleteAllInBatch(rolesToRemove);
     }
 
