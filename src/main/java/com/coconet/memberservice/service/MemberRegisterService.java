@@ -95,36 +95,34 @@ public class MemberRegisterService {
         memberRoleRepository.deleteAllInBatch(rolesToRemove);
     }
 
-    public void updateStacks(MemberEntity member, List<String> requestedStackNames){
+    public void updateStacks(MemberEntity memberEntity, List<String> requestedStackNames){
 
-        // Get current stacks
-        List<MemberStackEntity> currentStacks = memberStackRepository.getAllStacks(member);
+        // Get current member's stacks
+        List<MemberStackEntity> currentStackEntities = memberStackRepository.getAllStacks(memberEntity);
 
-        // Requested Stacks
-        List<TechStackEntity> requestedStacks = techStackRepository.findByNameIn(requestedStackNames);
+        // Retrieve requested stack entities
+        List<TechStackEntity> requestedStackEntities = techStackRepository.findByNameIn(requestedStackNames);
 
-        List<String> currentStackNames = currentStacks.stream()
-                .map(stack -> stack.getTechStack().getName())
-                .toList();
-
-        // Identify new stacks to add
-        List<TechStackEntity> stacksToAdd = requestedStacks.stream()
-                .filter(stack -> !currentStackNames.contains(stack.getName()))
+        // Identify stacks to add
+        List<TechStackEntity> stacksToAdd = requestedStackEntities.stream()
+                .filter(requestedStack -> currentStackEntities.stream()
+                        .noneMatch(currentStack -> currentStack.getTechStack().getName().equals(requestedStack.getName())))
                 .toList();
 
         // Identify stacks to remove
-        List<MemberStackEntity> stacksToRemove = currentStacks.stream()
-                .filter(stack -> !requestedStackNames.contains(stack.getTechStack().getName()))
+        List<MemberStackEntity> stacksToRemove = currentStackEntities.stream()
+                .filter(currentStack -> requestedStackEntities.stream()
+                        .noneMatch(requestedStack -> requestedStack.getName().equals(currentStack.getTechStack().getName())))
                 .toList();
 
-        // Create MemberStackEntity to add
-        List<MemberStackEntity> memberStackEntities = stacksToAdd.stream()
-                .map(stack -> new MemberStackEntity(member, stack))
-                .toList();
+        // Create MemberStackEntities and Save
+        memberStackRepository.saveAll(
+                stacksToAdd.stream()
+                        .map(stackEntity -> new MemberStackEntity(memberEntity, stackEntity))
+                        .toList()
+        );
 
-        // Save new stacks
-        memberStackRepository.saveAll(memberStackEntities);
-        // Delete stacks
+        // Remove MemberStackEntities
         memberStackRepository.deleteAllInBatch(stacksToRemove);
     }
 }
