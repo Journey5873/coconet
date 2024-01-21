@@ -41,7 +41,8 @@ export abstract class HttpClient {
     return this.instance
   }
 
-  private handleResponse = ({ data }: AxiosResponse) => data
+  private handleResponse = ({ data }: AxiosResponse): AxiosResponse => data
 
-  private handleError = (error: any) => Promise.reject(error)
+  private handleError = (error: AxiosError): Promise<AxiosError> =>
+    Promise.reject(error)
 }
