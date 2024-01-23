@@ -3,6 +3,7 @@ package com.coconet.articleservice.service;
 import com.coconet.articleservice.client.MemberClient;
 import com.coconet.articleservice.common.errorcode.ErrorCode;
 import com.coconet.articleservice.common.exception.ApiException;
+import com.coconet.articleservice.converter.ArticleEntityConverter;
 import com.coconet.articleservice.dto.*;
 import com.coconet.articleservice.entity.*;
 import com.coconet.articleservice.entity.enums.ArticleType;
@@ -74,10 +75,7 @@ public class ArticleService {
         em.clear();
         em.flush();
 
-        return ArticleResponseDto.builder().articleEntity(articleEntity)
-                .roles(articleRoleEntityList)
-                .stacks(articleStackEntityList)
-                .build();
+        return ArticleEntityConverter.convertToDto(articleEntity);
     }
 
     public ArticleResponseDto getArticle(String articleUUID){

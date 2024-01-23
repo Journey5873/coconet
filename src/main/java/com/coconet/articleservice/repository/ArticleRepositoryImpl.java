@@ -1,13 +1,11 @@
 package com.coconet.articleservice.repository;
 
 
-import com.coconet.articleservice.dto.*;
+import com.coconet.articleservice.converter.ArticleEntityConverter;
+import com.coconet.articleservice.dto.ArticleResponseDto;
 import com.coconet.articleservice.entity.ArticleEntity;
 import com.coconet.articleservice.entity.RoleEntity;
 import com.coconet.articleservice.entity.TechStackEntity;
-import com.coconet.articleservice.entity.enums.ArticleType;
-import com.coconet.articleservice.entity.enums.EstimatedDuration;
-import com.coconet.articleservice.entity.enums.MeetingType;
 import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.JPAExpressions;
@@ -47,9 +45,7 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
                 .where(articleEntity.articleUUID.eq(articleUUID))
                 .fetchOne();
 
-        return ArticleResponseDto.builder()
-                .articleEntity(article)
-                .build();
+        return ArticleEntityConverter.convertToDto(article);
     }
 
 
@@ -83,39 +79,12 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
                 .fetch();
 
         List<ArticleResponseDto> contents = articles.stream()
-                .map(a -> ArticleResponseDto.builder()
-                        .articleEntity(a)
-                        .build())
+                .map(article -> ArticleEntityConverter.convertToDto(article))
                 .toList();
 
         JPAQuery<ArticleEntity> countQuery = queryFactory
                 .selectFrom(articleEntity)
                 .where(condition);
-
-        return PageableExecutionUtils.getPage(contents, pageable, () -> countQuery.fetchCount());
-    }
-
-    @Override
-    public Page<ArticleResponseDto> getMyArticles(UUID memberUUID, Pageable pageable) {
-
-        List<ArticleEntity> articles = queryFactory.selectFrom(articleEntity)
-                .distinct()
-                .leftJoin(articleEntity.articleRoles, articleRoleEntity)
-                .leftJoin(articleEntity.articleStacks, articleStackEntity)
-                .where(articleEntity.memberUUID.eq(memberUUID).and(articleEntity.status.eq((byte)1)))
-                .orderBy(articleEntity.updatedAt.desc())
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
-                .fetch();
-
-        List<ArticleResponseDto> contents = articles.stream()
-                .map(a -> ArticleResponseDto.builder()
-                        .articleEntity(a)
-                        .build())
-                .toList();
-
-        JPAQuery<ArticleEntity> countQuery = queryFactory
-                .selectFrom(articleEntity);
 
         return PageableExecutionUtils.getPage(contents, pageable, () -> countQuery.fetchCount());
     }
@@ -147,6 +116,31 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
 
     private BooleanExpression articleStackContains(List<TechStackEntity> stacks){
         return isEmpty(stacks) ? null : articleStackEntity.techStack.in(stacks);
+    }
+
+
+    @Override
+    public Page<ArticleResponseDto> getMyArticles(UUID memberUUID, Pageable pageable) {
+
+        List<ArticleEntity> articles = queryFactory.selectFrom(articleEntity)
+                .distinct()
+                .leftJoin(articleEntity.articleRoles, articleRoleEntity)
+                .leftJoin(articleEntity.articleStacks, articleStackEntity)
+                .where(articleEntity.memberUUID.eq(memberUUID).and(articleEntity.status.eq((byte)1)))
+                .orderBy(articleEntity.updatedAt.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        List<ArticleResponseDto> contents = articles.stream()
+                .map(article -> ArticleEntityConverter.convertToDto(article))
+                .toList();
+
+
+        JPAQuery<ArticleEntity> countQuery = queryFactory
+                .selectFrom(articleEntity);
+
+        return PageableExecutionUtils.getPage(contents, pageable, () -> countQuery.fetchCount());
     }
 
     @Override
@@ -186,9 +180,7 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
 
 
         return suggestions.stream()
-                .map(a -> ArticleResponseDto.builder()
-                        .articleEntity(a)
-                        .build())
+                .map(suggestion -> ArticleEntityConverter.convertToDto(suggestion))
                 .toList();
     }
 
@@ -209,9 +201,7 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
                 .fetch();
 
         return populars.stream()
-                .map(a -> ArticleResponseDto.builder()
-                        .articleEntity(a)
-                        .build())
+                .map(popularPost -> ArticleEntityConverter.convertToDto(popularPost))
                 .toList();
     }
 }
