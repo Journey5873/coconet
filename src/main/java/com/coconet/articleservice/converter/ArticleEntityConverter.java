@@ -21,7 +21,7 @@ public class ArticleEntityConverter {
     public static ArticleResponseDto convertToDto (ArticleEntity articleEntity) {
 
         List<ArticleRoleDto> roles = new ArrayList<>();
-        if (articleEntity.getArticleType().equals(ArticleType.PROJECT)){
+        if (articleEntity.getArticleType().equals(ArticleType.PROJECT.toString())){
             roles = articleEntity.getArticleRoles().stream()
                     .map(role -> new ArticleRoleDto(role.getRole().getName(), role.getParticipant()))
                     .toList();
