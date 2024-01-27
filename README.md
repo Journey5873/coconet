@@ -1,2 +1,2 @@
 # coconet
-disc
+discs
