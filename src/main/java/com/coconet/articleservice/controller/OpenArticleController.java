@@ -24,7 +24,7 @@ public class OpenArticleController {
         return Response.OK(article);
     }
 
-    @GetMapping("/articles")
+    @PostMapping("/articles")
     public Response<Page<ArticleResponseDto>> getArticles(@RequestBody ArticleFilterDto condition,
                                                 Pageable pageable){
         return Response.OK(articleService.getArticles(condition, null, pageable));

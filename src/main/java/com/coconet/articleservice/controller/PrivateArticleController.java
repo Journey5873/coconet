@@ -18,7 +18,7 @@ public class PrivateArticleController {
 
     private final ArticleService articleService;
 
-    @GetMapping("/articles")
+    @PostMapping("/articles")
     public Response<Page<ArticleResponseDto>> getArticles(@RequestBody ArticleFilterDto condition,
                                                 @RequestHeader(value = "memberUUID") UUID memberUUID,
                                                 Pageable pageable
