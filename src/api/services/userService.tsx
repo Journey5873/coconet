@@ -9,8 +9,15 @@ export class UserService {
     this.userRepository = userRepository
   }
 
-  async getUser(id: string) {
-    return this.userRepository.get('', id)
+  async getUser() {
+    return this.userRepository.get('')
+  }
+
+  async createUser<Dto>(item: Dto) {
+    return this.userRepository.create<Dto>(
+      'member-service/open-api/register',
+      item,
+    )
   }
 
   async updateUser<Dto>(data: Dto, id: string) {

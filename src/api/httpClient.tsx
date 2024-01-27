@@ -10,7 +10,7 @@ export abstract class HttpClient {
 
   protected createInstance(): AxiosInstance {
     const requestConfig: AxiosRequestConfig = {
-      baseURL: 'http://localhost:64502',
+      baseURL: 'http://localhost:8000',
       timeout: 2500,
       headers: {
         'Content-Type': 'application/json',
@@ -21,7 +21,7 @@ export abstract class HttpClient {
 
     this.instance.interceptors.request.use(
       (config) => {
-        const token = localStorage.getItem('token')
+        const token = localStorage?.getItem('token')
         if (token) {
           config.headers.common['Authorization'] = `Bearer ${token}`
         }

@@ -8,7 +8,7 @@ export interface ApiResponse<T> {
 }
 
 export interface IBaseRepository<T> {
-  get(path: string, id: string): Promise<ApiResponse<T>>
+  get(path: string): Promise<ApiResponse<T>>
   getMany(path: string): Promise<ApiResponse<T[]>>
   create<Dto>(path: string, item: Dto): Promise<ApiResponse<T>>
   update<Dto>(path: string, id: string, item: Dto): Promise<ApiResponse<T>>
@@ -39,9 +39,9 @@ export class BaseRepository<T>
     super()
   }
 
-  public async get(path: string, id: string): Promise<ApiResponse<T>> {
+  public async get(path: string): Promise<ApiResponse<T>> {
     const instance = this.createInstance()
-    const result = await instance.get(`/${path}/${id}`).then(transform)
+    const result = await instance.get(`/${path}`).then(transform)
     return result as ApiResponse<T>
   }
 

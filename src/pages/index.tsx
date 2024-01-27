@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo } from 'react'
+import React, { useState, useCallback, useMemo, useEffect } from 'react'
 import { dummyData, dummyData2 } from '../data/data'
 import { useSearchParams, useNavigate } from 'react-router-dom'
 import MultiStackSelector from '../components/organisms/multiStackSelector/multiStackSelector'
@@ -11,13 +11,31 @@ import FilterSelect from '../components/atoms/Select/filterSelect'
 import AdditionalModal from '../components/organisms/modal/additionalModal'
 
 import { useUserService } from '../api/services/userService'
+import { useArticleService } from '../api/services/articleService'
 
 const Index = () => {
   const navigate = useNavigate()
   const [selected, setSelected] = useState<string[]>([])
   const [selectedPosition, setSelectedPosition] = useState<string>('')
   const [searchParams] = useSearchParams()
+
   const userService = useUserService()
+  const articleService = useArticleService()
+
+  const temp = async () => {
+    try {
+      const result = await articleService.getAllArticle({})
+
+      console.log(result.data)
+      console.log(result.errors)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  useEffect(() => {
+    temp()
+  }, [])
 
   const memberId = useMemo(
     () => searchParams.get('memberId') || '',
@@ -56,6 +74,14 @@ const Index = () => {
   const handlePosiionSelected = useCallback((value: string) => {
     setSelectedPosition(value)
   }, [])
+
+  useEffect(() => {
+    if (memberId) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = 'unset'
+    }
+  }, [memberId])
 
   return (
     <>

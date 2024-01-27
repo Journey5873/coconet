@@ -9,7 +9,7 @@ import SingleSelect from '../../atoms/Select/SingleSelect'
 import { SelectValue } from '../../../pages/setting'
 import MultipleSelect from '../../atoms//Select/MultipleSelect'
 import apiService from '../../../utils/apiService'
-import axios from 'axios'
+import { useUserService } from '../../../api/services/userService'
 
 export type RegisterDto = {
   memberId: string
@@ -21,6 +21,7 @@ export type RegisterDto = {
   githubLink?: string
   blogLink?: string
   notionLink?: string
+  imageFile: string
 }
 
 interface Props {
@@ -32,6 +33,7 @@ interface Props {
 }
 
 const AdditionalModal = ({ open, handleClose, memberId }: Props) => {
+  const userService = useUserService()
   const [tab, setTab] = useState<number>(1)
   const [additinalValue, setAdditionalValue] = useState<Record<string, any>>({
     nickname: '',
@@ -71,12 +73,18 @@ const AdditionalModal = ({ open, handleClose, memberId }: Props) => {
         githubLink: '',
         blogLink: '',
         notionLink: '',
+        imageFile: '',
       }
+
       console.log(registerInfo, 'registerInfo')
-      const response = await apiService.register(registerInfo)
-      const result = await response.data
+
+      const result = await userService.createUser<RegisterDto>(registerInfo)
 
       console.log(result)
+      // const response = await apiService.register(registerInfo)
+      // const result = await response.data
+
+      // console.log(result)
     } catch (error) {
       console.log(error)
     }
@@ -236,6 +244,7 @@ const loginModalAnimation = keyframes`
 
 const StyledLoginModalBg = styled.div`
   box-sizing: border-box;
+  background-color: rgba(0, 0, 0, 0.7);
   display: block;
   position: fixed;
   inset: 0px;
