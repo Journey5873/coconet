@@ -30,14 +30,15 @@ spring:
         - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin
       globalcors:
         corsConfigurations:
-          ?[/**]?:
+          '[/**]':
             allowedOrigins: ${CLIENT_URL}
             allowedMethods:
               - GET
               - POST
               - PUT
               - DELETE
-            allowedHeaders: ?*?
+              - OPTIONS
+            allowedHeaders: '*'
 eureka:
   client:
     service-url:
@@ -59,3 +60,5 @@ jasypt:
     pool-size: 2
     string-output-type: base64
     key-obtention-iterations: 10000
+
+
