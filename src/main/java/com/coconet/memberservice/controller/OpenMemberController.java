@@ -55,6 +55,8 @@ public class OpenMemberController {
     private String kakaoSecret;
     @Value("${spring.security.oauth2.client.registration.kakao.redirect-uri}")
     private String kakaoRedirectUri;
+    @Value("${frontend.URI}")
+    private String frontURI;
 
 
     @Operation(
@@ -107,7 +109,7 @@ public class OpenMemberController {
         if(!memberValidationService.existMember(email)) {
             UUID memberId = memberServiceImpl.preRegister(AuthProvider.github, email);
             return ResponseEntity.status(HttpStatus.FOUND)
-                    .location(URI.create("http://localhost:3000?memberId=" + memberId.toString()))
+                    .location(URI.create(frontURI+ "?memberId=" + memberId.toString()))
                     .build();
         }
 
@@ -115,11 +117,11 @@ public class OpenMemberController {
 
         if(result.getMemberUUID() != null)
             return ResponseEntity.status(HttpStatus.FOUND)
-                    .location(URI.create("http://localhost:3000?memberId=" + result.getMemberUUID().toString()))
+                    .location(URI.create(frontURI+ "?memberId=" + result.getMemberUUID().toString()))
                     .build();
 
         return ResponseEntity.status(HttpStatus.FOUND)
-                .location(URI.create("http://localhost:3000?accessToken=" + result.getAccessToken().toString()))
+                .location(URI.create(frontURI+ "?accessToken=" + result.getAccessToken().toString()))
                 .build();
     }
 
@@ -156,7 +158,7 @@ public class OpenMemberController {
         if(!memberValidationService.existMember(email)) {
             UUID memberId = memberServiceImpl.preRegister(AuthProvider.google, email);
             return ResponseEntity.status(HttpStatus.FOUND)
-                    .location(URI.create("http://localhost:3000?memberId=" + memberId.toString()))
+                    .location(URI.create(frontURI+"?memberId=" + memberId.toString()))
                     .build();
         }
 
@@ -164,11 +166,11 @@ public class OpenMemberController {
 
         if(result.getMemberUUID() != null)
             return ResponseEntity.status(HttpStatus.FOUND)
-                    .location(URI.create("http://localhost:3000?memberId=" + result.getMemberUUID().toString()))
+                    .location(URI.create(frontURI+"?memberId=" + result.getMemberUUID().toString()))
                     .build();
 
         return ResponseEntity.status(HttpStatus.FOUND)
-                .location(URI.create("http://localhost:3000?accessToken=" + result.getAccessToken().toString()))
+                .location(URI.create(frontURI+"?accessToken=" + result.getAccessToken().toString()))
                 .build();
     }
 
@@ -218,7 +220,7 @@ public class OpenMemberController {
         if(!memberValidationService.existMember(email)) {
             UUID memberId = memberServiceImpl.preRegister(AuthProvider.kakao, email);
             return ResponseEntity.status(HttpStatus.FOUND)
-                    .location(URI.create("http://localhost:3000?memberId=" + memberId.toString()))
+                    .location(URI.create(frontURI+"?memberId=" + memberId.toString()))
                     .build();
         }
 
@@ -226,11 +228,11 @@ public class OpenMemberController {
 
         if(result.getMemberUUID() != null)
             return ResponseEntity.status(HttpStatus.FOUND)
-                    .location(URI.create("http://localhost:3000?memberId=" + result.getMemberUUID().toString()))
+                    .location(URI.create(frontURI+"?memberId=" + result.getMemberUUID().toString()))
                     .build();
 
         return ResponseEntity.status(HttpStatus.FOUND)
-                .location(URI.create("http://localhost:3000?accessToken=" + result.getAccessToken().toString()))
+                .location(URI.create(frontURI+"?accessToken=" + result.getAccessToken().toString()))
                 .build();
     }
 

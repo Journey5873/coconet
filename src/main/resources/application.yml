@@ -69,3 +69,6 @@ jasypt:
     pool-size: ${ENCRYPTOR_POOL_SIZE}
     string-output-type: base64
     key-obtention-iterations: ${ENCRYPTOR_ITERATIONS}
+
+frontend:
+  URI: http://52.63.151.220:3000/
