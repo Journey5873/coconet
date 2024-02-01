@@ -2,4 +2,4 @@
 
 Check
 
-final gate
+final gateway
