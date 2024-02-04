@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>My Chat Rooms</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        li {
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<h1>My Chat Rooms</h1>
+
+<table>
+    <thead>
+    <tr>
+        <th>Room UUID</th>
+        <th>Article UUID</th>
+        <th>Applicant UUID</th>
+        <th>Members</th>
+        <th>Room Name</th>
+        <th>Created At</th>
+        <th>Updated At</th>
+    </tr>
+    </thead>
+    <tbody th:each="room : ${myRooms}">
+    <tr>
+        <td th:text="${room.roomUUID}"></td>
+        <td th:text="${room.articleUUID}"></td>
+        <td th:text="${room.applicantUUID}"></td>
+        <td>
+            <ul>
+                <li th:each="member : ${room.members}" th:text="${member}"></li>
+            </ul>
+        </td>
+        <td th:text="${room.roomName}"></td>
+        <td th:text="${room.createdAt}"></td>
+        <td th:text="${room.updatedAt}"></td>
+    </tr>
+    </tbody>
+</table>
+
+</body>
+</html>
