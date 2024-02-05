@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.UUID;
 
 import static lombok.AccessLevel.PROTECTED;
@@ -15,11 +14,11 @@ import static lombok.AccessLevel.PROTECTED;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor(access = PROTECTED)
-public class RoomResponseDto {
+public class ChatroomResponseDto {
     private UUID roomUUID;
     private UUID articleUUID;
     private UUID applicantUUID;
-    private List<UUID> members; // 대화방 참가자 리스트
+    private UUID writerUUID;
     private String roomName;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

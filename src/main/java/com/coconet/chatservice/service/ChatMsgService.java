@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -17,15 +18,15 @@ public class ChatMsgService {
 
     public ChatMsgResponseDto sendChat(ChatMsgCreateRequestDto requestDto){
         ChatMsgEntity chatMsgEntity = ChatMsgEntity.builder()
-                .senderUUID(requestDto.getSenderUUID().toString())
-                .roomUUID(requestDto.getRoomUUID().toString())
+                .senderUUID(requestDto.getSenderUUID())
+                .roomUUID(requestDto.getRoomUUID())
                 .message(requestDto.getMessage())
                 .build();
         ChatMsgEntity savedMsgEntity = chatMsgRepository.save(chatMsgEntity);
         return ChatMsgEntityToConverter.convertToDto(savedMsgEntity);
     }
 
-    public List<ChatMsgResponseDto> loadChats(String roomUUID){
+    public List<ChatMsgResponseDto> loadChats(UUID roomUUID){
         List<ChatMsgEntity> chats = chatMsgRepository.findAllByRoomUUID(roomUUID);
 
         return chats.stream()

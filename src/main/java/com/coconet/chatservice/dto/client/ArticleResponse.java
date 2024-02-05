@@ -1,4 +1,4 @@
-package com.coconet.chatservice.dto;
+package com.coconet.chatservice.dto.client;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,12 +9,12 @@ import java.util.UUID;
 
 import static lombok.AccessLevel.PROTECTED;
 
-@Builder
 @Getter
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = PROTECTED)
-public class RoomCreateRequestDto {
+public class ArticleResponse {
     private UUID articleUUID;
-    private UUID writerUUID;
     private String roomName;
+    private UUID writerUUID;
 }

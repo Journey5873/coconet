@@ -26,18 +26,19 @@ public class ChatRoomEntity extends BaseEntity{
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
 
-    @OneToMany(mappedBy = "chatRoom")
-    private List<RooMemberEntity> RoomMembers = new ArrayList<>();
-
     @Column(columnDefinition = "BINARY(16)", name = "room_uuid")
     private UUID roomUUID;
 
     @Column(columnDefinition = "BINARY(16)", name = "article_uuid")
     private UUID articleUUID;
 
-    @Column(columnDefinition = "BINARY(16)", name = "member_uuid")
+    @Column(columnDefinition = "BINARY(16)", name = "applicant_uuid")
     private UUID applicantUUID;
+
+    @Column(columnDefinition = "BINARY(16)", name = "writer_uuid")
+    private UUID writerUUID;
 
     @Column(name = "room_name")
     private String roomName;
+
 }
