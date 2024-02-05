@@ -11,7 +11,7 @@ import java.util.UUID;
 import static lombok.AccessLevel.*;
 
 @Getter
-@SuperBuilder
+@Builder
 @NoArgsConstructor(access = PROTECTED)
 @AllArgsConstructor
 public class MemberResponse {

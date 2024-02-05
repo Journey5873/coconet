@@ -5,6 +5,7 @@ import com.coconet.articleservice.common.errorcode.ErrorCode;
 import com.coconet.articleservice.common.exception.ApiException;
 import com.coconet.articleservice.converter.ArticleEntityConverter;
 import com.coconet.articleservice.dto.*;
+import com.coconet.articleservice.dto.client.ChatClientResponseDto;
 import com.coconet.articleservice.entity.*;
 import com.coconet.articleservice.entity.enums.ArticleType;
 import com.coconet.articleservice.entity.enums.EstimatedDuration;
@@ -382,6 +383,16 @@ public class ArticleService {
         return response;
     }
 
+    public ChatClientResponseDto sendChatClient(UUID articleUUID) {
+        ArticleEntity article = articleRepository.findByArticleUUID(articleUUID)
+                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "No Article found"));
+
+        return ChatClientResponseDto.builder()
+                .roomName(article.getTitle())
+                .writerUUID(article.getMemberUUID())
+                .articleUUID(articleUUID)
+                .build();
+    }
 
     /**
      * UTILS
