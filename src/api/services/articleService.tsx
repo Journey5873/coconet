@@ -15,6 +15,12 @@ export class ArticleService {
       articleDto,
     )
   }
+
+  async getDetailArticle(articleUuid: string) {
+    return this.articleRepository.get(
+      `article-service/open-api/article/${articleUuid}`,
+    )
+  }
 }
 
 const ArticleContext = createContext(new ArticleService(new BaseRepository()))

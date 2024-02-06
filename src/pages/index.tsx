@@ -11,31 +11,19 @@ import FilterSelect from '../components/atoms/Select/filterSelect'
 import AdditionalModal from '../components/organisms/modal/additionalModal'
 
 import { useUserService } from '../api/services/userService'
-import { useArticleService } from '../api/services/articleService'
+import axios from 'axios'
+import { BaseRepository } from '../api/baseRepository'
+import {
+  ArticleService,
+  useArticleService,
+} from '../api/services/articleService'
 
 const Index = () => {
   const navigate = useNavigate()
   const [selected, setSelected] = useState<string[]>([])
   const [selectedPosition, setSelectedPosition] = useState<string>('')
   const [searchParams] = useSearchParams()
-
   const userService = useUserService()
-  const articleService = useArticleService()
-
-  const temp = async () => {
-    try {
-      const result = await articleService.getAllArticle({})
-
-      console.log(result.data)
-      console.log(result.errors)
-    } catch (error) {
-      console.log(error)
-    }
-  }
-
-  useEffect(() => {
-    temp()
-  }, [])
 
   const memberId = useMemo(
     () => searchParams.get('memberId') || '',
@@ -75,13 +63,18 @@ const Index = () => {
     setSelectedPosition(value)
   }, [])
 
+  const api = useArticleService()
+
+  const fetch = async () => {
+    try {
+      const result = await api.getAllArticle({})
+      console.log(result.data)
+    } catch {}
+  }
+
   useEffect(() => {
-    if (memberId) {
-      document.body.style.overflow = 'hidden'
-    } else {
-      document.body.style.overflow = 'unset'
-    }
-  }, [memberId])
+    fetch()
+  }, [])
 
   return (
     <>
@@ -143,4 +136,5 @@ const StyledItemWrpper = styled.div`
   margin-top: 1rem;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
+  gap: 2rem;
 `

@@ -11,7 +11,6 @@ export abstract class HttpClient {
   protected createInstance(): AxiosInstance {
     const requestConfig: AxiosRequestConfig = {
       baseURL: 'http://localhost:8000',
-      timeout: 2500,
       headers: {
         'Content-Type': 'application/json',
       },

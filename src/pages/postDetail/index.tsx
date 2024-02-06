@@ -9,12 +9,14 @@ import { FaRegThumbsUp } from 'react-icons/fa'
 import { imageMap, dateFormat } from '../../utils/utils'
 import SupportButtonModal from '../../components/molecules/SupportButtonModal'
 import { DummyData, dummyData } from '../../data/data'
+import { useArticleService } from '../../api/services/articleService'
+import { Article } from '../../models/article'
 
 const PostDetail = () => {
   const [isVisible, setIsVisible] = useState(false)
 
   const { id } = useParams()
-  const [post, setPost] = useState<DummyData | null>(null)
+  const [post, setPost] = useState<Article | null>(null)
   const navigate = useNavigate()
 
   const handleSupportButton = () => {
@@ -32,11 +34,29 @@ const PostDetail = () => {
     }
   }
 
-  //게시글 GET
+  const api = useArticleService()
+
+  const fetch = async () => {
+    try {
+      const result = await api.getDetailArticle(
+        '42beefe5-8a14-4cc5-ace7-9b3c7bc12847',
+      )
+      console.log(result.data)
+      if (result.data) {
+        setPost(result.data)
+      }
+    } catch {}
+  }
+
   useEffect(() => {
-    setPost(dummyData)
-    savePostIdToLocalStorage(id || '')
-  }, [id])
+    fetch()
+  }, [])
+
+  //게시글 GET
+  // useEffect(() => {
+  //   setPost(dummyData)
+  //   savePostIdToLocalStorage(id || '')
+  // }, [id])
 
   if (!post) return null
 
@@ -55,7 +75,7 @@ const PostDetail = () => {
               <StyledPostProfileBox>
                 <StyledUser>
                   <StyledUserImg color="rgb(153, 153, 153)" />
-                  <StyledUserName>{post.author}</StyledUserName>
+                  <StyledUserName>{post.memberUuid}</StyledUserName>
                 </StyledUser>
                 <StyledSeperator></StyledSeperator>
                 <StlyedRegisteredDate>{`${dateFormat(
@@ -85,13 +105,13 @@ const PostDetail = () => {
                   <StyledPostInfoListContent className="recruitment_status">
                     <StyledPostInfoTitle>모집 현황</StyledPostInfoTitle>
                     <ul>
-                      {post.articleRoleDtos.map((value, i) => (
+                      {post.roles.map((role, i) => (
                         <StyledPositionList>
                           <StyledPositionName>
-                            {value.roleName}
+                            {role?.roleName}
                           </StyledPositionName>
                           <StyledPositionCount>
-                            {value.participant}
+                            {role.participant}
                           </StyledPositionCount>
                         </StyledPositionList>
                       ))}
@@ -100,7 +120,7 @@ const PostDetail = () => {
                   <StyledPostInfoListContent className="language">
                     <StyledPostInfoTitle>사용 언어</StyledPostInfoTitle>
                     <StyledLanguageListWrapper>
-                      {post.articleStackDtos.map((item, index) => (
+                      {post.stacks.map((item, index) => (
                         <StyledTech key={index}>
                           <StyledTechImg src={imageMap[item.stackName]} />
                         </StyledTech>
@@ -143,40 +163,26 @@ const PostDetail = () => {
                 <StyledCommentInputButton>댓글등록</StyledCommentInputButton>
               </StyledCommentInputWrppaer>
               <StyledCommentListWrapper>
-                <StyledCommentList>
-                  <div>
-                    <StyledCommentUserInfoWrapper>
-                      <StyledCommentInputProfile className="comment_list" />
-                      <StyledCommentUserInfo>
-                        <StyledCommentUserName>작성자 1</StyledCommentUserName>
-                        <StyledCommentTime>
-                          2023-11-12 18:28:21
-                        </StyledCommentTime>
-                      </StyledCommentUserInfo>
-                    </StyledCommentUserInfoWrapper>
-                  </div>
-                  <StyledCommentContent>
-                    Lorem ipsum, dolor sit amet consectetur adipisicing elit.
-                    Suscipit optio, laudantium quaerat quasi praesentium
-                    possimus tempore velit numquam veniam laboriosam..
-                  </StyledCommentContent>
-                </StyledCommentList>
-                <StyledCommentList>
-                  <div>
-                    <StyledCommentUserInfoWrapper>
-                      <StyledCommentInputProfile className="comment_list" />
-                      <StyledCommentUserInfo>
-                        <StyledCommentUserName>작성자 2</StyledCommentUserName>
-                        <StyledCommentTime>
-                          2023-11-12 18:28:21
-                        </StyledCommentTime>
-                      </StyledCommentUserInfo>
-                    </StyledCommentUserInfoWrapper>
-                  </div>
-                  <StyledCommentContent>
-                    Lorem ipsum, dolor sit amet consectetur adipisicing elit.
-                  </StyledCommentContent>
-                </StyledCommentList>
+                {post.comments.map((comment) => (
+                  <StyledCommentList>
+                    <div>
+                      <StyledCommentUserInfoWrapper>
+                        <StyledCommentInputProfile className="comment_list" />
+                        <StyledCommentUserInfo>
+                          <StyledCommentUserName>
+                            {comment.memeberUuid}
+                          </StyledCommentUserName>
+                          <StyledCommentTime>
+                            {comment.createdAt}
+                          </StyledCommentTime>
+                        </StyledCommentUserInfo>
+                      </StyledCommentUserInfoWrapper>
+                    </div>
+                    <StyledCommentContent>
+                      {comment.content}
+                    </StyledCommentContent>
+                  </StyledCommentList>
+                ))}
               </StyledCommentListWrapper>
             </div>
             {isVisible && (

@@ -11,7 +11,7 @@ export type EstimatedDuration =
 export type MeetingType = 'ONLINE' | 'OFFLINE' | 'ONOFFLINE'
 
 export interface ArticleRole {
-  rolenName: string
+  roleName: string
   participant: number
 }
 
@@ -21,15 +21,29 @@ export interface Stack {
   image: string
 }
 
+export interface Comment {
+  commentId: number
+  content: string
+  createdAt: string
+  memeberUuid: string
+  updatedAt: string
+}
+
 export interface Article {
-  id: string
+  memberUuid: string
+  articleUuid: string
   title: string
   plannedStartAt: string
   expiredAt: string
-  estimatedDurationm: EstimatedDuration
+  estimatedDuration: EstimatedDuration
   articleType: ArticleType
   meetingType: MeetingType
+  roles: ArticleRole[]
   stacks: Stack[]
+  content: string
+  viewCount: number
+  bookmarkCount: number
+  comments: Comment[]
 }
 
 export interface AricleDto {
