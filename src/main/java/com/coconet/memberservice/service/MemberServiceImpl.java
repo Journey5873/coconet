@@ -103,14 +103,14 @@ public class MemberServiceImpl implements MemberService {
 
     public String updateProfilePic(MemberEntity member, MultipartFile image) {
         String absolutePath = new File("").getAbsolutePath() + "/";
-        String path = "member-service/src/main/resources/memberProfilePics";
+        String path = "src/main/resources/memberProfilePics";
 
         if (!image.isEmpty()) {
             String imagePath = path + "/" + member.getId() + ".png";
             File file = new File(absolutePath + imagePath);
 
             try {
-                image.transferTo(file);
+                image.transferTo(file.toPath());
             } catch (IOException e) {
                 throw new ApiException(ErrorCode.SERVER_ERROR, "Error happened when file is created");
             }
