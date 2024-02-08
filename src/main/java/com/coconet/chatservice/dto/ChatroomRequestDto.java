@@ -13,7 +13,7 @@ import static lombok.AccessLevel.PROTECTED;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor(access = PROTECTED)
-public class ChatroomCreateRequestDto {
+public class ChatroomRequestDto {
     private UUID articleUUID;
 }
 

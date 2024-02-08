@@ -41,4 +41,11 @@ public class ChatRoomEntity extends BaseEntity{
     @Column(name = "room_name")
     private String roomName;
 
+    public void leave(UUID memberUUID) {
+        if(applicantUUID.equals(memberUUID))
+            applicantUUID = null;
+        else
+            writerUUID = null;
+    }
+
 }

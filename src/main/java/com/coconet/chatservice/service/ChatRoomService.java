@@ -4,7 +4,8 @@ import com.coconet.chatservice.client.ArticleClient;
 import com.coconet.chatservice.common.errorcode.ErrorCode;
 import com.coconet.chatservice.common.exception.ApiException;
 import com.coconet.chatservice.converter.ChatRoomEntityConverter;
-import com.coconet.chatservice.dto.ChatroomCreateRequestDto;
+import com.coconet.chatservice.dto.ChatRoomDeleteDto;
+import com.coconet.chatservice.dto.ChatroomRequestDto;
 import com.coconet.chatservice.dto.ChatroomResponseDto;
 import com.coconet.chatservice.dto.client.ArticleResponse;
 import com.coconet.chatservice.entity.ChatRoomEntity;
@@ -21,7 +22,13 @@ import java.util.UUID;
 public class ChatRoomService {
     private final ChatRoomRepository chatRoomRepository;
     private final ArticleClient articleClient;
-    public ChatroomResponseDto createRoom(ChatroomCreateRequestDto createRequestDto, @RequestParam UUID memberUUID){
+    private final ChatRoomSubService chatRoomSubService;
+
+    // TODO : the applicant UUID cannot be the same as writerUUID
+    public ChatroomResponseDto createRoom(ChatroomRequestDto createRequestDto, @RequestParam UUID memberUUID){
+        if(chatRoomSubService.existChatRoom(createRequestDto.getArticleUUID(), memberUUID)) {
+            throw new ApiException(ErrorCode.BAD_REQUEST, "Already exist");
+        }
 
         ArticleResponse article = articleClient.sendChatClient(createRequestDto.getArticleUUID()).getData();
 
@@ -30,7 +37,7 @@ public class ChatRoomService {
                 .articleUUID(createRequestDto.getArticleUUID())
                 .applicantUUID(memberUUID)
                 .writerUUID(article.getWriterUUID())
-                .roomName(article.getRoomName())
+                .roomName(chatRoomSubService.punctuateTitle(article.getRoomName()))
                 .build();
 
         ChatRoomEntity newChatRoom = chatRoomRepository.save(chatRoom);
@@ -38,6 +45,7 @@ public class ChatRoomService {
         return ChatRoomEntityConverter.convertToDto(newChatRoom);
     }
 
+    // Todo: Paging
     public List<ChatroomResponseDto> getRooms(UUID memberUUID) {
         List<ChatRoomEntity> chatRoomEntities = chatRoomRepository.findByAllMemberUUID(memberUUID);
 
@@ -52,5 +60,18 @@ public class ChatRoomService {
 
         ChatRoomEntity roomEntity = chatRoomRepository.findByRoomUUID(roomUUID);
         return ChatRoomEntityConverter.convertToDto(roomEntity);
+    }
+
+    // websocket => .. 어떻게 끊죠 ??
+    // 좀더 찾아보기로.
+    public ChatroomResponseDto leaveRoom(UUID memberUUID, ChatRoomDeleteDto chatRoomDeleteDto) {
+        if (!chatRoomRepository.isMember(memberUUID, chatRoomDeleteDto.getRoomUUID()))
+            throw new ApiException(ErrorCode.BAD_REQUEST, "Not Authorised");
+
+        ChatRoomEntity roomEntity = chatRoomRepository
+                .findByRoomUUID(chatRoomDeleteDto.getRoomUUID());
+        roomEntity.leave(memberUUID);
+        ChatRoomEntity response = chatRoomRepository.save(roomEntity);
+        return ChatRoomEntityConverter.convertToDto(response);
     }
 }
