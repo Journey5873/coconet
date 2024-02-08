@@ -7,6 +7,15 @@ export interface ApiResponse<T> {
   errors: any
 }
 
+export interface ApiResponsePageable<T> {
+  data?: T
+  succeeded?: boolean
+  errors: any
+  pageable: Record<string, any>
+  totalPages: number
+  totalElements: number
+}
+
 export interface IBaseRepository<T> {
   get(path: string): Promise<ApiResponse<T>>
   getMany(path: string): Promise<ApiResponse<T[]>>
@@ -24,6 +33,28 @@ const transform = (response: AxiosResponse): Promise<ApiResponse<any>> => {
   return new Promise((resolve, _) => {
     const result: ApiResponse<any> = {
       data: response.data,
+      succeeded: response.status === 200,
+      errors: response.data.errors,
+    }
+    resolve(result)
+  })
+}
+
+/**
+ * 페이징 형태의 응답을 변경
+ * TODO : 필요한 타입 만들기
+ * @param response
+ * @returns
+ */
+const transformPageable = (
+  response: any,
+): Promise<ApiResponsePageable<any>> => {
+  return new Promise((resolve, _) => {
+    const result: ApiResponsePageable<any> = {
+      data: response.data.content,
+      pageable: response.data.pageable,
+      totalPages: response.data.totalPages,
+      totalElements: response.data.totalElements,
       succeeded: response.status === 200,
       errors: response.data.errors,
     }
@@ -51,9 +82,42 @@ export class BaseRepository<T>
     return result as ApiResponse<T[]>
   }
 
+  public async getManyPagable<Dto>(
+    path: string,
+    item: Dto,
+  ): Promise<ApiResponsePageable<T[]>> {
+    const instance = this.createInstance()
+    const result = await instance.post(`/${path}`, item).then(transformPageable)
+    return result as ApiResponsePageable<T[]>
+  }
+
+  public async getManyWithBody<Dto>(
+    path: string,
+    item: Dto,
+  ): Promise<ApiResponse<T[]>> {
+    const instance = this.createInstance()
+    const result = await instance.post(`/${path}`, item).then(transform)
+    return result as ApiResponse<T[]>
+  }
+
   public async create<Dto>(path: string, item: Dto): Promise<ApiResponse<T>> {
     const instance = this.createInstance()
     const result = await instance.post(`/${path}`, item).then(transform)
+    return result as ApiResponse<T>
+  }
+
+  public async createMultiPart<Dto>(
+    path: string,
+    item: Dto,
+  ): Promise<ApiResponse<T>> {
+    const instance = this.createInstance()
+    const result = await instance
+      .post(`/${path}`, item, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      })
+      .then(transform)
     return result as ApiResponse<T>
   }
 
