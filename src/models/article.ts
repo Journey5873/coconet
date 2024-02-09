@@ -45,6 +45,7 @@ export interface Article {
   stacks: Stack[]
   roles: Role[]
   status: number
+  content: string
   updatedAt: string
   viewCount: number
   createdAt: string

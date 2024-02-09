@@ -6,13 +6,16 @@ import { UserProvier } from './api/services/userService'
 import { ArticleProvider } from './api/services/articleService'
 import { Provider } from 'react-redux'
 import store from './store/RootReducer'
+import { ArticleDetailProvider } from './api/services/articleDetialService'
 
 const MultiServiceProvider = ({ children }: PropsWithChildren) => {
   return (
     <>
-      <ArticleProvider>
-        <UserProvier>{children}</UserProvier>
-      </ArticleProvider>
+      <ArticleDetailProvider>
+        <ArticleProvider>
+          <UserProvier>{children}</UserProvier>
+        </ArticleProvider>
+      </ArticleDetailProvider>
     </>
   )
 }

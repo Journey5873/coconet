@@ -9,19 +9,30 @@ import { FaRegThumbsUp } from 'react-icons/fa'
 import { imageMap, dateFormat } from '../../utils/utils'
 import SupportButtonModal from '../../components/molecules/SupportButtonModal'
 import { DummyData, dummyData } from '../../data/data'
-import { useArticleService } from '../../api/services/articleService'
+import { useArticleDetailService } from '../../api/services/articleDetialService'
+import { Article } from '../../models/article'
 
 const PostDetail = () => {
+  const api = useArticleDetailService()
   const [isVisible, setIsVisible] = useState(false)
 
   const { id } = useParams()
 
-  const articleService = useArticleService()
-  const [post, setPost] = useState<DummyData | null>(null)
+  const [post, setPost] = useState<Article>()
   const navigate = useNavigate()
 
   const handleSupportButton = () => {
     setIsVisible(!isVisible)
+  }
+
+  const fetch = async (id: string) => {
+    try {
+      const result = await api.getDetailArticle(id)
+      console.log(result.data)
+      if (result.data) {
+        setPost(result.data)
+      }
+    } catch {}
   }
 
   const savePostIdToLocalStorage = (postId: string) => {
@@ -37,8 +48,13 @@ const PostDetail = () => {
 
   //게시글 GET
   useEffect(() => {
-    setPost(dummyData)
     savePostIdToLocalStorage(id || '')
+  }, [id])
+
+  useEffect(() => {
+    if (id) {
+      fetch(id)
+    }
   }, [id])
 
   if (!post) return null
@@ -123,7 +139,7 @@ const PostDetail = () => {
             </StyledPostHeader>
             <StyledPostContentWrapper>
               <StyledPostInfo>프로젝트 소개</StyledPostInfo>
-              <StyledPostContent>{post.content}</StyledPostContent>
+              <StyledPostContent>{post?.content}</StyledPostContent>
             </StyledPostContentWrapper>
             <StyledViewAndBookmarkCount>
               <StyledViewWrapper>
@@ -307,7 +323,7 @@ const StyledContackPoint = styled.div`
   text-decoration-color: #4a5e75;
 `
 
-const StyledLinkIcon = styled(LinkIcon)`
+const StyledLinkIcon = styled.div`
   width: 16px;
   height: 16px;
 `
