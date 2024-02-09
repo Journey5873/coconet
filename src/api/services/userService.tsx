@@ -9,8 +9,15 @@ export class UserService {
     this.userRepository = userRepository
   }
 
-  async getUser() {
-    return this.userRepository.get('')
+  async getMyProfile() {
+    return this.userRepository.get('member-service/api/my-profile')
+  }
+
+  async updateMyProfile(data: any) {
+    return this.userRepository.updateMultiPart(
+      'member-service/api/my-profile',
+      data,
+    )
   }
 
   async createUser<Dto>(item: Dto) {

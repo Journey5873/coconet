@@ -118,6 +118,21 @@ export class BaseRepository<T>
     return result as ApiResponse<T>
   }
 
+  public async updateMultiPart<Dto>(
+    path: string,
+    item: Dto,
+  ): Promise<ApiResponse<T>> {
+    const instance = this.createInstance()
+    const result = await instance
+      .put(`/${path}`, item, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      })
+      .then(transform)
+    return result as ApiResponse<T>
+  }
+
   public async update<Dto>(
     path: string,
     id: string,
