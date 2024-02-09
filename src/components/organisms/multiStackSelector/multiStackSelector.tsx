@@ -6,6 +6,8 @@ import { imageMap } from '../../../utils/utils'
 
 import { ImCancelCircle } from 'react-icons/im'
 
+import useClose from '../../../hooks/useClose'
+
 import Tabs from '../customTabs/Tabs'
 
 import Tab from '../customTabs/Tab'
@@ -20,10 +22,11 @@ interface Props {
 }
 
 const MultiStackSelector = ({ handleSelected, selected }: Props) => {
+  const { ref } = useClose({ callBack: () => setIsShow(false) })
   const [isShow, setIsShow] = useState<boolean>(false)
   const isSelected = useMemo(() => selected.length > 0, [selected.length])
   return (
-    <StyledContainer>
+    <StyledContainer ref={ref}>
       <div>
         <StyledSelectButton onClick={() => setIsShow((prev) => !prev)}>
           <span>기술 스택</span>

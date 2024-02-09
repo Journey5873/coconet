@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import styled from 'styled-components'
+import useClose from '../../../hooks/useClose'
 
 interface Props {
   title: string
@@ -9,6 +10,7 @@ interface Props {
 }
 
 const FilterSelect = ({ title, options, selected, handleSelected }: Props) => {
+  const { ref } = useClose({ callBack: () => setIsShow(false) })
   const [isShow, setIsShow] = useState<boolean>(false)
 
   const handleClickOptionItem = (value: string) => {
@@ -16,7 +18,7 @@ const FilterSelect = ({ title, options, selected, handleSelected }: Props) => {
     setIsShow(false)
   }
   return (
-    <StyledContainer>
+    <StyledContainer ref={ref}>
       <div>
         <StyledSelectButton onClick={() => setIsShow((prev) => !prev)}>
           <span>{selected || title}</span>

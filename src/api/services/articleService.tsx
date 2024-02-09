@@ -10,10 +10,18 @@ export class ArticleService {
   }
 
   async getAllArticle(articleDto: AricleDto) {
-    return this.articleRepository.create<AricleDto>(
+    return this.articleRepository.getManyPagable<AricleDto>(
       'article-service/open-api/articles',
       articleDto,
     )
+  }
+
+  async getArticleById(id: string) {
+    return this.articleRepository.get(`article-service/open-api/article/${id}`)
+  }
+
+  async getPoplarArticle() {
+    return this.articleRepository.get(`article-service/open-api/popular`)
   }
 }
 

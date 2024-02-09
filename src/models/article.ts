@@ -21,15 +21,35 @@ export interface Stack {
   image: string
 }
 
+export interface Role {
+  roleName: string
+  participant: number
+}
+
+export interface Comment {
+  commentId: string
+  content: string
+  createdAt: string
+  memberUUID: string
+  updatedAt: string
+}
+
 export interface Article {
-  id: string
+  articleUUID: string
   title: string
-  plannedStartAt: string
+  bookmarkCount: number
   expiredAt: string
   estimatedDurationm: EstimatedDuration
   articleType: ArticleType
   meetingType: MeetingType
   stacks: Stack[]
+  roles: Role[]
+  status: number
+  updatedAt: string
+  viewCount: number
+  createdAt: string
+  memberUUID: string
+  plannedStartAt: string
 }
 
 export interface AricleDto {

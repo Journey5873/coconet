@@ -1,26 +1,25 @@
 import styled from 'styled-components'
 import newIcon from '../../assets/images/newIcon.svg'
-import { FaBookmark, FaRegBookmark, FaEye } from 'react-icons/fa'
-import { DummyData } from '../../../data/data'
+import { FaRegBookmark, FaEye } from 'react-icons/fa'
 import { typeMap, imageMap, dateFormat } from '../../../utils/utils'
 import { useNavigate } from 'react-router-dom'
+import { Article } from '../../../models/article'
 
 interface Props {
-  item: DummyData
+  item: Article
 }
 
 const Card = ({ item }: Props) => {
   const navigation = useNavigate()
   const {
-    articleId,
+    articleUUID,
     expiredAt,
     title,
-    articleRoleDtos,
-    articleStackDtos,
+    roles,
+    stacks,
     viewCount,
     articleType,
     meetingType,
-    author,
   } = item
 
   const isPostIdInLocalStorage = (articleId: number): boolean => {
@@ -30,9 +29,9 @@ const Card = ({ item }: Props) => {
   }
 
   return (
-    <StyledCardContainer onClick={() => navigation(`/post/${articleId}`)}>
+    <StyledCardContainer onClick={() => navigation(`/post/${articleUUID}`)}>
       <StyledNewIconWrapper>
-        {!isPostIdInLocalStorage(articleId) && (
+        {!isPostIdInLocalStorage(Number(articleUUID)) && (
           <img width={30} height={30} src={newIcon} />
         )}
       </StyledNewIconWrapper>
@@ -49,20 +48,20 @@ const Card = ({ item }: Props) => {
       )}`}</StyledCardExpired>
       <h2>{title}</h2>
       <div style={{ display: 'flex', columnGap: '4px' }}>
-        {articleRoleDtos.map((item, index) => (
-          <StyledRole key={index}>{typeMap.get(item.roleName)}</StyledRole>
+        {roles.map((role, index) => (
+          <StyledRole key={index}>{typeMap.get(role.roleName)}</StyledRole>
         ))}
       </div>
       <StyledRowWrapper>
-        {articleStackDtos.map((item, index) => (
+        {stacks.slice(0, 5).map((stack, index) => (
           <StyledTech key={index}>
-            <StyledTechImg src={imageMap[item.stackName]} />
+            <StyledTechImg src={imageMap[stack.stackName]} />
           </StyledTech>
         ))}
       </StyledRowWrapper>
       <div style={{ borderTop: '1px solid lightgray', paddingTop: '16px' }}>
         <StyledRowBetweenWrapper>
-          <span>{author}</span>
+          {/* <span>{author}</span> */}
           <StyledRowWrapper>
             <FaEye />
             {viewCount}
