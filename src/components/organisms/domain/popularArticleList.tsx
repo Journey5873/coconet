@@ -2,14 +2,11 @@ import { useState, useEffect } from 'react'
 import { useArticleService } from '../../../api/services/articleService'
 import styled from 'styled-components'
 import { Article } from '../../../models/article'
-import Card from '../../molecules/card/card'
 import PopularCard from '../../molecules/card/popularCard'
 
 const PopularArticleList = () => {
   const articleService = useArticleService()
   const [popularArticles, setPopularArticles] = useState<Article[]>([])
-
-  console.log(popularArticles, 'popularArticles')
 
   const fetchPopularArticle = async () => {
     try {

@@ -1,19 +1,55 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { BiSolidBookBookmark, BiSolidHeart } from 'react-icons/bi'
 import styled from 'styled-components'
-
 import Tabs from '../../components/organisms/customTabs/Tabs'
-
 import Tab from '../../components/organisms/customTabs/Tab'
+import { Article } from '../../models/article'
+import { useArticleService } from '../../api/services/articleService'
+import Card from '../../components/molecules/card/card'
+import BookmarkedCard from '../../components/molecules/card/bookmarkedCard'
 
 const MyLikes = () => {
+  const articleService = useArticleService()
   const [isActive, setIsActive] = useState<boolean>(false)
+  const [bookmarkingArticles, setBookmarkingArticles] = useState<Article[]>([])
+  const [suggestingArticles, setSuggestingArticles] = useState<Article[]>([])
+
+  const fetchBookmarkingArticles = async () => {
+    try {
+      const result = await articleService.getBookmarkedArticle()
+
+      if (result.data) {
+        setBookmarkingArticles(result.data)
+      }
+    } catch (error) {
+      console.log(error)
+      setBookmarkingArticles([])
+    }
+  }
+
+  const fetchSuggestingArticles = async () => {
+    try {
+      const result = await articleService.getSuggestingArticle()
+
+      if (result.data) {
+        setSuggestingArticles(result.data)
+      }
+    } catch (error) {
+      console.log(error)
+      setBookmarkingArticles([])
+    }
+  }
 
   const [value, setValue] = useState('one')
 
   const handleChange = (event: any, newValue: string) => {
     setValue(newValue)
   }
+
+  useEffect(() => {
+    fetchBookmarkingArticles()
+    fetchSuggestingArticles()
+  }, [])
 
   return (
     <StyledMyPostsPageWrapper>
@@ -51,8 +87,26 @@ const MyLikes = () => {
             ]}
           >
             <Tab value="읽은 목록">읽은 목록</Tab>
-            <Tab value="관심 목록">관심 목록</Tab>
-            <Tab value="지원 목록">지원 목록</Tab>
+            <Tab value="관심 목록">
+              <StyledItemWrpper>
+                {bookmarkingArticles.length <= 0 && (
+                  <div>관심 목록이 없습니다.</div>
+                )}
+                {bookmarkingArticles?.map((article) => (
+                  <BookmarkedCard item={article} key={article.articleUUID} />
+                ))}
+              </StyledItemWrpper>
+            </Tab>
+            <Tab value="지원 목록">
+              <StyledItemWrpper>
+                {suggestingArticles.length <= 0 && (
+                  <div>지원 목록이 없습니다.</div>
+                )}
+                {suggestingArticles?.map((article) => (
+                  <Card item={article} key={article.articleUUID} />
+                ))}
+              </StyledItemWrpper>
+            </Tab>
           </Tabs>
         </StyledMypostsMain>
       </StyledMypostsMyLikes>
@@ -81,4 +135,11 @@ const StyledMypostsMyLikes = styled.div`
 const StyledMypostsMain = styled.main`
   display: flex;
   flex-direction: column;
+`
+
+const StyledItemWrpper = styled.div`
+  margin-top: 1rem;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
 `

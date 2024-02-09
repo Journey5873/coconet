@@ -3,7 +3,7 @@ import { useArticleService } from '../api/services/articleService'
 import { Article } from '../models/article'
 import { useSearchParams, useNavigate } from 'react-router-dom'
 import { roleOptions } from '../utils/utils'
-import { useAppDispatch } from '../store/RootReducer'
+import { useAppDispatch, useAppSelector } from '../store/RootReducer'
 import Pagination from '@mui/material/Pagination'
 import CircularProgress from '@mui/material/CircularProgress'
 import MultiStackSelector from '../components/organisms/multiStackSelector/multiStackSelector'
@@ -18,6 +18,7 @@ import { setToken } from '../store/authSlice'
 import PopularArticleList from '../components/organisms/domain/popularArticleList'
 
 const Index = () => {
+  const token = useAppSelector((state) => state.reducer.auth.token)
   const dispatch = useAppDispatch()
   const articleService = useArticleService()
   const navigate = useNavigate()
@@ -57,6 +58,7 @@ const Index = () => {
     bookmark?: boolean
   }) => {
     setIsLoading(true)
+
     try {
       const result = await articleService.getAllArticle(arg)
 
@@ -79,7 +81,7 @@ const Index = () => {
 
   useEffect(() => {
     fetchAllArticle({})
-  }, [])
+  }, [token])
 
   /**
    * 기술을 선택하는 함수

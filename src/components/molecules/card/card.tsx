@@ -5,12 +5,16 @@ import { typeMap, imageMap, dateFormat } from '../../../utils/utils'
 import { useNavigate } from 'react-router-dom'
 import { Article } from '../../../models/article'
 import { useAppSelector } from '../../../store/RootReducer'
+import { useArticleService } from '../../../api/services/articleService'
 
 interface Props {
   item: Article
 }
 
 const Card = ({ item }: Props) => {
+  const token = useAppSelector((state) => state.reducer.auth.token)
+  const articleService = useArticleService()
+
   const navigation = useNavigate()
   const {
     articleUUID,
@@ -29,10 +33,14 @@ const Card = ({ item }: Props) => {
     return postIds.includes(articleId.toString())
   }
 
-  const handleClickBookmark = (event: any) => {
+  const handleClickBookmark = async (event: any) => {
     event.stopPropagation()
 
     // TODO : 로그인 했는지 확인.
+    if (!token) return
+
+    await articleService.bookmarkArticle(articleUUID)
+    alert('bookmarking!!')
   }
 
   return (
@@ -48,22 +56,24 @@ const Card = ({ item }: Props) => {
           <StyledArticleType>{typeMap.get(articleType)}</StyledArticleType>
           <StyledMeetingType>{typeMap.get(meetingType)}</StyledMeetingType>
         </StyledRowWrapper>
-        <FaRegBookmark
-          style={{ fontSize: '32px', color: '#8caf8e' }}
-          onClick={handleClickBookmark}
-        />
+        {token && (
+          <FaRegBookmark
+            style={{ fontSize: '32px', color: '#8caf8e' }}
+            onClick={handleClickBookmark}
+          />
+        )}
       </StyledRowBetweenWrapper>
       <StyledCardExpired>{`마감일 | ${dateFormat(
         expiredAt,
       )}`}</StyledCardExpired>
       <h2>{title}</h2>
       <div style={{ display: 'flex', columnGap: '4px' }}>
-        {roles.map((role, index) => (
+        {roles?.map((role, index) => (
           <StyledRole key={index}>{typeMap.get(role.roleName)}</StyledRole>
         ))}
       </div>
       <StyledRowWrapper>
-        {stacks.slice(0, 5).map((stack, index) => (
+        {stacks?.slice(0, 5).map((stack, index) => (
           <StyledTech key={index}>
             <StyledTechImg src={imageMap[stack.stackName]} />
           </StyledTech>

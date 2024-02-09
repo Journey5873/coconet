@@ -82,7 +82,7 @@ export class BaseRepository<T>
     return result as ApiResponse<T[]>
   }
 
-  public async getManyPagable<Dto>(
+  public async getManyPagableWithBody<Dto>(
     path: string,
     item: Dto,
   ): Promise<ApiResponsePageable<T[]>> {
@@ -91,13 +91,10 @@ export class BaseRepository<T>
     return result as ApiResponsePageable<T[]>
   }
 
-  public async getManyWithBody<Dto>(
-    path: string,
-    item: Dto,
-  ): Promise<ApiResponse<T[]>> {
+  public async getManyPagable(path: string): Promise<ApiResponsePageable<T[]>> {
     const instance = this.createInstance()
-    const result = await instance.post(`/${path}`, item).then(transform)
-    return result as ApiResponse<T[]>
+    const result = await instance.get(`/${path}`).then(transformPageable)
+    return result as ApiResponsePageable<T[]>
   }
 
   public async create<Dto>(path: string, item: Dto): Promise<ApiResponse<T>> {

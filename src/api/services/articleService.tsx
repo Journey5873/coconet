@@ -10,8 +10,15 @@ export class ArticleService {
   }
 
   async getAllArticle(articleDto: AricleDto) {
-    return this.articleRepository.getManyPagable<AricleDto>(
+    return this.articleRepository.getManyPagableWithBody<AricleDto>(
       'article-service/open-api/articles',
+      articleDto,
+    )
+  }
+
+  async getAllArticlePrivate(articleDto: AricleDto) {
+    return this.articleRepository.getManyPagableWithBody<AricleDto>(
+      'article-service/api/articles',
       articleDto,
     )
   }
@@ -22,6 +29,27 @@ export class ArticleService {
 
   async getPoplarArticle() {
     return this.articleRepository.getMany(`article-service/open-api/popular`)
+  }
+
+  async getBookmarkedArticle() {
+    return this.articleRepository.getMany(`article-service/api/bookmark`)
+  }
+
+  async getSuggestingArticle() {
+    return this.articleRepository.getMany(`article-service/api/suggestions`)
+  }
+
+  async getMyArticle() {
+    return this.articleRepository.getManyPagable(
+      `article-service/api/my-articles`,
+    )
+  }
+
+  async bookmarkArticle(articleUUID: string) {
+    return this.articleRepository.create(
+      `article-service/api/bookmark/${articleUUID}`,
+      {},
+    )
   }
 }
 
