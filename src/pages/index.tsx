@@ -3,6 +3,7 @@ import { useArticleService } from '../api/services/articleService'
 import { Article } from '../models/article'
 import { useSearchParams, useNavigate } from 'react-router-dom'
 import { roleOptions } from '../utils/utils'
+import { useAppDispatch } from '../store/RootReducer'
 import Pagination from '@mui/material/Pagination'
 import CircularProgress from '@mui/material/CircularProgress'
 import MultiStackSelector from '../components/organisms/multiStackSelector/multiStackSelector'
@@ -13,8 +14,11 @@ import Tabs from '../components/organisms/customTabs/Tabs'
 import Card from '../components/molecules/card/card'
 import FilterSelect from '../components/atoms/Select/filterSelect'
 import AdditionalModal from '../components/organisms/modal/additionalModal'
+import { setToken } from '../store/authSlice'
+import PopularArticleList from '../components/organisms/domain/popularArticleList'
 
 const Index = () => {
+  const dispatch = useAppDispatch()
   const articleService = useArticleService()
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
@@ -22,9 +26,9 @@ const Index = () => {
     () => searchParams.get('memberId') || '',
     [searchParams.get('memberId')],
   )
-  const token = useMemo(
-    () => searchParams.get('token') || '',
-    [searchParams.get('token')],
+  const accessToken = useMemo(
+    () => searchParams.get('accessToken') || '',
+    [searchParams.get('accessToken')],
   )
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [articleList, setArticleList] = useState<Article[]>([])
@@ -65,6 +69,8 @@ const Index = () => {
         setArticleList(result.data)
       }
     } catch (error) {
+      console.log(error)
+      debugger
       setArticleList([])
     } finally {
       setIsLoading(false)
@@ -119,16 +125,26 @@ const Index = () => {
   useEffect(() => {
     if (memberId) {
       document.body.style.overflow = 'hidden'
+      localStorage.setItem('memberUUID', memberId)
     } else {
       document.body.style.overflow = 'unset'
     }
   }, [memberId])
+
+  useEffect(() => {
+    if (accessToken) {
+      localStorage.setItem('accessToken', accessToken)
+      dispatch(setToken({ token: accessToken }))
+    }
+  }, [accessToken])
 
   return (
     <>
       <div style={{ paddingTop: 125 }}>
         <StyledContents>
           <CustomCarousel />
+          {/* 인기글 추기 */}
+          <PopularArticleList />
           <div style={{ display: 'flex', columnGap: '1.5rem' }}>
             <MultiStackSelector
               handleSelected={hanldeSelected}
@@ -223,6 +239,9 @@ export default Index
 const StyledContents = styled.div`
   width: 1220px;
   margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
 `
 
 const StyledItemWrpper = styled.div`

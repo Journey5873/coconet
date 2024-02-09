@@ -9,10 +9,9 @@ function App() {
   const dispatch = useAppDispatch()
 
   useEffect(() => {
-    const userInfoString = localStorage.getItem('userInfo')
-    if (userInfoString) {
-      const result = JSON.parse(userInfoString)
-      dispatch(setToken(result))
+    const accessToken = localStorage.getItem('accessToken')
+    if (accessToken) {
+      dispatch(setToken({ token: accessToken }))
       console.log('성공')
     }
   }, [])

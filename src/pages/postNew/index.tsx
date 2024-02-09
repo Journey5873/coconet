@@ -8,11 +8,11 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 import MultipleSelect from '../../components/atoms/Select/MultipleSelect'
 import MultipleSelectWithCount from '../../components/atoms/Select/MultipleSelectWithCount'
-import '@toast-ui/editor/dist/toastui-editor.css'
-import { Editor } from '@toast-ui/react-editor'
+// import '@toast-ui/editor/dist/toastui-editor.css'
+// import { Editor } from '@toast-ui/react-editor'
 
 export default function PostNew() {
-  const editorRef = useRef<Editor>(null)
+  // const editorRef = useRef<Editor>(null)
   // 모집 구분
   const [category, setCategory] = useState<SelectValue>({
     label: '',
@@ -41,12 +41,12 @@ export default function PostNew() {
   })
   const handleStack = (value: SelectValue) => setStack(value)
 
-  const onSave = () => {
-    // 입력창에 입력한 내용을 HTML 태그 형태로 취득
-    console.log(editorRef.current?.getInstance().getHTML())
-    // 입력창에 입력한 내용을 MarkDown 형태로 취득
-    console.log(editorRef.current?.getInstance().getMarkdown())
-  }
+  // const onSave = () => {
+  //   // 입력창에 입력한 내용을 HTML 태그 형태로 취득
+  //   console.log(editorRef.current?.getInstance().getHTML())
+  //   // 입력창에 입력한 내용을 MarkDown 형태로 취득
+  //   console.log(editorRef.current?.getInstance().getMarkdown())
+  // }
 
   return (
     <PostRegisterWrapper>
@@ -120,13 +120,13 @@ export default function PostNew() {
             프로젝트에 대해 소개해주세요.
           </StyledSelectSectionTitle>
         </StyledSelectSection>
-        <Editor
+        {/* <Editor
           ref={editorRef}
           previewStyle="vertical"
           height="800px"
           initialEditType="wysiwyg"
           initialValue="프로젝트에 대해 소개해주세요."
-        />
+        /> */}
       </section>
     </PostRegisterWrapper>
   )

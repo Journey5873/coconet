@@ -47,10 +47,10 @@ const MultiStackSelector = ({ handleSelected, selected }: Props) => {
             <StyledStackWrapper>
               {skillData.all.map((skill, index) => (
                 <StyledSpecButton
+                  key={index}
                   isSelected={isSelected && selected.indexOf(skill.value) < 0}
                 >
                   <SpecButton
-                    key={index}
                     label={skill.label}
                     iconUrl={imageMap[skill.label]}
                     onClick={() => handleSelected(skill.value)}
@@ -63,10 +63,10 @@ const MultiStackSelector = ({ handleSelected, selected }: Props) => {
             <StyledStackWrapper>
               {skillData.frontend.map((skill, index) => (
                 <StyledSpecButton
+                  key={index}
                   isSelected={isSelected && selected.indexOf(skill.value) < 0}
                 >
                   <SpecButton
-                    key={index}
                     label={skill.label}
                     iconUrl={imageMap[skill.label]}
                     onClick={() => handleSelected(skill.value)}
@@ -79,10 +79,10 @@ const MultiStackSelector = ({ handleSelected, selected }: Props) => {
             <StyledStackWrapper>
               {skillData.backend.map((skill, index) => (
                 <StyledSpecButton
+                  key={index}
                   isSelected={isSelected && selected.indexOf(skill.value) < 0}
                 >
                   <SpecButton
-                    key={index}
                     label={skill.label}
                     iconUrl={imageMap[skill.label]}
                     onClick={() => handleSelected(skill.value)}
@@ -95,10 +95,10 @@ const MultiStackSelector = ({ handleSelected, selected }: Props) => {
             <StyledStackWrapper>
               {skillData.mobile.map((skill, index) => (
                 <StyledSpecButton
+                  key={index}
                   isSelected={isSelected && selected.indexOf(skill.value) < 0}
                 >
                   <SpecButton
-                    key={index}
                     label={skill.label}
                     iconUrl={imageMap[skill.label]}
                     onClick={() => handleSelected(skill.value)}
@@ -111,10 +111,10 @@ const MultiStackSelector = ({ handleSelected, selected }: Props) => {
             <StyledStackWrapper>
               {skillData.etc.map((skill, index) => (
                 <StyledSpecButton
+                  key={index}
                   isSelected={isSelected && selected.indexOf(skill.value) < 0}
                 >
                   <SpecButton
-                    key={index}
                     label={skill.label}
                     iconUrl={imageMap[skill.label]}
                     onClick={() => handleSelected(skill.value)}
@@ -132,8 +132,8 @@ const MultiStackSelector = ({ handleSelected, selected }: Props) => {
             alignItems: 'center',
           }}
         >
-          {selected?.map((skill) => (
-            <StyledSelectedButton>
+          {selected?.map((skill, index) => (
+            <StyledSelectedButton key={index}>
               <span>{skill}</span>
               <ImCancelCircle onClick={() => handleSelected(skill)} />
             </StyledSelectedButton>

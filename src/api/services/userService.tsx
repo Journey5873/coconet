@@ -14,7 +14,7 @@ export class UserService {
   }
 
   async createUser<Dto>(item: Dto) {
-    return this.userRepository.create<Dto>(
+    return this.userRepository.createMultiPart<Dto>(
       'member-service/open-api/register',
       item,
     )
@@ -30,6 +30,12 @@ export class UserService {
 
   async test() {
     console.log('test')
+  }
+
+  async checkUsername(name: string) {
+    return this.userRepository.get(
+      `member-service/open-api/memberNameCheck/${name}`,
+    )
   }
 }
 

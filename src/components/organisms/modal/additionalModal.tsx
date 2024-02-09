@@ -7,9 +7,12 @@ import CustomInput from '../../atoms/Input'
 import { StyledFlexRowBox } from '../../common/common'
 import SingleSelect from '../../atoms/Select/SingleSelect'
 import { SelectValue } from '../../../pages/setting'
-import MultipleSelect from '../../atoms//Select/MultipleSelect'
-import apiService from '../../../utils/apiService'
 import { useUserService } from '../../../api/services/userService'
+
+import { useAppDispatch } from '../../../store/RootReducer'
+import { setToken } from '../../../store/authSlice'
+import { useDropzone } from 'react-dropzone'
+import MultipleSelect from '../../atoms//Select/MultipleSelect'
 
 export type RegisterDto = {
   memberId: string
@@ -17,11 +20,10 @@ export type RegisterDto = {
   career: number
   roles: string[]
   stacks: string[]
-  bio?: string
-  githubLink?: string
-  blogLink?: string
-  notionLink?: string
-  imageFile: string
+  bio: string
+  githubLink: string
+  blogLink: string
+  notionLink: string
 }
 
 interface Props {
@@ -33,7 +35,22 @@ interface Props {
 }
 
 const AdditionalModal = ({ open, handleClose, memberId }: Props) => {
+  const { open: dropzoneOpen } = useDropzone({
+    onDrop: (acceptedFiles, fileRejections, event) => {
+      const file = acceptedFiles[0]
+
+      if (file) {
+        const reader = new FileReader()
+        reader.onloadend = () => {
+          setThumnail(reader.result as string)
+        }
+        reader.readAsDataURL(file)
+        setImageFile(file)
+      }
+    },
+  })
   const userService = useUserService()
+  const dispatch = useAppDispatch()
   const [tab, setTab] = useState<number>(1)
   const [additinalValue, setAdditionalValue] = useState<Record<string, any>>({
     nickname: '',
@@ -47,6 +64,8 @@ const AdditionalModal = ({ open, handleClose, memberId }: Props) => {
     },
   })
   const [stacks, setStacks] = useState<SelectValue[]>([])
+  const [imageFile, setImageFile] = useState<File | null>(null)
+  const [thumnail, setThumnail] = useState<string>('')
 
   const handelChangeAdditionalValue = (e: any) => {
     const { name, value } = e.target
@@ -62,9 +81,11 @@ const AdditionalModal = ({ open, handleClose, memberId }: Props) => {
   const handleStack = (value: SelectValue[]) => setStacks(value)
 
   const onRegister = async () => {
+    const formData = new FormData()
+
     try {
-      const registerInfo: RegisterDto = {
-        memberId,
+      const requestDto: any = {
+        memberUUID: memberId,
         career: additinalValue.career.value,
         name: additinalValue.nickname,
         roles: [additinalValue.roles.value],
@@ -73,18 +94,17 @@ const AdditionalModal = ({ open, handleClose, memberId }: Props) => {
         githubLink: '',
         blogLink: '',
         notionLink: '',
-        imageFile: '',
       }
 
-      console.log(registerInfo, 'registerInfo')
+      formData.append(
+        'requestDto',
+        new Blob([JSON.stringify(requestDto)], { type: 'application/json' }),
+      )
+      formData.append('imageFile', imageFile!)
 
-      const result = await userService.createUser<RegisterDto>(registerInfo)
+      const result = await userService.createUser<FormData>(formData)
 
-      console.log(result)
-      // const response = await apiService.register(registerInfo)
-      // const result = await response.data
-
-      // console.log(result)
+      console.log(result, 'result')
     } catch (error) {
       console.log(error)
     }
@@ -123,11 +143,21 @@ const AdditionalModal = ({ open, handleClose, memberId }: Props) => {
                   <div style={{ alignSelf: 'center' }}>
                     <StyledFlexRowBox>
                       <StyledButton
-                        onClick={() => {
+                        onClick={async () => {
                           if (!additinalValue?.nickname) {
                             alert('닉네임을 입력해주세요.')
                             return
                           }
+
+                          const isValid = await userService.checkUsername(
+                            additinalValue?.nickname,
+                          )
+
+                          if (isValid.data) {
+                            alert('중복된 닉네임 입니다.')
+                            return
+                          }
+
                           setTab(2)
                         }}
                       >
@@ -208,6 +238,56 @@ const AdditionalModal = ({ open, handleClose, memberId }: Props) => {
                         onClick={() => {
                           if (!stacks.length) {
                             alert('관심 기술을 입력해주세요.')
+                            return
+                          }
+
+                          setTab(4)
+                        }}
+                      >
+                        다음
+                      </StyledButton>
+                    </StyledFlexRowBox>
+                  </div>
+                </StyledContentsWrapper>
+              </>
+            )}
+
+            {tab === 4 && (
+              <>
+                <div style={{ alignSelf: 'start' }}>
+                  <StyledBackButton onClick={() => setTab(2)}>
+                    <MdArrowBackIos />
+                  </StyledBackButton>
+                </div>
+                <StyledLoginTitle>이미지를 업로드해주세요.</StyledLoginTitle>
+                <StyledContentsWrapper>
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    {thumnail ? (
+                      <img
+                        src={thumnail}
+                        width={200}
+                        height={200}
+                        onClick={() => dropzoneOpen()}
+                      />
+                    ) : (
+                      <StyleImageAddButton onClick={() => dropzoneOpen()}>
+                        +
+                      </StyleImageAddButton>
+                    )}
+                  </div>
+
+                  <div style={{ alignSelf: 'center' }}>
+                    <StyledFlexRowBox>
+                      <StyledButton
+                        onClick={() => {
+                          if (!imageFile) {
+                            alert('프로필 이미지를 업로드해주세요')
                             return
                           }
 
@@ -343,4 +423,14 @@ const StyledButton = styled.button`
 const StyledBackButton = styled.div`
   cursor: pointer;
   font-size: 20px;
+`
+
+const StyleImageAddButton = styled.div`
+  width: 100px;
+  height: 100px;
+  border: 1px dotted black;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
 `

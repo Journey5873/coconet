@@ -21,7 +21,7 @@ export class ArticleService {
   }
 
   async getPoplarArticle() {
-    return this.articleRepository.get(`article-service/open-api/popular`)
+    return this.articleRepository.getMany(`article-service/open-api/popular`)
   }
 }
 

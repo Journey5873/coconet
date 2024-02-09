@@ -102,18 +102,41 @@ type Skill = { value: string; label: string }
 
 type SkillCategory = 'all' | 'frontend' | 'backend' | 'mobile' | 'etc'
 
+// ‘Java’
+// ‘Spring’
+// ‘Node.js’
+// ‘Kotlin’
+// ‘Python’
+// ‘Django’
+// ‘Mysql’
+// ‘MongoDB’
+// ‘net’
+// ‘JavaScript’
+// ‘React’
+// ‘TypeScript’
+// ‘Next.js’
+// ‘Flutter’
+// ‘Swift’
+// ‘AWS’
+// ‘Docker’
+// ‘Figma’
+// ‘Git’
+// ‘Jenkins’
+// ‘Jira’
+// ‘Unity’
+
 export const skillData: Record<SkillCategory, Skill[]> = {
   all: [
     { value: 'JavaScript', label: 'JavaScript' },
     { value: 'TypeScript', label: 'TypeScript' },
     { value: 'React', label: 'React' },
-    { value: 'Vue', label: 'Vue' },
+    // { value: 'Vue', label: 'Vue' },
     { value: 'Node.js', label: 'Nodejs' },
     { value: 'Java', label: 'Java' },
     { value: 'Spring', label: 'Spring' },
     { value: 'Kotlin', label: 'Kotlin' },
-    { value: 'C++', label: 'C++' },
-    { value: 'Go', label: 'Go' },
+    // { value: 'C++', label: 'C++' },
+    // { value: 'Go', label: 'Go' },
     { value: 'Python', label: 'Python' },
     { value: 'Django', label: 'Django' },
     { value: 'Flutter', label: 'Flutter' },
@@ -126,16 +149,16 @@ export const skillData: Record<SkillCategory, Skill[]> = {
     { value: 'Git', label: 'Git' },
     { value: 'Figma', label: 'Figma' },
     { value: 'Zeplin', label: 'Zeplin' },
-    { value: 'Jest', label: 'Jest' },
+    // { value: 'Jest', label: 'Jest' },
   ],
   backend: [
-    { value: 'Node.js', label: 'Nodejs' },
+    { value: 'Node.js', label: 'Node.js' },
     { value: 'Java', label: 'Java' },
     { value: 'Spring', label: 'Spring' },
   ],
   etc: [
-    { value: 'C++', label: 'C++' },
-    { value: 'Go', label: 'Go' },
+    // { value: 'C++', label: 'C++' },
+    // { value: 'Go', label: 'Go' },
     { value: 'Python', label: 'Python' },
     { value: 'Unity', label: 'Unity' },
     { value: 'AWS', label: 'AWS' },
@@ -148,9 +171,9 @@ export const skillData: Record<SkillCategory, Skill[]> = {
     { value: 'JavaScript', label: 'JavaScript' },
     { value: 'TypeScript', label: 'TypeScript' },
     { value: 'React', label: 'React' },
-    { value: 'Vue', label: 'Vue' },
+    // { value: 'Vue', label: 'Vue' },
     { value: 'Next.js', label: 'Next.js' },
-    { value: 'Jest', label: 'Jest' },
+    // { value: 'Jest', label: 'Jest' },
   ],
   mobile: [
     { value: 'Kotlin', label: 'Kotlin' },

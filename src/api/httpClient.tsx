@@ -20,9 +20,10 @@ export abstract class HttpClient {
 
     this.instance.interceptors.request.use(
       (config) => {
-        const token = localStorage?.getItem('token')
-        if (token) {
-          config.headers.common['Authorization'] = `Bearer ${token}`
+        const accessToken = localStorage?.getItem('accessToken')
+        console.log(accessToken, 'accessToken')
+        if (accessToken) {
+          config.headers.Authorization = `Bearer ${accessToken}`
         }
         return config
       },
@@ -42,6 +43,18 @@ export abstract class HttpClient {
 
   private handleResponse = ({ data }: AxiosResponse): AxiosResponse => data
 
-  private handleError = (error: AxiosError): Promise<AxiosError> =>
-    Promise.reject(error)
+  private handleError = (error: AxiosError): Promise<AxiosError> => {
+    // const originalRequest = error.config;
+    // if (error.response?.status === 401 && !originalRequest?._retry) {
+    //   originalRequest._retry = true;
+    //   try {
+    //     const newToken = await this.refreshToken();
+    //     localStorage.setItem('accessToken', newToken);
+    //     return this.instance.request(originalRequest);
+    //   } catch (refreshError) {
+    //     return Promise.reject(refreshError);
+    //   }
+    // }
+    return Promise.reject(error)
+  }
 }

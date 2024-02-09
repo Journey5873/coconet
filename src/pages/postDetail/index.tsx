@@ -9,11 +9,14 @@ import { FaRegThumbsUp } from 'react-icons/fa'
 import { imageMap, dateFormat } from '../../utils/utils'
 import SupportButtonModal from '../../components/molecules/SupportButtonModal'
 import { DummyData, dummyData } from '../../data/data'
+import { useArticleService } from '../../api/services/articleService'
 
 const PostDetail = () => {
   const [isVisible, setIsVisible] = useState(false)
 
   const { id } = useParams()
+
+  const articleService = useArticleService()
   const [post, setPost] = useState<DummyData | null>(null)
   const navigate = useNavigate()
 
