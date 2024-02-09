@@ -10,10 +10,13 @@ interface Props {
   handleLoginModalVisible: () => void
 }
 
+// 구글 로그인
+const googleURL = `http://localhost:8000/member-service/open-api/oauth2/authorize/google`
+
 // 깃헙 로그인
 const githubURL = `http://localhost:8000/member-service/open-api/oauth2/authorize/github`
-const handleLogin = () => {
-  window.location.href = githubURL
+const handleLogin = (url: string) => {
+  window.location.href = url
 }
 
 export default function LoginModal({ handleLoginModalVisible }: Props) {
@@ -36,13 +39,13 @@ export default function LoginModal({ handleLoginModalVisible }: Props) {
                 <StyledButton>
                   <GoogleLogo />
                 </StyledButton>
-                <StyledButtonDescription href="http://localhost:8000/member-service/open-api/oauth2/authorize/google">
+                <StyledButtonDescription onClick={() => handleLogin(googleURL)}>
                   Google 로그인
                 </StyledButtonDescription>
               </StyledBottonWrapper>
               <StyledBottonWrapper>
                 <StyledButton style={{ backgroundColor: '#272e33' }}>
-                  <GithubLogo onClick={handleLogin} />
+                  <GithubLogo onClick={() => handleLogin(githubURL)} />
                 </StyledButton>
                 <StyledButtonDescription>Github 로그인</StyledButtonDescription>
               </StyledBottonWrapper>

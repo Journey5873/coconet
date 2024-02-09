@@ -58,63 +58,68 @@ const PostDetail = () => {
               <StyledPostProfileBox>
                 <StyledUser>
                   <StyledUserImg color="rgb(153, 153, 153)" />
-                  <StyledUserName>{post.author}</StyledUserName>
+                  {/* {
+                                post.userImage
+                                ? <StyledUserImg src="../../components/assets/images/Logo.svg" />
+                                : <Logo />
+                            }     */}
+                  <StyledUserName>코코넷</StyledUserName>
                 </StyledUser>
                 <StyledSeperator></StyledSeperator>
-                <StlyedRegisteredDate>{`${dateFormat(
-                  post.expiredAt,
-                )}`}</StlyedRegisteredDate>
+                <StlyedRegisteredDate>2023.10.31</StlyedRegisteredDate>
               </StyledPostProfileBox>
               <StyledPostInfoWrapper>
                 <StyledPostInfoList>
                   <StyledPostInfoListContent>
                     <StyledPostInfoTitle>모집 구분</StyledPostInfoTitle>
-                    <span>{post.articleType}</span>
+                    <span>프로젝트</span>
                   </StyledPostInfoListContent>
                   <StyledPostInfoListContent>
                     <StyledPostInfoTitle>진행 방식</StyledPostInfoTitle>
-                    <span>{post.meetingType}</span>
+                    <span>온라인</span>
+                  </StyledPostInfoListContent>
+                  <StyledPostInfoListContent>
+                    <StyledPostInfoTitle>모집 인원</StyledPostInfoTitle>
+                    <span>1명</span>
                   </StyledPostInfoListContent>
                   <StyledPostInfoListContent>
                     <StyledPostInfoTitle>시작 예정</StyledPostInfoTitle>
-                    <span>{`${dateFormat(post.plannedStartAt)}`}</span>
+                    <span>2023.11.19</span>
+                  </StyledPostInfoListContent>
+                  <StyledPostInfoListContent>
+                    <StyledPostInfoTitle>연락 방법</StyledPostInfoTitle>
+                    <StyledContackPoint>
+                      <div>이메일</div>
+                      <StyledLinkIcon />
+                    </StyledContackPoint>
                   </StyledPostInfoListContent>
                   <StyledPostInfoListContent>
                     <StyledPostInfoTitle>예상 기간</StyledPostInfoTitle>
-                    <span>{post.estimatedDuration}</span>
+                    <span>2개월</span>
                   </StyledPostInfoListContent>
                 </StyledPostInfoList>
                 <StyledPostInfoRemains>
-                  <StyledPostInfoListContent className="recruitment_status">
-                    <StyledPostInfoTitle>모집 현황</StyledPostInfoTitle>
-                    <ul>
-                      {post.articleRoleDtos.map((value, i) => (
-                        <StyledPositionList>
-                          <StyledPositionName>
-                            {value.roleName}
-                          </StyledPositionName>
-                          <StyledPositionCount>
-                            {value.participant}
-                          </StyledPositionCount>
-                        </StyledPositionList>
-                      ))}
-                    </ul>
+                  <StyledPostInfoListContent>
+                    <StyledPostInfoTitle>모집 분야</StyledPostInfoTitle>
+                    <StyledLanguageList>
+                      <StyledPostInfoPositions>
+                        프론트엔드
+                      </StyledPostInfoPositions>
+                      <StyledPostInfoPositions>
+                        안드로이드
+                      </StyledPostInfoPositions>
+                    </StyledLanguageList>
                   </StyledPostInfoListContent>
-                  <StyledPostInfoListContent className="language">
+                  <StyledPostInfoListContent>
                     <StyledPostInfoTitle>사용 언어</StyledPostInfoTitle>
-                    <StyledLanguageListWrapper>
-                      {post.articleStackDtos.map((item, index) => (
-                        <StyledTech key={index}>
-                          <StyledTechImg src={imageMap[item.stackName]} />
-                        </StyledTech>
-                      ))}
-                    </StyledLanguageListWrapper>
+                    <ul>
+                      <li>
+                        <img src="" alt="" />
+                      </li>
+                    </ul>
                   </StyledPostInfoListContent>
                 </StyledPostInfoRemains>
               </StyledPostInfoWrapper>
-              <StyledSupportButton onClick={() => handleSupportButton()}>
-                지원하기
-              </StyledSupportButton>
             </StyledPostHeader>
             <StyledPostContentWrapper>
               <StyledPostInfo>프로젝트 소개</StyledPostInfo>
@@ -123,71 +128,14 @@ const PostDetail = () => {
             <StyledViewAndBookmarkCount>
               <StyledViewWrapper>
                 <StyledViewImg />
-                <StyledViewcount>{post.viewCount}</StyledViewcount>
+                <StyledViewcount>31</StyledViewcount>
               </StyledViewWrapper>
               <StyledBookmarkWrapper>
                 <StyledBoockmarkImg />
-                <StyledViewcount>{post.bookmarkCount}</StyledViewcount>
+                <StyledViewcount>0</StyledViewcount>
               </StyledBookmarkWrapper>
             </StyledViewAndBookmarkCount>
-            <div style={{ marginBottom: 80 }}>
-              <StyledCommentInputWrppaer>
-                <StyledCommentTitle>
-                  댓글<span style={{ marginLeft: 6 }}>0</span>
-                </StyledCommentTitle>
-                <StyledCommentInputContainer>
-                  <StyledCommentInputProfile />
-                  <StyledCommentInputTextArea
-                    name="comment"
-                    id="comment"
-                    placeholder="댓글을 입력하세요."
-                  ></StyledCommentInputTextArea>
-                </StyledCommentInputContainer>
-                <StyledCommentInputButton>댓글등록</StyledCommentInputButton>
-              </StyledCommentInputWrppaer>
-              <StyledCommentListWrapper>
-                <StyledCommentList>
-                  <div>
-                    <StyledCommentUserInfoWrapper>
-                      <StyledCommentInputProfile className="comment_list" />
-                      <StyledCommentUserInfo>
-                        <StyledCommentUserName>작성자 1</StyledCommentUserName>
-                        <StyledCommentTime>
-                          2023-11-12 18:28:21
-                        </StyledCommentTime>
-                      </StyledCommentUserInfo>
-                    </StyledCommentUserInfoWrapper>
-                  </div>
-                  <StyledCommentContent>
-                    Lorem ipsum, dolor sit amet consectetur adipisicing elit.
-                    Suscipit optio, laudantium quaerat quasi praesentium
-                    possimus tempore velit numquam veniam laboriosam..
-                  </StyledCommentContent>
-                </StyledCommentList>
-                <StyledCommentList>
-                  <div>
-                    <StyledCommentUserInfoWrapper>
-                      <StyledCommentInputProfile className="comment_list" />
-                      <StyledCommentUserInfo>
-                        <StyledCommentUserName>작성자 2</StyledCommentUserName>
-                        <StyledCommentTime>
-                          2023-11-12 18:28:21
-                        </StyledCommentTime>
-                      </StyledCommentUserInfo>
-                    </StyledCommentUserInfoWrapper>
-                  </div>
-                  <StyledCommentContent>
-                    Lorem ipsum, dolor sit amet consectetur adipisicing elit.
-                  </StyledCommentContent>
-                </StyledCommentList>
-              </StyledCommentListWrapper>
-            </div>
-            {isVisible && (
-              <SupportButtonModal
-                isVisible={isVisible}
-                handleSupportButton={handleSupportButton}
-              />
-            )}
+            <div style={{ marginBottom: 80 }}></div>
           </>
         ) : (
           <Loader />
@@ -206,7 +154,7 @@ const StyledPostDetail = styled.div`
   display: flex;
   flex-direction: column;
   margin: 0 auto;
-  padding: 85px 24px;
+  padding: 1.5rem 1.5rem 5rem;
 `
 
 const StyledPostHeader = styled.section`
@@ -282,10 +230,6 @@ const StyledPostInfoList = styled.ul`
   list-style: none;
   justify-content: space-between;
   row-gap: 24px;
-
-  @media screen and (max-width: 600px) {
-    flex-direction: column;
-  }
 `
 
 const StyledPostInfoRemains = styled.div`
@@ -293,41 +237,22 @@ const StyledPostInfoRemains = styled.div`
   margin-top: 24px;
 `
 
-const StyledPositionList = styled.li`
+const StyledLanguageList = styled.ul`
   display: flex;
-  flex-direction: row;
   align-items: center;
-  margin-bottom: 8px;
+  grid-gap: 12px;
+  gap: 12px;
+  list-style: none;
 `
-
-const StyledPositionName = styled.h2`
-  width: 100px;
-  font-size: 15px;
-  line-height: 1.3125rem;
-  margin-right: 30px;
+const StyledPostInfoPositions = styled.li`
+  padding: 6px 10px;
+  background: #f2f4f8;
+  border-radius: 15px;
   font-weight: 700;
-`
-
-const StyledPositionCount = styled.span`
-  font-size: 15px;
-  line-height: 1.3125rem;
-  color: #424251;
-  margin-right: 34px;
-`
-
-const StyledSupportButton = styled.button`
-  margin: 0 auto;
-  margin-top: 61px;
-  width: 180px;
-  height: 50px;
-  background: #8caf8e;
-  border-radius: 50px;
-  border: 1px solid #8caf8e;
-  font-weight: 700;
-  color: #fff;
-  font-size: 16px;
-  line-height: 40px;
-  cursor: pointer;
+  font-size: 14px;
+  line-height: 16px;
+  text-align: center;
+  color: #4a5e75;
 `
 
 const StyledPostInfoListContent = styled.li`
@@ -337,40 +262,6 @@ const StyledPostInfoListContent = styled.li`
   align-items: center;
   font-weight: 700;
   font-size: 20px;
-
-  &.recruitment_status {
-    width: 100%;
-  }
-  &.language {
-    width: 100%;
-    margin-top: 24px;
-  }
-
-  @media screen and (max-width: 600px) {
-    width: 100%;
-  }
-`
-
-const StyledLanguageListWrapper = styled.ul`
-  list-style: none;
-  display: flex;
-  gap: 15px;
-`
-const StyledTech = styled.li`
-  width: 50px;
-  height: 50px;
-  aspect-ratio: 1/1;
-  border: 1px solid lightgray;
-  border-radius: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`
-
-const StyledTechImg = styled.img`
-  width: 90%;
-  height: 90%;
-  object-fit: cover;
 `
 
 const StyledPostInfoTitle = styled.span`
@@ -379,7 +270,7 @@ const StyledPostInfoTitle = styled.span`
 `
 
 const StyledPostContentWrapper = styled.div`
-  margin-top: 44px;
+  margin-top: 132px;
   font-size: 1.125rem;
   word-break: break-all;
   line-height: 1.7;
@@ -398,6 +289,27 @@ const StyledPostInfo = styled.h2`
 const StyledPostContent = styled.div`
   width: 100%;
   margin: 40px auto 0;
+`
+
+const StyledContackPoint = styled.div`
+  cursor: pointer;
+  display: flex;
+  grid-gap: 4px;
+  gap: 4px;
+  position: absolute;
+  background: #f2f4f8;
+  padding: 4px 8px;
+  border-radius: 10px;
+  color: #4a5e75;
+  left: 114px;
+  font-size: 14px;
+  text-decoration-line: underline;
+  text-decoration-color: #4a5e75;
+`
+
+const StyledLinkIcon = styled(LinkIcon)`
+  width: 16px;
+  height: 16px;
 `
 
 const StyledViewAndBookmarkCount = styled.section`
@@ -440,109 +352,4 @@ const StyledBookmarkWrapper = styled.div`
   align-items: center;
   gap: 5px;
   cursor: pointer;
-`
-
-const StyledCommentInputWrppaer = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  margin-top: 100px;
-`
-
-const StyledCommentTitle = styled.div`
-  margin-bottom: 15px;
-  font-size: 18px;
-  font-weight: 700;
-
-  span {
-    line-height: 24px;
-    color: #939393;
-  }
-`
-
-const StyledCommentInputContainer = styled.div`
-  display: flex;
-  grid-gap: 15px;
-  gap: 15px;
-`
-
-const StyledCommentInputProfile = styled(CoconutIcon)`
-  display: block;
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-
-  &.comment_list {
-    width: 52px;
-    height: 52px;
-    margin-right: 16px;
-    object-fit: cover;
-  }
-`
-
-const StyledCommentInputTextArea = styled.textarea`
-  font-family: inherit;
-  padding: 1rem 1rem 1.5rem;
-  outline: none;
-  border: 2px solid #e1e1e1;
-  border-radius: 16px;
-  width: 100%;
-  min-height: 100px;
-  margin-bottom: 10px;
-  resize: none;
-`
-const StyledCommentInputButton = styled.button`
-  margin: 16px 0 24px;
-  margin-left: auto;
-  width: 120px;
-  height: 40px;
-  background: #333;
-  border-radius: 50px;
-  font-weight: 700;
-  color: #fff;
-  font-size: 16px;
-  line-height: 40px;
-  cursor: pointer;
-`
-
-const StyledCommentListWrapper = styled.div``
-
-const StyledCommentList = styled.li`
-  display: flex;
-  flex-direction: column;
-  padding-top: 1.5rem;
-  padding-bottom: 1.5rem;
-  border-bottom: 2px solid #e1e1e1;
-`
-
-const StyledCommentUserInfoWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  margin-bottom: 18px;
-`
-
-const StyledCommentUserInfo = styled.div`
-  display: flex;
-  flex-direction: column;
-  font-weight: 700;
-`
-
-const StyledCommentUserName = styled.div`
-  color: #333;
-  font-weight: 700;
-`
-
-const StyledCommentTime = styled.div`
-  font-size: 14px;
-  line-height: 126.5%;
-  letter-spacing: -0.005em;
-  color: #9f9f9f;
-`
-
-const StyledCommentContent = styled.p`
-  font-size: 1.125rem;
-  line-height: 1.7;
-  letter-spacing: -0.004em;
-  word-break: break-all;
-  overflow-wrap: break-all;
 `
