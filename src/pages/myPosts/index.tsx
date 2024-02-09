@@ -1,7 +1,31 @@
+import { useState, useEffect } from 'react'
 import { BiSolidBookHeart } from 'react-icons/bi'
 import styled from 'styled-components'
+import { Article } from '../../models/article'
+import { useArticleService } from '../../api/services/articleService'
+import Card from '../../components/molecules/card/card'
 
 const MyPosts = () => {
+  const articleService = useArticleService()
+  const [myArticles, setMyArticles] = useState<Article[]>([])
+
+  const fetchMyArticles = async () => {
+    try {
+      const result = await articleService.getMyArticle()
+
+      if (result.data) {
+        setMyArticles(result.data)
+      }
+    } catch (error) {
+      console.log(error)
+      setMyArticles([])
+    }
+  }
+
+  useEffect(() => {
+    fetchMyArticles()
+  }, [])
+
   return (
     <StyledMyPostsPageWrapper>
       <StyledMypostsMyLikes>
@@ -15,6 +39,14 @@ const MyPosts = () => {
               <StyledMypostsText>작성 목록</StyledMypostsText>
             </StyledMypostsCategoryItem>
           </StyledMypostsCategory>
+          <StyledItemWrpper>
+            {myArticles.length <= 0 && (
+              <div style={{ fontSize: '1rem' }}>작성 목록이 없습니다.</div>
+            )}
+            {myArticles?.map((article) => (
+              <Card item={article} key={article.articleUUID} />
+            ))}
+          </StyledItemWrpper>
         </StyledMypostsMain>
       </StyledMypostsMyLikes>
     </StyledMyPostsPageWrapper>
@@ -62,4 +94,11 @@ const StyledMypostsCategoryItem = styled.div`
 const StyledMypostsText = styled.span`
   margin-left: 0.5rem;
   color: #343a40;
+`
+
+const StyledItemWrpper = styled.div`
+  margin-top: 1rem;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
 `
