@@ -73,14 +73,18 @@ public class ArticleEntity extends BaseEntity{
             nullable = false, unique = true)
     private UUID memberUUID;
 
-    public void changeTitle(String title) { this.title = title; }
-    public void changeContent(String content) { this.content = content; }
-    public void changPlannedStartAt(LocalDateTime plannedStartAt) {this.plannedStartAt = plannedStartAt; }
-    public void changeExpiredAt(LocalDateTime expiredAt) { this.expiredAt = expiredAt; }
-    public void changeEstDuration(String estimatedDuration) { this.estimatedDuration = estimatedDuration; }
-    public void changeArticleType(String articleType) { this.articleType = articleType; }
+    public void updateArticle(String title, String content, LocalDateTime plannedStartAt, LocalDateTime expiredAt,
+                       String estimatedDuration, String articleType, String meetingType) {
+        this.title = title;
+        this.content = content;
+        this.plannedStartAt = plannedStartAt;
+        this.expiredAt = expiredAt;
+        this.estimatedDuration = estimatedDuration;
+        this.articleType = articleType;
+        this.meetingType = meetingType;
+    }
+
     public void changeStatus(Byte status) { this.status = status; }
-    public void changeMeetingType(String meetingType) { this.meetingType = meetingType; }
 
     public void setBookmark() {
         this.bookmarkCount++;

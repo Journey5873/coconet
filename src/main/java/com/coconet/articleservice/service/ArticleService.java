@@ -114,28 +114,61 @@ public class ArticleService {
     }
 
     public ArticleResponseDto updateArticle(ArticleRequestDto articleRequestDto, UUID memberUUID){
-        ArticleEntity article = articleRepository.findByArticleUUID(articleRequestDto.getArticleUUID())
+        ArticleEntity articleEntity = articleRepository.findByArticleUUID(articleRequestDto.getArticleUUID())
                 .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "No Post found"));
 
-        if (!article.getMemberUUID().equals(memberUUID)){
+        if (!articleEntity.getMemberUUID().equals(memberUUID)){
             new ApiException(ErrorCode.FORBIDDEN_ERROR, "Only author can edit this post.");
         }
 
-        article.changeTitle(articleRequestDto.getTitle());
-        article.changeContent(articleRequestDto.getContent());
-        article.changPlannedStartAt(articleRequestDto.getPlannedStartAt().atTime(LocalTime.MAX));
-        article.changeEstDuration(articleRequestDto.getEstimatedDuration().name());
-        article.changeExpiredAt(articleRequestDto.getExpiredAt().atTime(LocalTime.MAX));
-        article.changeMeetingType(articleRequestDto.getMeetingType().name());
-        article.changeArticleType(articleRequestDto.getArticleType().name());
+        articleEntity.updateArticle(articleRequestDto.getTitle(),
+                articleRequestDto.getContent(),
+                articleRequestDto.getPlannedStartAt().atTime(LocalTime.MAX),
+                articleRequestDto.getExpiredAt().atTime(LocalTime.MAX),
+                articleRequestDto.getEstimatedDuration().name(),
+                articleRequestDto.getArticleType().name(),
+                articleRequestDto.getMeetingType().name()
+                );
 
-        updateRoles(articleRequestDto.getRoles(), article);
-        updateStacks(articleRequestDto.getStacks(), article);
+        updateRoles(articleRequestDto.getRoles(), articleEntity);
+        updateStacks(articleRequestDto.getStacks(), articleEntity);
 
-        return articleRepository.getArticle(article.getArticleUUID());
+        return ArticleEntityConverter.convertToDto(articleEntity);
     }
 
-    public void updateStacks(List<ArticleStackDto> requestedStackDtos, ArticleEntity article){
+    public void updateStacks(List<String> requestedStackNames, ArticleEntity article){
+
+        // Get current all article's stacks
+        List<ArticleStackEntity> currentStackEntities = articleStackRepository.getArticleStacks(article);
+
+        // Retrieve requested stack entities
+        List<TechStackEntity> requestedStackEntities = techStackRepository.findByNameIn(requestedStackNames);
+
+        // Identify new stacks to add
+        List<TechStackEntity> stacksToAdd = requestedStackEntities.stream()
+                .filter(requestedStack -> currentStackEntities.stream()
+                        .noneMatch(currentStack -> currentStack.getTechStack().getName().equals(requestedStack.getName())))
+                .toList();
+
+        // Identify stacks to Delete
+        List<ArticleStackEntity> stacksToRemove = currentStackEntities.stream()
+                .filter(currentStack -> requestedStackEntities.stream()
+                        .noneMatch(requestedStack -> requestedStack.getName().equals(currentStack.getTechStack().getName())))
+                .toList();
+
+        // Create ArticleStackEntities and Save
+        articleStackRepository.saveAll(
+                stacksToAdd.stream()
+                .map(stackEntity -> new ArticleStackEntity(article, stackEntity))
+                .toList()
+        );
+
+        // Remove ArticleStackEntities
+        articleStackRepository.deleteAllInBatch(stacksToRemove);
+    }
+
+    public void updateStacksOld(List<ArticleStackDto> requestedStackDtos, ArticleEntity article){
+
         List<String> requestedStackNames = requestedStackDtos.stream()
                 .map(ArticleStackDto::getStackName)
                 .toList();
@@ -253,7 +286,6 @@ public class ArticleService {
         // Check the number of matching stacks between the suggestion and user stacks
         long stackCount = memberStacks.stream()
                 .filter(techStack -> suggestion.getStacks().stream()
-                        .map(ArticleStackDto::getStackName)
                         .anyMatch(stackName -> stackName.equals(techStack.getName())))
                 .count();
 

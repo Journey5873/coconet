@@ -27,11 +27,10 @@ public class ArticleEntityConverter {
                     .toList();
         }
 
-        List<ArticleStackDto> stacks = new ArrayList<>();
+        List<String> stacks = new ArrayList<>();
         if (!articleEntity.getArticleStacks().isEmpty()){
             stacks = articleEntity.getArticleStacks().stream()
-                .map(stack -> new ArticleStackDto(stack.getTechStack().getName(),
-                        stack.getTechStack().getCategory(), stack.getTechStack().getImage()))
+                .map(stack -> stack.getTechStack().getName())
                 .toList();
         }
 

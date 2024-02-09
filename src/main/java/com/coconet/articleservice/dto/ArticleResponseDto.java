@@ -40,6 +40,6 @@ public class ArticleResponseDto {
     private UUID memberUUID;
 
     private List<ArticleRoleDto> roles = new ArrayList<>();
-    private List<ArticleStackDto> stacks = new ArrayList<>();
+    private List<String> stacks = new ArrayList<>();
     private List<CommentResponseDto> comments = new ArrayList<>();
 }

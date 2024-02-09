@@ -29,5 +29,5 @@ public class ArticleRequestDto {
     private ArticleType articleType;
     private MeetingType meetingType;
     private List<ArticleRoleDto> roles = new ArrayList<>();
-    private List<ArticleStackDto> stacks = new ArrayList<>();
+    private List<String> stacks = new ArrayList<>();
 }
