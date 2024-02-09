@@ -6,25 +6,40 @@ import coconutIcon from '../assets/images/coconutIcon.svg'
 import { ReactComponent as Polygon } from '../assets/images/polygon.svg'
 import { Link, useNavigate } from 'react-router-dom'
 import { useState } from 'react'
+import { useAppSelector, useAppDispatch } from '../../store/RootReducer'
 import LoginModal from './LoginModal'
 import { RxHamburgerMenu } from 'react-icons/rx'
+import { removeToken } from '../../store/authSlice'
 
 export default function Header() {
+  const dispatch = useAppDispatch()
+  const token = useAppSelector((state) => state.reducer.auth.token)
+  const navigate = useNavigate()
   const [openDropdownbar, setOpenDropdownbar] = useState(false)
   const [openLoginModal, setOpenLoginModal] = useState(false)
 
   const handleDropdownbar = () => {
     setOpenDropdownbar((openDropdownbar) => !openDropdownbar)
   }
-  const handleOpenLoginModal = () => {
-    setOpenLoginModal((openLoginModal) => !openLoginModal)
+
+  const handleLogout = () => {
+    localStorage.removeItem('accessToken')
+
+    dispatch(removeToken())
+  }
+  const handleClickNewArticle = () => {
+    if (!token) {
+      setOpenLoginModal((openLoginModal) => !openLoginModal)
+      return
+    }
+
+    navigate('/post/new')
   }
 
   const dropdownbarItem = [
     { link: '/myPosts', content: '내 작성글' },
     { link: '/myLikes', content: '내 관심글' },
     { link: '/setting', content: '설정' },
-    { link: '/', content: '로그아웃' },
   ]
 
   const navigation = useNavigate()
@@ -35,43 +50,64 @@ export default function Header() {
           <StyledLogoImg src={Logo} />
         </Link>
         <StyledMenuWrapper>
-          <StyledPostRegister onClick={() => handleOpenLoginModal()}>
+          <StyledPostRegister onClick={() => handleClickNewArticle()}>
             새 글 쓰기
           </StyledPostRegister>
           {openLoginModal && (
-            <LoginModal handleLoginModalVisible={handleOpenLoginModal} />
-          )}
-          <StyledMenuImage>
-            <img
-              src={chatIcon}
-              alt="chatIcon"
-              onClick={() => navigation(`/chat`)}
+            <LoginModal
+              handleLoginModalVisible={() =>
+                setOpenLoginModal((openLoginModal) => !openLoginModal)
+              }
             />
-          </StyledMenuImage>
-          <StyledMenuImage>
-            <img src={notificationIcon} alt="notificationIcon" />
-          </StyledMenuImage>
-          <StyledLoginUser onClick={() => handleDropdownbar()}>
-            <StyledLoginUserImg src={coconutIcon} alt="coconutIcon" />
-            <RxHamburgerMenu className="mobileMenu" size={23} />
-            <StyledPolygon />
-            <StyledDropdownBar openDropdownbar={openDropdownbar}>
-              <StyledDropDownBarMenu>
-                {dropdownbarItem.map((item, i) => {
-                  return (
-                    <StyledDropDownBarMenuItem key={i}>
-                      <Link
-                        to={item.link}
-                        onClick={() => console.log('페이지 이동')}
-                      >
-                        {item.content}
-                      </Link>
+          )}
+          {!token && (
+            <StyledPostRegister
+              onClick={() => () =>
+                setOpenLoginModal((openLoginModal) => !openLoginModal)
+              }
+            >
+              로그인
+            </StyledPostRegister>
+          )}
+
+          {token && (
+            <>
+              <StyledMenuImage>
+                <img
+                  src={chatIcon}
+                  alt="chatIcon"
+                  onClick={() => navigation(`/chat`)}
+                />
+              </StyledMenuImage>
+              <StyledMenuImage>
+                <img src={notificationIcon} alt="notificationIcon" />
+              </StyledMenuImage>
+              <StyledLoginUser onClick={() => handleDropdownbar()}>
+                <StyledLoginUserImg src={coconutIcon} alt="coconutIcon" />
+                <RxHamburgerMenu className="mobileMenu" size={23} />
+                <StyledPolygon />
+                <StyledDropdownBar openDropdownbar={openDropdownbar}>
+                  <StyledDropDownBarMenu>
+                    {dropdownbarItem.map((item, i) => {
+                      return (
+                        <StyledDropDownBarMenuItem key={i}>
+                          <Link
+                            to={item.link}
+                            onClick={() => console.log('페이지 이동')}
+                          >
+                            {item.content}
+                          </Link>
+                        </StyledDropDownBarMenuItem>
+                      )
+                    })}
+                    <StyledDropDownBarMenuItem onClick={handleLogout}>
+                      로그아웃
                     </StyledDropDownBarMenuItem>
-                  )
-                })}
-              </StyledDropDownBarMenu>
-            </StyledDropdownBar>
-          </StyledLoginUser>
+                  </StyledDropDownBarMenu>
+                </StyledDropdownBar>
+              </StyledLoginUser>
+            </>
+          )}
         </StyledMenuWrapper>
       </StyledHeaderInner>
     </StyledHeaderWrapper>
