@@ -44,6 +44,7 @@ export interface Article {
   meetingType: MeetingType
   stacks: Stack[]
   roles: Role[]
+  comments: Comment[]
   status: number
   content: string
   updatedAt: string
