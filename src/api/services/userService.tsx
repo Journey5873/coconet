@@ -24,7 +24,7 @@ export class UserService {
     return this.userRepository.createMultiPart<Dto>(
       'member-service/open-api/register',
       item,
-    )
+    ) as any
   }
 
   async updateUser<Dto>(data: Dto, id: string) {

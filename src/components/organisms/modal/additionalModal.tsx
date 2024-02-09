@@ -13,6 +13,7 @@ import { useAppDispatch } from '../../../store/RootReducer'
 import { setToken } from '../../../store/authSlice'
 import { useDropzone } from 'react-dropzone'
 import MultipleSelect from '../../atoms//Select/MultipleSelect'
+import { useNavigate } from 'react-router-dom'
 
 export type RegisterDto = {
   memberId: string
@@ -35,6 +36,7 @@ interface Props {
 }
 
 const AdditionalModal = ({ open, handleClose, memberId }: Props) => {
+  const navigate = useNavigate()
   const { open: dropzoneOpen } = useDropzone({
     onDrop: (acceptedFiles, fileRejections, event) => {
       const file = acceptedFiles[0]
@@ -104,7 +106,14 @@ const AdditionalModal = ({ open, handleClose, memberId }: Props) => {
 
       const result = await userService.createUser<FormData>(formData)
 
-      console.log(result, 'result')
+      if (result.data) {
+        const accessToken = result.data?.accessToken
+        localStorage.setItem('accessToken', accessToken)
+        dispatch(setToken({ token: accessToken }))
+        navigate('/')
+      } else {
+        console.log(result.errors)
+      }
     } catch (error) {
       console.log(error)
     }

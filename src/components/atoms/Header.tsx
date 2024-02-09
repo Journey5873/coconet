@@ -26,6 +26,7 @@ export default function Header() {
     localStorage.removeItem('accessToken')
 
     dispatch(removeToken())
+    navigate('/')
   }
   const handleClickNewArticle = () => {
     if (!token) {
