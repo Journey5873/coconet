@@ -27,7 +27,7 @@ const Card = ({ item }: Props) => {
     meetingType,
   } = item
 
-  const isPostIdInLocalStorage = (articleId: number): boolean => {
+  const isPostIdInLocalStorage = (articleId: string): boolean => {
     const postIds = JSON.parse(localStorage.getItem('postIds') || '[]')
 
     return postIds.includes(articleId.toString())
@@ -46,7 +46,7 @@ const Card = ({ item }: Props) => {
   return (
     <StyledCardContainer onClick={() => navigation(`/post/${articleUUID}`)}>
       <StyledNewIconWrapper>
-        {!isPostIdInLocalStorage(Number(articleUUID)) && (
+        {!isPostIdInLocalStorage(articleUUID) && (
           <img width={30} height={30} src={newIcon} />
         )}
       </StyledNewIconWrapper>

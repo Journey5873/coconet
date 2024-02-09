@@ -1,20 +1,51 @@
 import styled from 'styled-components'
+import { dateFormat } from '../../../utils/utils'
 import { Comment } from '../../../models/article'
 import { ReactComponent as CoconutIcon } from '../../../components/assets/images/coconutIcon.svg'
+import { useEffect, useState } from 'react'
+import { User } from '../../../models/user'
+import { useUserService } from '../../../api/services/userService'
 
 interface Props {
   comment: Comment
 }
 
 const CommentItem = ({ comment }: Props) => {
+  const userService = useUserService()
+  const [user, setUser] = useState<User>()
+
+  const fetchCurrentUser = async () => {
+    if (!comment.memberUUID) return
+    try {
+      const result = await userService.getUserById(comment.memberUUID)
+
+      if (result.data) {
+        setUser(result.data)
+      } else {
+        console.log(result.errors)
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  useEffect(() => {
+    fetchCurrentUser()
+  }, [])
+
+  if (!user) {
+    return <div>댓글을 불러오는데 에러가 발생헀습니다.</div>
+  }
   return (
     <StyledCommentList>
       <div>
         <StyledCommentUserInfoWrapper>
           <StyledCommentInputProfile className="comment_list" />
           <StyledCommentUserInfo>
-            <StyledCommentUserName>{comment.memberUUID}</StyledCommentUserName>
-            <StyledCommentTime>{comment.createdAt}</StyledCommentTime>
+            <StyledCommentUserName>{user.name}</StyledCommentUserName>
+            <StyledCommentTime>
+              {dateFormat(comment.createdAt)}
+            </StyledCommentTime>
           </StyledCommentUserInfo>
         </StyledCommentUserInfoWrapper>
       </div>

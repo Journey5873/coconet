@@ -28,8 +28,8 @@ export class UserService {
     return this.userRepository.delete('', id)
   }
 
-  async test() {
-    console.log('test')
+  async getUserById(memberUUID: string) {
+    return this.userRepository.get(`member-service/open-api/${memberUUID}`)
   }
 
   async checkUsername(name: string) {

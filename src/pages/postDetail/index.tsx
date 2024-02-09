@@ -12,10 +12,14 @@ import { DummyData, dummyData } from '../../data/data'
 import { useArticleDetailService } from '../../api/services/articleDetialService'
 import { Article } from '../../models/article'
 import CommentItem from '../../components/organisms/comment/commentItem'
+import { User } from '../../models/user'
+import { useUserService } from '../../api/services/userService'
 
 const PostDetail = () => {
-  const api = useArticleDetailService()
+  const articleService = useArticleDetailService()
+  const userService = useUserService()
   const [isVisible, setIsVisible] = useState(false)
+  const [currentUser, setCurrentUser] = useState<User | null>(null)
 
   const { id } = useParams()
 
@@ -26,15 +30,29 @@ const PostDetail = () => {
     setIsVisible(!isVisible)
   }
 
-  const fetch = async (id: string) => {
+  const fetchPostDetail = async (id: string) => {
     try {
-      const result = await api.getDetailArticle(id)
+      const result = await articleService.getDetailArticle(id)
       if (result.data) {
         setPost(result.data)
       }
     } catch (error) {
       console.log(error)
       setPost(null)
+    }
+  }
+
+  const fetchCurrentUser = async (memberUUID: string) => {
+    try {
+      const result = await userService.getUserById(memberUUID)
+
+      if (result.data) {
+        setCurrentUser(result.data)
+      } else {
+        console.log(result.errors)
+      }
+    } catch (error) {
+      console.log(error)
     }
   }
 
@@ -56,11 +74,19 @@ const PostDetail = () => {
 
   useEffect(() => {
     if (id) {
-      fetch(id)
+      fetchPostDetail(id)
     }
   }, [id])
 
-  if (!post) return null
+  useEffect(() => {
+    if (post?.memberUUID) {
+      fetchCurrentUser(post.memberUUID)
+    }
+  }, [post?.memberUUID])
+
+  if (!post) {
+    return <div>게시글을 볼러오는데 에러가 발생했습니다.</div>
+  }
 
   return (
     <>
@@ -77,7 +103,9 @@ const PostDetail = () => {
               <StyledPostProfileBox>
                 <StyledUser>
                   <StyledUserImg color="rgb(153, 153, 153)" />
-                  <StyledUserName>{post.memberUUID}</StyledUserName>
+                  <StyledUserName>
+                    {currentUser?.name ?? '알 수 없는 유저'}
+                  </StyledUserName>
                 </StyledUser>
                 <StyledSeperator></StyledSeperator>
                 <StlyedRegisteredDate>{`${dateFormat(
@@ -342,6 +370,7 @@ const StyledPostInfoListContent = styled.li`
 const StyledLanguageListWrapper = styled.ul`
   list-style: none;
   display: flex;
+  flex-wrap: wrap;
   gap: 15px;
 `
 const StyledTech = styled.li`
