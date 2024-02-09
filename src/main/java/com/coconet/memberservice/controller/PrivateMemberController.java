@@ -62,7 +62,7 @@ public class PrivateMemberController {
             }
     )
     @PutMapping("/my-profile")
-    public Response<MemberResponseDto> updateUserInfo(@RequestPart("requestDto") MemberRequestDto requestDto, @RequestPart("imageFile") MultipartFile imageFile, @RequestHeader(value="memberUUID") UUID memberUUID) {
+    public Response<MemberResponseDto> updateUserInfo(@RequestPart("requestDto") MemberRequestDto requestDto, @RequestPart(value = "imageFile", required = false) MultipartFile imageFile, @RequestHeader(value="memberUUID") UUID memberUUID) {
         MemberResponseDto memberResponseDto = memberServiceImpl.updateUserInfo(memberUUID, requestDto, imageFile);
         return Response.OK(memberResponseDto);
     }

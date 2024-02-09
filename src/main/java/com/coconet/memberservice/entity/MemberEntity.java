@@ -66,7 +66,8 @@ public class MemberEntity extends BaseEntity{
     public void register(String name, String career, String profileImage, String github, String blog, String notion, String bio) {
         this.name = name;
         this.career = career;
-        this.profileImage = profileImage;
+        if(profileImage != null)
+            this.profileImage = profileImage;
         this.githubLink = github;
         this.blogLink = blog;
         this.notionLink = notion;

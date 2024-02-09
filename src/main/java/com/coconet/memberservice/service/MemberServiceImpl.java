@@ -136,9 +136,13 @@ public class MemberServiceImpl implements MemberService {
             throw new ApiException(ErrorCode.BAD_REQUEST, "The name is already used");
         }
 
+        if(imageFile != null) {
+            updateProfilePic(member, imageFile);
+        }
+
         member.register(requestDto.getName(),
                 String.valueOf(requestDto.getCareer()),
-                updateProfilePic(member, imageFile),
+                null,
                 requestDto.getGithubLink(),
                 requestDto.getBlogLink(),
                 requestDto.getNotionLink(),
@@ -191,4 +195,3 @@ public class MemberServiceImpl implements MemberService {
         return memberRepository.findByName(nickName).isPresent();
     }
 }
-
