@@ -67,10 +67,7 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
                 .leftJoin(articleEntity.articleStacks, articleStackEntity)
                 .where(condition);
 
-        if (bookmark && !memberUUID.toString().isBlank()){
-            query.leftJoin(articleEntity.bookmarks, bookmarkEntity)
-                    .where(bookmarkEntity.memberUUID.eq(memberUUID));
-        }
+        query = handleBookmark(query, bookmark, memberUUID);
 
         List<ArticleEntity> articles = query
                 .orderBy(articleEntity.updatedAt.desc())
@@ -87,6 +84,14 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
                 .where(condition);
 
         return PageableExecutionUtils.getPage(contents, pageable, () -> countQuery.fetchCount());
+    }
+
+    private JPAQuery<ArticleEntity> handleBookmark(JPAQuery<ArticleEntity> query, boolean bookmark, UUID memberUUID) {
+        if (bookmark && !memberUUID.toString().isBlank()) {
+            query.leftJoin(articleEntity.bookmarks, bookmarkEntity)
+                    .where(bookmarkEntity.memberUUID.eq(memberUUID));
+        }
+        return query;
     }
 
     private BooleanExpression containsKeyword(String keyword){
