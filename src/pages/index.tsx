@@ -72,7 +72,6 @@ const Index = () => {
       }
     } catch (error) {
       console.log(error)
-      debugger
       setArticleList([])
     } finally {
       setIsLoading(false)

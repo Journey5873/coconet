@@ -5,13 +5,15 @@ import notificationIcon from '../assets/images/notificationIcon.svg'
 import coconutIcon from '../assets/images/coconutIcon.svg'
 import { ReactComponent as Polygon } from '../assets/images/polygon.svg'
 import { Link, useNavigate } from 'react-router-dom'
-import { useState } from 'react'
+import { useState, useContext } from 'react'
+import { AlertContext } from '../organisms/modal/AlertModalContext'
 import { useAppSelector, useAppDispatch } from '../../store/RootReducer'
 import LoginModal from './LoginModal'
 import { RxHamburgerMenu } from 'react-icons/rx'
 import { removeToken } from '../../store/authSlice'
 
 export default function Header() {
+  const alertContext = useContext(AlertContext)
   const dispatch = useAppDispatch()
   const token = useAppSelector((state) => state.reducer.auth.token)
   const navigate = useNavigate()
@@ -23,11 +25,20 @@ export default function Header() {
   }
 
   const handleLogout = () => {
-    localStorage.removeItem('accessToken')
-
-    dispatch(removeToken())
-    navigate('/')
+    if (alertContext) {
+      alertContext.onOpen({
+        title: '로그아웃',
+        content: '로그아웃 하시겠습니까?',
+        onConfirm: () => {
+          localStorage.removeItem('accessToken')
+          dispatch(removeToken())
+          navigate('/')
+          alertContext.onClose()
+        },
+      })
+    }
   }
+
   const handleClickNewArticle = () => {
     if (!token) {
       setOpenLoginModal((openLoginModal) => !openLoginModal)
