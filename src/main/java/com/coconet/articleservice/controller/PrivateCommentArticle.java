@@ -36,6 +36,6 @@ public class PrivateCommentArticle {
 
     @DeleteMapping("/comment")
     public void deleteComment(@RequestBody CommentRequestDto commentRequestDto, @RequestHeader(value="memberUUID") UUID memberUUID) {
-        articleService.deleteComment(commentRequestDto.getCommentId(), memberUUID);
+        articleService.deleteComment(commentRequestDto.getCommentUUID(), memberUUID);
     }
 }

@@ -3,12 +3,12 @@ package com.coconet.articleservice.service;
 import com.coconet.articleservice.client.MemberClient;
 import com.coconet.articleservice.common.errorcode.ErrorCode;
 import com.coconet.articleservice.common.exception.ApiException;
-import com.coconet.articleservice.converter.ArticleEntityConverter;
+import com.coconet.articleservice.converter.ArticleConverter;
+import com.coconet.articleservice.converter.CommentConverter;
 import com.coconet.articleservice.dto.*;
 import com.coconet.articleservice.dto.client.ChatClientResponseDto;
 import com.coconet.articleservice.entity.*;
 import com.coconet.articleservice.entity.enums.ArticleType;
-import com.coconet.articleservice.entity.enums.EstimatedDuration;
 import com.coconet.articleservice.entity.enums.MeetingType;
 import com.coconet.articleservice.entity.member.MemberResponse;
 import com.coconet.articleservice.entity.member.MemberRoleResponse;
@@ -76,7 +76,7 @@ public class ArticleService {
         em.clear();
         em.flush();
 
-        return ArticleEntityConverter.convertToDto(articleEntity);
+        return ArticleConverter.convertToDto(articleEntity);
     }
 
     public ArticleResponseDto getArticle(String articleUUID){
@@ -133,7 +133,7 @@ public class ArticleService {
         updateRoles(articleRequestDto.getRoles(), articleEntity);
         updateStacks(articleRequestDto.getStacks(), articleEntity);
 
-        return ArticleEntityConverter.convertToDto(articleEntity);
+        return ArticleConverter.convertToDto(articleEntity);
     }
 
     public void updateStacks(List<String> requestedStackNames, ArticleEntity article){
@@ -374,25 +374,17 @@ public class ArticleService {
      */
     public CommentResponseDto writeComment(CommentRequestDto request, UUID articleUUID, UUID memberUUID) {
 
-        CommentEntity commentEntity = CommentEntity.builder()
-                .content(request.getContent())
-                .memberUUID(memberUUID)
-                .article(articleRepository.findByArticleUUID(articleUUID)
-                        .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "Not Found Article")))
-                .build();
-        commentRepository.save(commentEntity);
+        ArticleEntity article = articleRepository.findByArticleUUID(articleUUID)
+                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "Not Found Article"));
 
-        return CommentResponseDto.builder()
-                .content(commentEntity.getContent())
-                .createdAt(commentEntity.getCreatedAt())
-                .updatedAt(commentEntity.getUpdatedAt())
-                .memberUUID(commentEntity.getMemberUUID())
-                .build();
+        CommentEntity commentEntity = CommentConverter.convertToEntity(request, article, memberUUID);
+
+        return CommentConverter.convertToDto(commentRepository.save(commentEntity));
     }
 
     public CommentResponseDto updateComment(CommentRequestDto commentDto, UUID memberUUID) {
 
-        CommentEntity commentEntity = commentRepository.findById(commentDto.getCommentId())
+        CommentEntity commentEntity = commentRepository.findByCommentUUID(commentDto.getCommentUUID())
                 .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "Not Found Comment"));
 
         if(commentEntity.getMemberUUID().equals(memberUUID)){
@@ -402,16 +394,11 @@ public class ArticleService {
             throw new ApiException(ErrorCode.FORBIDDEN_ERROR, "Only commenter can update the Comment.");
         }
 
-        return CommentResponseDto.builder()
-                .content(commentEntity.getContent())
-                .createdAt(commentEntity.getCreatedAt())
-                .updatedAt(commentEntity.getUpdatedAt())
-                .memberUUID(commentEntity.getMemberUUID())
-                .build();
+        return CommentConverter.convertToDto(commentEntity);
     }
 
-    public void deleteComment(Long commentId, UUID memberUUID) {
-        CommentEntity commentEntity = commentRepository.findById(commentId)
+    public void deleteComment(UUID commentUUID, UUID memberUUID) {
+        CommentEntity commentEntity = commentRepository.findByCommentUUID(commentUUID)
                 .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "Not Found Comment"));
 
         if(commentEntity.getMemberUUID().equals(memberUUID)){

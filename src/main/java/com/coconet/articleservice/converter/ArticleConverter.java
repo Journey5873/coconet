@@ -1,23 +1,22 @@
 package com.coconet.articleservice.converter;
 
+import com.coconet.articleservice.dto.ArticleCreateRequestDto;
 import com.coconet.articleservice.dto.ArticleResponseDto;
 import com.coconet.articleservice.dto.ArticleRoleDto;
-import com.coconet.articleservice.dto.ArticleStackDto;
 import com.coconet.articleservice.dto.CommentResponseDto;
 import com.coconet.articleservice.entity.ArticleEntity;
-import com.coconet.articleservice.entity.ArticleRoleEntity;
-import com.coconet.articleservice.entity.ArticleStackEntity;
 import com.coconet.articleservice.entity.enums.ArticleType;
 import com.coconet.articleservice.entity.enums.EstimatedDuration;
 import com.coconet.articleservice.entity.enums.MeetingType;
 import lombok.Builder;
 
+import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 @Builder
-public class ArticleEntityConverter {
+public class ArticleConverter {
     public static ArticleResponseDto convertToDto (ArticleEntity articleEntity) {
 
         List<ArticleRoleDto> roles = new ArrayList<>();
@@ -37,11 +36,7 @@ public class ArticleEntityConverter {
         List<CommentResponseDto> comments = new ArrayList<>();
         if (!articleEntity.getComments().isEmpty()){
             comments = articleEntity.getComments().stream()
-                .map(comment -> new CommentResponseDto(comment.getCommentId(),
-                        comment.getContent(),
-                        comment.getCreatedAt(),
-                        comment.getUpdatedAt(),
-                        comment.getMemberUUID()))
+                .map(comment -> CommentConverter.convertToDto(comment))
                 .toList();
         }
 
@@ -63,6 +58,23 @@ public class ArticleEntityConverter {
                 .roles(roles)
                 .stacks(stacks)
                 .comments(comments)
+                .build();
+    }
+
+    public static ArticleEntity converterToEntity (ArticleCreateRequestDto request, UUID memberUUID) {
+        return ArticleEntity.builder()
+                .title(request.getTitle())
+                .articleUUID(UUID.randomUUID())
+                .memberUUID(memberUUID)
+                .content(request.getContent())
+                .plannedStartAt(request.getPlannedStartAt().atTime(LocalTime.MAX))
+                .expiredAt(request.getExpiredAt().atTime(LocalTime.MAX))
+                .estimatedDuration(request.getEstimatedDuration().name())
+                .viewCount(0)
+                .bookmarkCount(0)
+                .articleType(request.getArticleType().name())
+                .status((byte) 1)
+                .meetingType(request.getMeetingType().name())
                 .build();
     }
 }

@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.UUID;
+
 import static lombok.AccessLevel.PROTECTED;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -14,7 +16,7 @@ import static lombok.AccessLevel.PROTECTED;
 @NoArgsConstructor(access = PROTECTED)
 @AllArgsConstructor
 public class CommentRequestDto {
-    private Long commentId;
+    private UUID commentUUID;
     private String content;
 
 }

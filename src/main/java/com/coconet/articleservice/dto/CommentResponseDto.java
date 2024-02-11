@@ -17,19 +17,10 @@ import static lombok.AccessLevel.PROTECTED;
 @NoArgsConstructor(access = PROTECTED)
 @AllArgsConstructor
 public class CommentResponseDto {
-
-    private Long commentId;
     private String content;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private UUID commentUUID;
     private UUID memberUUID;
     private UUID articleUUID;
-
-    public CommentResponseDto(Long commentId, String content, LocalDateTime createdAt, LocalDateTime updatedAt, UUID memberUUID) {
-        this.commentId = commentId;
-        this.content = content;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-        this.memberUUID = memberUUID;
-    }
 }

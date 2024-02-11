@@ -1,7 +1,7 @@
 package com.coconet.articleservice.repository;
 
 
-import com.coconet.articleservice.converter.ArticleEntityConverter;
+import com.coconet.articleservice.converter.ArticleConverter;
 import com.coconet.articleservice.dto.ArticleResponseDto;
 import com.coconet.articleservice.entity.ArticleEntity;
 import com.coconet.articleservice.entity.RoleEntity;
@@ -45,7 +45,7 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
                 .where(articleEntity.articleUUID.eq(articleUUID))
                 .fetchOne();
 
-        return ArticleEntityConverter.convertToDto(article);
+        return ArticleConverter.convertToDto(article);
     }
 
 
@@ -76,7 +76,7 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
                 .fetch();
 
         List<ArticleResponseDto> contents = articles.stream()
-                .map(article -> ArticleEntityConverter.convertToDto(article))
+                .map(article -> ArticleConverter.convertToDto(article))
                 .toList();
 
         JPAQuery<ArticleEntity> countQuery = queryFactory
@@ -138,7 +138,7 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
                 .fetch();
 
         List<ArticleResponseDto> contents = articles.stream()
-                .map(article -> ArticleEntityConverter.convertToDto(article))
+                .map(article -> ArticleConverter.convertToDto(article))
                 .toList();
 
 
@@ -185,7 +185,7 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
 
 
         return suggestions.stream()
-                .map(suggestion -> ArticleEntityConverter.convertToDto(suggestion))
+                .map(suggestion -> ArticleConverter.convertToDto(suggestion))
                 .toList();
     }
 
@@ -206,7 +206,7 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
                 .fetch();
 
         return populars.stream()
-                .map(popularPost -> ArticleEntityConverter.convertToDto(popularPost))
+                .map(popularPost -> ArticleConverter.convertToDto(popularPost))
                 .toList();
     }
 }
