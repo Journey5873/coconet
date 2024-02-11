@@ -7,15 +7,18 @@ import { ArticleProvider } from './api/services/articleService'
 import { Provider } from 'react-redux'
 import store from './store/RootReducer'
 import { ArticleDetailProvider } from './api/services/articleDetialService'
+import AlertProvider from './components/organisms/modal/AlertModalContext'
 
 const MultiServiceProvider = ({ children }: PropsWithChildren) => {
   return (
     <>
-      <ArticleDetailProvider>
-        <ArticleProvider>
-          <UserProvier>{children}</UserProvier>
-        </ArticleProvider>
-      </ArticleDetailProvider>
+      <AlertProvider>
+        <ArticleDetailProvider>
+          <ArticleProvider>
+            <UserProvier>{children}</UserProvier>
+          </ArticleProvider>
+        </ArticleDetailProvider>
+      </AlertProvider>
     </>
   )
 }
