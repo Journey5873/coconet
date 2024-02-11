@@ -27,7 +27,7 @@ export interface Role {
 }
 
 export interface Comment {
-  commentId: string
+  commentUUID: string
   content: string
   createdAt: string
   memberUUID: string

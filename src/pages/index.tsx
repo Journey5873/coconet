@@ -14,8 +14,9 @@ import Tabs from '../components/organisms/customTabs/Tabs'
 import Card from '../components/molecules/card/card'
 import FilterSelect from '../components/atoms/Select/filterSelect'
 import AdditionalModal from '../components/organisms/modal/additionalModal'
-import { setToken } from '../store/authSlice'
+import { setToken, setUserName } from '../store/authSlice'
 import PopularArticleList from '../components/organisms/domain/popularArticleList'
+import SuggestionArticleList from '../components/organisms/domain/suggestionArticleList'
 
 const Index = () => {
   const token = useAppSelector((state) => state.reducer.auth.token)
@@ -146,6 +147,7 @@ const Index = () => {
         <StyledContents>
           <CustomCarousel />
           {/* 인기글 추기 */}
+          <SuggestionArticleList />
           <PopularArticleList />
           <div style={{ display: 'flex', columnGap: '1.5rem' }}>
             <MultiStackSelector

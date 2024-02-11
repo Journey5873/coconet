@@ -11,6 +11,9 @@ import MultipleSelect from '../../components/atoms/Select/MultipleSelect'
 
 import SingleSelectString from '../../components/atoms/Select/SingleSelectString'
 import MultipleSelectString from '../../components/atoms/Select/MultipleSelectString'
+import { removeToken, setUserName } from '../../store/authSlice'
+import { useNavigate } from 'react-router-dom'
+import { useAppDispatch } from '../../store/RootReducer'
 
 export interface SettingFormType {
   name: string
@@ -81,6 +84,7 @@ const initialUserState: User = {
 const SettingPage = () => {
   const userService = useUserService()
   const [userState, dispatch] = useReducer(userReducer, initialUserState)
+  const navigate = useNavigate()
 
   const updateName = (name: string) => dispatch({ type: 'UPDATE_NAME', name })
   const updateCareer = (career: number) =>
@@ -151,6 +155,16 @@ const SettingPage = () => {
     }
   }
 
+  const deleteMyAccount = async () => {
+    try {
+      const result = await userService.deleteUser()
+      localStorage.removeItem('accessToken')
+      navigate('/')
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
   useEffect(() => {
     fetchMyProfile()
   }, [])
@@ -199,7 +213,9 @@ const SettingPage = () => {
       <LinkList onSubmit={() => console.log('submit')} />
       <StyledButtonWrapper>
         <GreenButton buttonName="저장" onClick={() => updateProfile()} />
-        <DeleteUserButton>회원탈퇴</DeleteUserButton>
+        <DeleteUserButton onClick={() => deleteMyAccount()}>
+          회원탈퇴
+        </DeleteUserButton>
       </StyledButtonWrapper>
     </Container>
   )

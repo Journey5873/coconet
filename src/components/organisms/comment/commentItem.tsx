@@ -2,9 +2,11 @@ import styled from 'styled-components'
 import { dateFormat } from '../../../utils/utils'
 import { Comment } from '../../../models/article'
 import { ReactComponent as CoconutIcon } from '../../../components/assets/images/coconutIcon.svg'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { User } from '../../../models/user'
 import { useUserService } from '../../../api/services/userService'
+import { toast } from 'react-toastify'
+import { useArticleDetailService } from '../../../api/services/articleDetialService'
 
 interface Props {
   comment: Comment
@@ -13,6 +15,8 @@ interface Props {
 const CommentItem = ({ comment }: Props) => {
   const userService = useUserService()
   const [user, setUser] = useState<User>()
+  const memeberId = localStorage.getItem('memberUUID')
+  const articleDetailService = useArticleDetailService()
 
   const fetchCurrentUser = async () => {
     if (!comment.memberUUID) return
@@ -29,6 +33,44 @@ const CommentItem = ({ comment }: Props) => {
     }
   }
 
+  const updateMyComment = async () => {
+    try {
+      const requestDto: any = {
+        commentUUID: comment.commentUUID,
+        content: comment.content,
+      }
+      const result = await articleDetailService.updateComment(
+        JSON.stringify(requestDto),
+      )
+      console.log(result.data)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  const deleteMyComment = async () => {
+    const confirm = window.confirm('해당 댓글을 삭제하시겠습니까?')
+
+    if (confirm) {
+      try {
+        const requestDto: any = {
+          commentUUID: comment.commentUUID,
+          content: comment.content,
+        }
+        const result = await articleDetailService.deleteComment({
+          data: JSON.stringify(requestDto),
+        })
+        if (result.succeeded) {
+          toast.success('댓글을 삭제했습니다.')
+        } else {
+          toast.error('다시 시도해주세요.')
+        }
+      } catch (error) {
+        console.log(error)
+      }
+    }
+  }
+
   useEffect(() => {
     fetchCurrentUser()
   }, [])
@@ -38,18 +80,24 @@ const CommentItem = ({ comment }: Props) => {
   }
   return (
     <StyledCommentList>
-      <div>
-        <StyledCommentUserInfoWrapper>
-          <StyledCommentInputProfile className="comment_list" />
-          <StyledCommentUserInfo>
-            <StyledCommentUserName>{user.name}</StyledCommentUserName>
-            <StyledCommentTime>
-              {dateFormat(comment.createdAt)}
-            </StyledCommentTime>
-          </StyledCommentUserInfo>
-        </StyledCommentUserInfoWrapper>
-      </div>
-      <StyledCommentContent>{comment.content}</StyledCommentContent>
+      <StyledCommentUserInfoWrapper>
+        <StyledCommentInputProfile className="comment_list" />
+        <StyledCommentUserInfo>
+          <StyledCommentUserName>{user.name}</StyledCommentUserName>
+          <StyledCommentTime>{dateFormat(comment.createdAt)}</StyledCommentTime>
+        </StyledCommentUserInfo>
+      </StyledCommentUserInfoWrapper>
+      <StyledComment>
+        <StyledCommentContent>{comment.content}</StyledCommentContent>
+        {comment.memberUUID === memeberId && (
+          <StyledMyCommentButtonWrapper>
+            <StyledMyCommentButton>수정</StyledMyCommentButton>
+            <StyledMyCommentButton onClick={() => deleteMyComment()}>
+              삭제
+            </StyledMyCommentButton>
+          </StyledMyCommentButtonWrapper>
+        )}
+      </StyledComment>
     </StyledCommentList>
   )
 }
@@ -108,4 +156,21 @@ const StyledCommentContent = styled.p`
   letter-spacing: -0.004em;
   word-break: break-all;
   overflow-wrap: break-all;
+`
+const StyledComment = styled.div`
+  display: flex;
+  justify-content: space-between;
+  padding: 0 14px;
+`
+
+const StyledMyCommentButtonWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 6px;
+`
+const StyledMyCommentButton = styled.button`
+  border: none;
+  outline: none;
+  background: #fff;
+  cursor: pointer;
 `

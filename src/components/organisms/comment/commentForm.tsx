@@ -9,8 +9,9 @@ interface CommentProps {
 }
 
 const CommentForm = ({ post }: CommentProps) => {
-  const articleService = useArticleDetailService()
+  const articleDetailService = useArticleDetailService()
   const [commentValue, setCommnetValue] = useState<string>('')
+  console.log(post.articleUUID)
 
   const onRegister = async () => {
     try {
@@ -18,7 +19,7 @@ const CommentForm = ({ post }: CommentProps) => {
         content: commentValue,
       }
 
-      const result = await articleService.createComment(
+      const result = await articleDetailService.createComment(
         `${post.articleUUID}`,
         JSON.stringify(requestDto),
       )

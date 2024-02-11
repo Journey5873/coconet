@@ -60,6 +60,7 @@ const StyledCardContainer = styled.div`
   flex-direction: column;
   gap: 1rem;
   cursor: pointer;
+  box-sizing: border-box;
 `
 
 const StyledCardExpired = styled.div`

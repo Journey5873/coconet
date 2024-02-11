@@ -21,6 +21,14 @@ export class ArticleDetailService {
       data,
     )
   }
+
+  async updateComment(data: any) {
+    return this.articleRepository.update(`article-service/api/comment`, data)
+  }
+
+  async deleteComment(data: any) {
+    return this.articleRepository.delete(`article-service/api/comment`, data)
+  }
 }
 
 const ArticleDetailContext = createContext(

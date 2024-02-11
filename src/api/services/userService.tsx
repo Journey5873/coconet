@@ -27,12 +27,12 @@ export class UserService {
     ) as any
   }
 
-  async updateUser<Dto>(data: Dto, id: string) {
-    return this.userRepository.update<Dto>('', id, data)
+  async updateUser<Dto>(data: Dto) {
+    return this.userRepository.update<Dto>('', data)
   }
 
-  async deleteUser(id: string) {
-    return this.userRepository.delete('', id)
+  async deleteUser() {
+    return this.userRepository.delete(`member-service/api/delete`)
   }
 
   async getUserById(memberUUID: string) {

@@ -10,7 +10,7 @@ import { SelectValue } from '../../../pages/setting'
 import { useUserService } from '../../../api/services/userService'
 
 import { useAppDispatch } from '../../../store/RootReducer'
-import { setToken } from '../../../store/authSlice'
+import { setToken, setUserName } from '../../../store/authSlice'
 import { useDropzone } from 'react-dropzone'
 import MultipleSelect from '../../atoms//Select/MultipleSelect'
 import { useNavigate } from 'react-router-dom'
@@ -107,9 +107,10 @@ const AdditionalModal = ({ open, handleClose, memberId }: Props) => {
       const result = await userService.createUser<FormData>(formData)
 
       if (result.data) {
-        const accessToken = result.data?.accessToken
+        const accessToken = result.data.accessToken
         localStorage.setItem('accessToken', accessToken)
         dispatch(setToken({ token: accessToken }))
+        dispatch(setUserName({ name: additinalValue.nickname }))
         navigate('/')
       } else {
         console.log(result.errors)

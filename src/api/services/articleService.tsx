@@ -31,6 +31,10 @@ export class ArticleService {
     return this.articleRepository.getMany(`article-service/open-api/popular`)
   }
 
+  async getSuggestionArticle() {
+    return this.articleRepository.getMany(`article-service/api/suggestions`)
+  }
+
   async getBookmarkedArticle() {
     return this.articleRepository.getMany(`article-service/api/bookmark`)
   }

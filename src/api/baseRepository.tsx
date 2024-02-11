@@ -133,19 +133,15 @@ export class BaseRepository<T>
     return result as ApiResponse<T>
   }
 
-  public async update<Dto>(
-    path: string,
-    id: string,
-    item: Dto,
-  ): Promise<ApiResponse<T>> {
+  public async update<Dto>(path: string, item: Dto): Promise<ApiResponse<T>> {
     const instance = this.createInstance()
-    const result = await instance.put(`/${path}/id`, item).then(transform)
+    const result = await instance.put(`/${path}`, item).then(transform)
     return result as ApiResponse<T>
   }
 
-  public async delete(path: string, id: string): Promise<ApiResponse<T>> {
+  public async delete(path: string, item?: any): Promise<ApiResponse<T>> {
     const instance = this.createInstance()
-    const result = await instance.delete(`/${path}/${id}`).then(transform)
+    const result = await instance.delete(`/${path}`, item).then(transform)
     return result as ApiResponse<T>
   }
 }

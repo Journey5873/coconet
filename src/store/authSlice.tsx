@@ -2,11 +2,13 @@ import { createSlice } from '@reduxjs/toolkit'
 import type { PayloadAction } from '@reduxjs/toolkit'
 
 type AuthState = {
-  token: string
+  token?: string
+  name?: string
 }
 
 const initialState: AuthState = {
   token: '',
+  name: '',
 }
 
 export const authSlice = createSlice({
@@ -19,10 +21,14 @@ export const authSlice = createSlice({
     },
     removeToken: (state) => {
       state.token = ''
+      state.name = ''
+    },
+    setUserName: (state, action: PayloadAction<AuthState>) => {
+      state.name = action.payload.name
     },
   },
 })
 
-export const { setToken, removeToken } = authSlice.actions
+export const { setToken, removeToken, setUserName } = authSlice.actions
 
 export default authSlice.reducer
