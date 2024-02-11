@@ -14,6 +14,13 @@ export class ArticleDetailService {
       `article-service/open-api/article/${articleUuid}`,
     )
   }
+
+  async createComment(articleUUID: string, data: any) {
+    return this.articleRepository.create(
+      `article-service/api/comment/${articleUUID}`,
+      data,
+    )
+  }
 }
 
 const ArticleDetailContext = createContext(

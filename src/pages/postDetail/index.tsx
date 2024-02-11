@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import Loader from '../../components/atoms/Loader'
 import { useNavigate, useParams } from 'react-router-dom'
+import { useForm } from 'react-hook-form'
 import styled from 'styled-components'
 import { ReactComponent as ArrowBack } from '../../components/assets/images/arrowBack.svg'
 import { ReactComponent as CoconutIcon } from '../../components/assets/images/coconutIcon.svg'
@@ -8,12 +9,12 @@ import { FiEye } from 'react-icons/fi'
 import { FaRegThumbsUp } from 'react-icons/fa'
 import { imageMap, dateFormat } from '../../utils/utils'
 import SupportButtonModal from '../../components/molecules/SupportButtonModal'
-import { DummyData, dummyData } from '../../data/data'
 import { useArticleDetailService } from '../../api/services/articleDetialService'
 import { Article } from '../../models/article'
 import CommentItem from '../../components/organisms/comment/commentItem'
 import { User } from '../../models/user'
 import { useUserService } from '../../api/services/userService'
+import CommentForm from '../../components/organisms/comment/commentForm'
 
 const PostDetail = () => {
   const articleService = useArticleDetailService()
@@ -35,6 +36,7 @@ const PostDetail = () => {
       const result = await articleService.getDetailArticle(id)
       if (result.data) {
         setPost(result.data)
+        console.log(result.data)
       }
     } catch (error) {
       console.log(error)
@@ -178,25 +180,13 @@ const PostDetail = () => {
               </StyledBookmarkWrapper>
             </StyledViewAndBookmarkCount>
             <div style={{ marginBottom: 80 }}>
-              <StyledCommentInputWrppaer>
-                <StyledCommentTitle>
-                  댓글<span style={{ marginLeft: 6 }}>0</span>
-                </StyledCommentTitle>
-                <StyledCommentInputContainer>
-                  <StyledCommentInputProfile />
-                  <StyledCommentInputTextArea
-                    name="comment"
-                    id="comment"
-                    placeholder="댓글을 입력하세요."
-                  ></StyledCommentInputTextArea>
-                </StyledCommentInputContainer>
-                <StyledCommentInputButton>댓글등록</StyledCommentInputButton>
-              </StyledCommentInputWrppaer>
-              <StyledCommentListWrapper>
-                {post.comments.map((comment) => (
+              <CommentForm post={post} />
+
+              {post.comments.map((comment) => (
+                <>
                   <CommentItem key={comment.commentId} comment={comment} />
-                ))}
-              </StyledCommentListWrapper>
+                </>
+              ))}
             </div>
             {isVisible && (
               <SupportButtonModal
@@ -459,107 +449,4 @@ const StyledBookmarkWrapper = styled.div`
   cursor: pointer;
 `
 
-const StyledCommentInputWrppaer = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  margin-top: 100px;
-`
-
-const StyledCommentTitle = styled.div`
-  margin-bottom: 15px;
-  font-size: 18px;
-  font-weight: 700;
-
-  span {
-    line-height: 24px;
-    color: #939393;
-  }
-`
-
-const StyledCommentInputContainer = styled.div`
-  display: flex;
-  grid-gap: 15px;
-  gap: 15px;
-`
-
-const StyledCommentInputProfile = styled(CoconutIcon)`
-  display: block;
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-
-  &.comment_list {
-    width: 52px;
-    height: 52px;
-    margin-right: 16px;
-    object-fit: cover;
-  }
-`
-
-const StyledCommentInputTextArea = styled.textarea`
-  font-family: inherit;
-  padding: 1rem 1rem 1.5rem;
-  outline: none;
-  border: 2px solid #e1e1e1;
-  border-radius: 16px;
-  width: 100%;
-  min-height: 100px;
-  margin-bottom: 10px;
-  resize: none;
-`
-const StyledCommentInputButton = styled.button`
-  margin: 16px 0 24px;
-  margin-left: auto;
-  width: 120px;
-  height: 40px;
-  background: #333;
-  border-radius: 50px;
-  font-weight: 700;
-  color: #fff;
-  font-size: 16px;
-  line-height: 40px;
-  cursor: pointer;
-`
-
 const StyledCommentListWrapper = styled.div``
-
-const StyledCommentList = styled.li`
-  display: flex;
-  flex-direction: column;
-  padding-top: 1.5rem;
-  padding-bottom: 1.5rem;
-  border-bottom: 2px solid #e1e1e1;
-`
-
-const StyledCommentUserInfoWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  margin-bottom: 18px;
-`
-
-const StyledCommentUserInfo = styled.div`
-  display: flex;
-  flex-direction: column;
-  font-weight: 700;
-`
-
-const StyledCommentUserName = styled.div`
-  color: #333;
-  font-weight: 700;
-`
-
-const StyledCommentTime = styled.div`
-  font-size: 14px;
-  line-height: 126.5%;
-  letter-spacing: -0.005em;
-  color: #9f9f9f;
-`
-
-const StyledCommentContent = styled.p`
-  font-size: 1.125rem;
-  line-height: 1.7;
-  letter-spacing: -0.004em;
-  word-break: break-all;
-  overflow-wrap: break-all;
-`
