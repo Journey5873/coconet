@@ -196,7 +196,61 @@ public class ArticleService {
         articleStackRepository.deleteAllInBatch(stacksToRemove);
     }
 
-    public void updateRoles(List<ArticleRoleDto> requestedRoles, ArticleEntity article){
+    public void updateRoles(List<ArticleRoleDto> requestedRoles, ArticleEntity article) {
+
+        // Get current ArticleRoleEntities
+        List<ArticleRoleEntity> currentRoleEntities = articleRoleRepository.getArticleRoles(article);
+
+        Map<String, ArticleRoleEntity> currentRolesMap = new HashMap<>();
+        Map<String, ArticleRoleDto> requestedRolesMap = new HashMap<>();
+
+        List<ArticleRoleEntity> rolesToUpdate = new ArrayList<>();
+        List<Long> rolesToDelete = new ArrayList<>();
+
+        currentRoleEntities.stream()
+                .map(articleRole -> currentRolesMap.put(articleRole.getRole().getName(), articleRole))
+                .toList();
+
+        requestedRoles.stream()
+                .map(articleRoleDto -> requestedRolesMap.put(articleRoleDto.getRoleName(), articleRoleDto))
+                .toList();
+
+        // Retrieve requested role entities
+        List<RoleEntity> requestedRoleEntities = roleRepository.findByNameIn(List.copyOf(requestedRolesMap.keySet()));
+
+
+        // Identify new roles to add & roles to update
+        for (RoleEntity req : requestedRoleEntities){
+            ArticleRoleEntity roleEntity = currentRolesMap.get(req.getName());
+
+            if (roleEntity != null){
+                if (!roleEntity.getParticipant().equals(requestedRolesMap.get(req.getName()).getParticipant())) {
+                    roleEntity.changeParticipant(requestedRolesMap.get(req.getName()).getParticipant());
+                    rolesToUpdate.add(roleEntity);
+                }
+            }else {
+                rolesToUpdate.add(
+                        ArticleRoleEntity.builder()
+                                .article(article)
+                                .role(req)
+                                .participant(requestedRolesMap.get(req.getName()).getParticipant())
+                                .build()
+                );
+            }
+        }
+
+        // Identify roles to remove
+        for (ArticleRoleEntity role : currentRoleEntities) {
+            if (requestedRoles.stream().noneMatch(req -> req.getRoleName().equals(role.getRole().getName()))) {
+                rolesToDelete.add(role.getId());
+            }
+        }
+
+        articleRoleRepository.saveAll(rolesToUpdate);
+        articleRoleRepository.deleteArticleRolesIn(rolesToDelete);
+    }
+
+    public void updateRolesOld(List<ArticleRoleDto> requestedRoles, ArticleEntity article){
         // Get current article's role list
         List<ArticleRoleEntity> currentArticleRoles = articleRoleRepository.getArticleRoles(article);
 
