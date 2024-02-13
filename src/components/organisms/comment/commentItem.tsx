@@ -2,12 +2,11 @@ import styled from 'styled-components'
 import { dateFormat } from '../../../utils/utils'
 import { Comment } from '../../../models/article'
 import { ReactComponent as CoconutIcon } from '../../../components/assets/images/coconutIcon.svg'
-import { useEffect, useMemo, useState } from 'react'
+import { ChangeEvent, useCallback, useEffect, useMemo, useState } from 'react'
 import { User } from '../../../models/user'
 import { useUserService } from '../../../api/services/userService'
 import { toast } from 'react-toastify'
 import { useArticleDetailService } from '../../../api/services/articleDetialService'
-
 interface Props {
   comment: Comment
 }
@@ -15,8 +14,21 @@ interface Props {
 const CommentItem = ({ comment }: Props) => {
   const userService = useUserService()
   const [user, setUser] = useState<User>()
+  const [updateComment, setUpdateComment] = useState<string>(comment.content)
+  const [isEditComment, setIsEditComment] = useState<boolean>(false)
   const memeberId = localStorage.getItem('memberUUID')
   const articleDetailService = useArticleDetailService()
+
+  const handleEdit = () => {
+    setIsEditComment(true)
+  }
+
+  const handleUpdateComment = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      setUpdateComment(e.target.value)
+    },
+    [],
+  )
 
   const fetchCurrentUser = async () => {
     if (!comment.memberUUID) return
@@ -37,7 +49,7 @@ const CommentItem = ({ comment }: Props) => {
     try {
       const requestDto: any = {
         commentUUID: comment.commentUUID,
-        content: comment.content,
+        content: updateComment,
       }
       const result = await articleDetailService.updateComment(
         JSON.stringify(requestDto),
@@ -88,13 +100,39 @@ const CommentItem = ({ comment }: Props) => {
         </StyledCommentUserInfo>
       </StyledCommentUserInfoWrapper>
       <StyledComment>
-        <StyledCommentContent>{comment.content}</StyledCommentContent>
+        {isEditComment ? (
+          <>
+            <input
+              type="text"
+              value={updateComment}
+              onChange={handleUpdateComment}
+            />
+          </>
+        ) : (
+          <StyledCommentContent>{updateComment}</StyledCommentContent>
+        )}
+
         {comment.memberUUID === memeberId && (
           <StyledMyCommentButtonWrapper>
-            <StyledMyCommentButton>수정</StyledMyCommentButton>
-            <StyledMyCommentButton onClick={() => deleteMyComment()}>
-              삭제
-            </StyledMyCommentButton>
+            {isEditComment ? (
+              <>
+                <StyledMyCommentButton onClick={updateMyComment}>
+                  확인
+                </StyledMyCommentButton>
+                <StyledMyCommentButton onClick={() => setIsEditComment(false)}>
+                  취소
+                </StyledMyCommentButton>
+              </>
+            ) : (
+              <>
+                <StyledMyCommentButton onClick={handleEdit}>
+                  수정
+                </StyledMyCommentButton>
+                <StyledMyCommentButton onClick={deleteMyComment}>
+                  삭제
+                </StyledMyCommentButton>
+              </>
+            )}
           </StyledMyCommentButtonWrapper>
         )}
       </StyledComment>
