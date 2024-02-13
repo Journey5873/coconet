@@ -22,7 +22,7 @@ public class OpenArticleController {
 
     @GetMapping("/article/{articleUUID}")
     public Response<ArticleResponseDto> getArticle(@PathVariable String articleUUID){
-        ArticleResponseDto article = articleService.getArticle(articleUUID);
+        ArticleResponseDto article = articleService.getArticle(articleUUID, null);
         return Response.OK(article);
     }
 

@@ -45,7 +45,7 @@ public class ArticleService {
             throw new ApiException(ErrorCode.BAD_REQUEST, "You need to login in first.");
         }
 
-        ArticleEntity articleEntity = request.toEntity(memberUUID);
+        ArticleEntity articleEntity = ArticleConverter.converterToEntity(request, memberUUID);
         ArticleEntity savedArticle = articleRepository.save(articleEntity);
 
         List<ArticleRoleEntity> articleRoleEntityList = request.getRoles()
@@ -73,19 +73,27 @@ public class ArticleService {
                     return articleStackRepository.save(articleStackEntity);
                 }).toList();
 
-        em.clear();
         em.flush();
+        em.clear();
 
-        return ArticleConverter.convertToDto(articleEntity);
+        return ArticleConverter.convertToDto(savedArticle);
     }
 
-    public ArticleResponseDto getArticle(String articleUUID){
-        ArticleResponseDto articleResponseDto = articleRepository.getArticle(UUID.fromString(articleUUID));
-        if (articleResponseDto == null){
+    public ArticleResponseDto getArticle(String articleUUID, UUID memberUUID){
+        ArticleEntity article = articleRepository.getArticle(UUID.fromString(articleUUID), memberUUID);
+        boolean isBookmarked = false;
+
+        if (article == null){
             throw new ApiException(ErrorCode.NOT_FOUND, "No Post found");
         }
 
-        return articleResponseDto;
+        Optional<BookmarkEntity> articleAndMemberUUID = bookmarkRepository.findByArticleAndMemberUUID(article, memberUUID);
+
+        if (articleAndMemberUUID.isPresent()){
+            isBookmarked = true;
+        }
+
+        return ArticleConverter.convertToDto(article, isBookmarked);
     }
 
     public Page<ArticleResponseDto> getArticles(
@@ -470,17 +478,4 @@ public class ArticleService {
     /**
      * UTILS
      */
-
-    private static List<CommentResponseDto> getCommentResponseDtos(ArticleEntity articleEntity) {
-        List<CommentResponseDto> commentResponseDtoList = articleEntity.getComments().stream()
-                .map(comment -> {
-                    return CommentResponseDto.builder()
-                            .content(comment.getContent())
-                            .createdAt(comment.getCreatedAt())
-                            .updatedAt(comment.getUpdatedAt())
-                            .memberUUID(comment.getMemberUUID())
-                            .build();
-                }).collect(Collectors.toList());
-        return commentResponseDtoList;
-    }
 }

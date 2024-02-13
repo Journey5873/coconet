@@ -17,7 +17,52 @@ import java.util.UUID;
 
 @Builder
 public class ArticleConverter {
+
     public static ArticleResponseDto convertToDto (ArticleEntity articleEntity) {
+
+        List<ArticleRoleDto> roles = new ArrayList<>();
+        if (articleEntity.getArticleRoles() != null && articleEntity.getArticleType().equals(ArticleType.PROJECT.toString())){
+            roles = articleEntity.getArticleRoles().stream()
+                    .map(role -> new ArticleRoleDto(role.getRole().getName(), role.getParticipant()))
+                    .toList();
+        }
+
+        List<String> stacks = new ArrayList<>();
+        if (articleEntity.getArticleStacks() != null && !articleEntity.getArticleStacks().isEmpty()){
+            stacks = articleEntity.getArticleStacks().stream()
+                    .map(stack -> stack.getTechStack().getName())
+                    .toList();
+        }
+
+        List<CommentResponseDto> comments = new ArrayList<>();
+        if (articleEntity.getComments() != null && !articleEntity.getComments().isEmpty()){
+            comments = articleEntity.getComments().stream()
+                    .map(comment -> CommentConverter.convertToDto(comment))
+                    .toList();
+        }
+
+        return ArticleResponseDto.builder()
+                .articleUUID(articleEntity.getArticleUUID())
+                .title(articleEntity.getTitle())
+                .content(articleEntity.getContent())
+                .createdAt(articleEntity.getCreatedAt())
+                .updateAt(articleEntity.getUpdatedAt())
+                .plannedStartAt(articleEntity.getPlannedStartAt())
+                .expiredAt(articleEntity.getExpiredAt())
+                .estimatedDuration(EstimatedDuration.valueOf(articleEntity.getEstimatedDuration()))
+                .viewCount(articleEntity.getViewCount())
+                .bookmarkCount(articleEntity.getBookmarkCount())
+                .articleType(ArticleType.valueOf(articleEntity.getArticleType()))
+                .status(articleEntity.getStatus())
+                .meetingType(MeetingType.valueOf(articleEntity.getMeetingType()))
+                .memberUUID(articleEntity.getMemberUUID())
+                .roles(roles)
+                .stacks(stacks)
+                .comments(comments)
+                .build();
+    }
+
+    public static ArticleResponseDto convertToDto (ArticleEntity articleEntity, boolean isBookmarked) {
 
         List<ArticleRoleDto> roles = new ArrayList<>();
         if (articleEntity.getArticleType().equals(ArticleType.PROJECT.toString())){
@@ -27,14 +72,14 @@ public class ArticleConverter {
         }
 
         List<String> stacks = new ArrayList<>();
-        if (!articleEntity.getArticleStacks().isEmpty()){
+        if (articleEntity.getArticleStacks() != null && !articleEntity.getArticleStacks().isEmpty()){
             stacks = articleEntity.getArticleStacks().stream()
                 .map(stack -> stack.getTechStack().getName())
                 .toList();
         }
 
         List<CommentResponseDto> comments = new ArrayList<>();
-        if (!articleEntity.getComments().isEmpty()){
+        if (articleEntity.getComments() != null && !articleEntity.getComments().isEmpty()){
             comments = articleEntity.getComments().stream()
                 .map(comment -> CommentConverter.convertToDto(comment))
                 .toList();
@@ -55,6 +100,7 @@ public class ArticleConverter {
                 .status(articleEntity.getStatus())
                 .meetingType(MeetingType.valueOf(articleEntity.getMeetingType()))
                 .memberUUID(articleEntity.getMemberUUID())
+                .bookmarked(isBookmarked)
                 .roles(roles)
                 .stacks(stacks)
                 .comments(comments)

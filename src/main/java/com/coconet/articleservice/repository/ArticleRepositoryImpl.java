@@ -4,6 +4,7 @@ package com.coconet.articleservice.repository;
 import com.coconet.articleservice.converter.ArticleConverter;
 import com.coconet.articleservice.dto.ArticleResponseDto;
 import com.coconet.articleservice.entity.ArticleEntity;
+import com.coconet.articleservice.entity.BookmarkEntity;
 import com.coconet.articleservice.entity.RoleEntity;
 import com.coconet.articleservice.entity.TechStackEntity;
 import com.querydsl.core.types.Predicate;
@@ -18,6 +19,7 @@ import org.springframework.data.support.PageableExecutionUtils;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static com.coconet.articleservice.entity.QArticleEntity.articleEntity;
@@ -31,9 +33,8 @@ import static org.springframework.util.ObjectUtils.isEmpty;
 public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
     private final JPAQueryFactory queryFactory;
 
-
     @Override
-    public ArticleResponseDto getArticle(UUID articleUUID) {
+    public ArticleEntity getArticle(UUID articleUUID, UUID memberUUID) {
 
         queryFactory.update(articleEntity)
                 .set(articleEntity.viewCount, articleEntity.viewCount.add(1))
@@ -45,21 +46,14 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
                 .where(articleEntity.articleUUID.eq(articleUUID))
                 .fetchOne();
 
-        return ArticleConverter.convertToDto(article);
+        return article;
     }
-
 
     @Override
     public Page<ArticleResponseDto> getArticles(List<RoleEntity> roles, List<TechStackEntity> stacks, String keyword,
                                             String articleType, String meetingType, boolean bookmark, UUID memberUUID, Pageable pageable) {
 
-        Predicate condition = articleEntity.status.eq((byte) 1)
-                .and(articleEntity.expiredAt.after(LocalDateTime.now()))
-                .and(containsKeyword(keyword))
-                .and(articleTypeEquals(articleType))
-                .and(meetingTypeEquals(meetingType))
-                .and(articleRoleContains(roles))
-                .and(articleStackContains(stacks));
+        Predicate condition = getCondition(roles, stacks, keyword, articleType, meetingType);
 
         JPAQuery<ArticleEntity> query = queryFactory.selectFrom(articleEntity)
                 .distinct()
@@ -86,6 +80,16 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
         return PageableExecutionUtils.getPage(contents, pageable, () -> countQuery.fetchCount());
     }
 
+    private BooleanExpression getCondition(List<RoleEntity> roles, List<TechStackEntity> stacks, String keyword, String articleType, String meetingType) {
+        return articleEntity.status.eq((byte) 1)
+                .and(articleEntity.expiredAt.after(LocalDateTime.now()))
+                .and(containsKeyword(keyword))
+                .and(articleTypeEquals(articleType))
+                .and(meetingTypeEquals(meetingType))
+                .and(articleRoleContains(roles))
+                .and(articleStackContains(stacks));
+    }
+
     private JPAQuery<ArticleEntity> handleBookmark(JPAQuery<ArticleEntity> query, boolean bookmark, UUID memberUUID) {
         if (bookmark && !memberUUID.toString().isBlank()) {
             query.leftJoin(articleEntity.bookmarks, bookmarkEntity)
@@ -101,7 +105,6 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
     private BooleanExpression titleContains(String title){
         return isEmpty(title) ? null : articleEntity.title.contains(title);
     }
-
 
     private BooleanExpression contentContains(String content){
         return isEmpty(content) ? null : articleEntity.content.contains(content);
@@ -210,7 +213,3 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
                 .toList();
     }
 }
-
-
-
-

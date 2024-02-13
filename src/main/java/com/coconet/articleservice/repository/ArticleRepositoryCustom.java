@@ -1,6 +1,7 @@
 package com.coconet.articleservice.repository;
 
 import com.coconet.articleservice.dto.ArticleResponseDto;
+import com.coconet.articleservice.entity.ArticleEntity;
 import com.coconet.articleservice.entity.RoleEntity;
 import com.coconet.articleservice.entity.TechStackEntity;
 import org.springframework.data.domain.Page;
@@ -10,7 +11,7 @@ import java.util.List;
 import java.util.UUID;
 
 public interface ArticleRepositoryCustom {
-    ArticleResponseDto getArticle(UUID articleUUID);
+    ArticleEntity getArticle(UUID articleUUID, UUID memberUUID);
 
     Page<ArticleResponseDto> getArticles(
             List<RoleEntity> roles, List<TechStackEntity> stacks, String keyword,

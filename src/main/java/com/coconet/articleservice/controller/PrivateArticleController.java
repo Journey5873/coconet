@@ -18,6 +18,13 @@ public class PrivateArticleController {
 
     private final ArticleService articleService;
 
+    @GetMapping("/article/{articleUUID}")
+    public Response<ArticleResponseDto> getArticle(@PathVariable String articleUUID,
+                                                   @RequestHeader(value = "memberUUID") UUID memberUUID){
+        ArticleResponseDto article = articleService.getArticle(articleUUID, memberUUID);
+        return Response.OK(article);
+    }
+
     @PostMapping("/articles")
     public Response<Page<ArticleResponseDto>> getArticles(@RequestBody ArticleFilterDto condition,
                                                 @RequestHeader(value = "memberUUID") UUID memberUUID,

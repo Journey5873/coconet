@@ -1,8 +1,5 @@
 package com.coconet.articleservice.dto;
 
-import com.coconet.articleservice.entity.ArticleEntity;
-import com.coconet.articleservice.entity.ArticleRoleEntity;
-import com.coconet.articleservice.entity.ArticleStackEntity;
 import com.coconet.articleservice.entity.enums.ArticleType;
 import com.coconet.articleservice.entity.enums.EstimatedDuration;
 import com.coconet.articleservice.entity.enums.MeetingType;
@@ -16,7 +13,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Getter
@@ -38,6 +34,7 @@ public class ArticleResponseDto {
     private Byte status;
     private MeetingType meetingType;
     private UUID memberUUID;
+    private boolean bookmarked;
 
     private List<ArticleRoleDto> roles = new ArrayList<>();
     private List<String> stacks = new ArrayList<>();

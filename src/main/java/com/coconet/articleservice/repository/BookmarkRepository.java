@@ -1,5 +1,6 @@
 package com.coconet.articleservice.repository;
 
+import com.coconet.articleservice.entity.ArticleEntity;
 import com.coconet.articleservice.entity.BookmarkEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -12,4 +13,6 @@ import java.util.UUID;
 public interface BookmarkRepository extends JpaRepository<BookmarkEntity, Long> {
     List<BookmarkEntity> findAllByMemberUUID(UUID memberUUID);
     Optional<BookmarkEntity> findByArticleIdAndMemberUUID(Long articleId, UUID memberUUID);
+
+    Optional<BookmarkEntity> findByArticleAndMemberUUID(ArticleEntity article, UUID memberUUID);
 }
