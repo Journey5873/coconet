@@ -4,15 +4,19 @@ import com.coconet.chatservice.dto.ChatMsgCreateRequestDto;
 import com.coconet.chatservice.dto.ChatMsgResponseDto;
 import com.coconet.chatservice.service.ChatMsgService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.event.EventListener;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.socket.messaging.SessionConnectEvent;
 
 @RestController
+@Slf4j
 @RequiredArgsConstructor
-@RequestMapping("/chat-service")
 public class ChatMsgController {
 
     private final ChatMsgService chatMsgService;
@@ -20,8 +24,7 @@ public class ChatMsgController {
     @Value("${chatroom.URI}")
     private String roomURI;
 
-    // 안되면 config에 주석 푸세염 ^^
-    @MessageMapping("/app/message")
+    @MessageMapping("/message")
     public ChatMsgResponseDto sendChat(ChatMsgCreateRequestDto requestDto) {
 
         ChatMsgResponseDto response = chatMsgService.sendChat(requestDto);
@@ -30,5 +33,14 @@ public class ChatMsgController {
 
         return response;
     }
-}
 
+    @GetMapping("/health")
+    public String healthCheck(){
+        return "waeeeeee";
+    }
+
+    @EventListener
+    public void handleSessionConnect(SessionConnectEvent event) {
+        log.info("connect");
+    }
+}

@@ -21,9 +21,10 @@ public class ChatRoomController {
     private final ChatRoomSubService chatRoomSubService;
 
     @PostMapping("/create")
-    public Response<ChatroomResponseDto> createRoom(@RequestBody ChatroomRequestDto chatroomRequestDto,
-                                                    @RequestHeader(value = "memberUUID") UUID memberUUID){
-
+    public Response<ChatroomResponseDto> createRoom(@RequestBody ChatroomRequestDto chatroomRequestDto
+                                                    ){
+//        @RequestHeader(value = "memberUUID") UUID memberUUID
+        UUID memberUUID = UUID.fromString("6a2e74dc-beab-4d68-99fb-c15cc48dd455");
         ChatroomResponseDto response = chatRoomService.createRoom(chatroomRequestDto, memberUUID);
         return Response.OK(response);
     }
@@ -34,9 +35,12 @@ public class ChatRoomController {
         return Response.OK(response);
     }
 
+    // Todo : paging
     @GetMapping("/{roomUUID}")
-    public Response<ChatLoadResponseDto> getRoom(@RequestHeader(value = "memberUUID") UUID memberUUID,
+    public Response<ChatLoadResponseDto> getRoom(
                                                  @PathVariable UUID roomUUID) {
+        //@RequestHeader(value = "memberUUID") UUID memberUUID,
+        UUID memberUUID = UUID.fromString("6a2e74dc-beab-4d68-99fb-c15cc48dd455");
         ChatroomResponseDto chatroom = chatRoomService.getRoom(memberUUID, roomUUID);
         List<ChatMsgResponseDto> chats = chatMsgService.loadChats(roomUUID);
         ChatLoadResponseDto response = new ChatLoadResponseDto(chats, chatroom);

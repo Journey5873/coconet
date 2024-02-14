@@ -11,6 +11,7 @@ import com.coconet.chatservice.dto.client.ArticleResponse;
 import com.coconet.chatservice.entity.ChatRoomEntity;
 import com.coconet.chatservice.repository.ChatRoomRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -25,7 +26,7 @@ public class ChatRoomService {
     private final ChatRoomSubService chatRoomSubService;
 
     // TODO : the applicant UUID cannot be the same as writerUUID
-    public ChatroomResponseDto createRoom(ChatroomRequestDto createRequestDto, @RequestParam UUID memberUUID){
+    public ChatroomResponseDto createRoom(ChatroomRequestDto createRequestDto, UUID memberUUID){
         if(chatRoomSubService.existChatRoom(createRequestDto.getArticleUUID(), memberUUID)) {
             throw new ApiException(ErrorCode.BAD_REQUEST, "Already exist");
         }

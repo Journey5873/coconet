@@ -11,6 +11,7 @@ public class ChatMsgEntityToConverter {
 
     public static ChatMsgResponseDto convertToDto(ChatMsgEntity chatMsgEntity) {
         return ChatMsgResponseDto.builder()
+                .chatMsgUUID(chatMsgEntity.getChatUUID())
                 .senderUUID(chatMsgEntity.getSenderUUID())
                 .roomUUID(chatMsgEntity.getRoomUUID())
                 .message(chatMsgEntity.getMessage())

@@ -16,7 +16,6 @@ import static lombok.AccessLevel.PROTECTED;
 public class ChatMsgResponseDto {
     private UUID chatMsgUUID;
     private UUID senderUUID;
-    private UUID receiverUUID;
     private UUID roomUUID;
     private String message;
 }

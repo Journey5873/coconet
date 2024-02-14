@@ -27,9 +27,8 @@ public class ChatRoomTestController {
     }
     // for testing
     @PostMapping("/create/test")
-    public String createRoomTest(Model theModel, @RequestBody ChatroomRequestDto chatroomRequestDto,
-                                 @RequestHeader(value = "memberUUID") UUID memberUUID){
-        ChatroomResponseDto room = chatRoomService.createRoom(chatroomRequestDto, memberUUID);
+    public String createRoomTest(Model theModel, @RequestBody ChatroomRequestDto chatroomRequestDto){
+        ChatroomResponseDto room = chatRoomService.createRoom(chatroomRequestDto, UUID.fromString("31323361-7364-0000-0000-000000000000"));
         theModel.addAttribute("room", room);
         return "/room";
     }
@@ -44,7 +43,6 @@ public class ChatRoomTestController {
         return "/room-list";
     }
 
-    //For testing
     @GetMapping("/{roomUUID}/test")
     public String getRoomTest(Model theModel, @PathVariable UUID roomUUID) {
         UUID memberUUID = UUID.fromString("31323361-7364-0000-0000-000000000000");

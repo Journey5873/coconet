@@ -20,7 +20,7 @@ import static lombok.AccessLevel.PROTECTED;
 public class ChatMsgEntity extends BaseEntity{
 
     @Id
-    private String id;
+    private UUID chatUUID;
     private UUID senderUUID;
     private UUID roomUUID;
     private String message;

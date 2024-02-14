@@ -18,6 +18,7 @@ public class ChatMsgService {
 
     public ChatMsgResponseDto sendChat(ChatMsgCreateRequestDto requestDto){
         ChatMsgEntity chatMsgEntity = ChatMsgEntity.builder()
+                .chatUUID(UUID.randomUUID())
                 .senderUUID(requestDto.getSenderUUID())
                 .roomUUID(requestDto.getRoomUUID())
                 .message(requestDto.getMessage())

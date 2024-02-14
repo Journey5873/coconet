@@ -10,6 +10,6 @@ import java.util.UUID;
 
 @FeignClient(name = "article-service")
 public interface ArticleClient {
-    @GetMapping("article-service/open-api/chatClient/{articleUUID}")
+    @GetMapping("/article-service/open-api/chatClient/{articleUUID}")
     Response<ArticleResponse> sendChatClient(@PathVariable UUID articleUUID);
 }
