@@ -15,9 +15,10 @@ import CommentItem from '../../components/organisms/comment/commentItem'
 import { User } from '../../models/user'
 import { useUserService } from '../../api/services/userService'
 import CommentForm from '../../components/organisms/comment/commentForm'
+import { toast } from 'react-toastify'
 
 const PostDetail = () => {
-  const articleService = useArticleDetailService()
+  const articleDetailService = useArticleDetailService()
   const userService = useUserService()
   const memberId = localStorage.getItem('memberUUID')
   const [isVisible, setIsVisible] = useState(false)
@@ -35,7 +36,7 @@ const PostDetail = () => {
 
   const fetchPostDetail = async (id: string) => {
     try {
-      const result = await articleService.getDetailArticle(id)
+      const result = await articleDetailService.getDetailArticle(id)
       if (result.data) {
         setPost(result.data)
         console.log(result.data)
@@ -68,6 +69,26 @@ const PostDetail = () => {
     if (!postIds.includes(postId)) {
       postIds.push(postId)
       localStorage.setItem('postIds', JSON.stringify(postIds))
+    }
+  }
+
+  const deleteMyPost = async () => {
+    const confirm = window.confirm('해당 게시글을 삭제하시겠습니까?')
+
+    if (confirm) {
+      try {
+        const result = await articleDetailService.deleteMyPost(
+          `${post?.articleUUID}`,
+        )
+        if (result.succeeded) {
+          toast.success('게시글을 삭제했습니다.')
+          navigate('/')
+        } else {
+          toast.error('다시 시도해주세요.')
+        }
+      } catch (error) {
+        console.log(error)
+      }
     }
   }
 
@@ -115,6 +136,8 @@ const PostDetail = () => {
                 <StlyedRegisteredDate>{`${dateFormat(
                   post.expiredAt,
                 )}`}</StlyedRegisteredDate>
+                <StyledButton>수정</StyledButton>
+                <StyledButton onClick={deleteMyPost}>삭제</StyledButton>
               </StyledPostProfileBox>
               <StyledPostInfoWrapper>
                 <StyledPostInfoList>
@@ -453,4 +476,4 @@ const StyledBookmarkWrapper = styled.div`
   cursor: pointer;
 `
 
-const StyledCommentListWrapper = styled.div``
+const StyledButton = styled.button``

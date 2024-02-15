@@ -139,6 +139,12 @@ export class BaseRepository<T>
     return result as ApiResponse<T>
   }
 
+  public async updateExceptBody(path: string): Promise<ApiResponse<T>> {
+    const instance = this.createInstance()
+    const result = await instance.put(`/${path}`).then(transform)
+    return result as ApiResponse<T>
+  }
+
   public async delete(path: string, item?: any): Promise<ApiResponse<T>> {
     const instance = this.createInstance()
     const result = await instance.delete(`/${path}`, item).then(transform)
