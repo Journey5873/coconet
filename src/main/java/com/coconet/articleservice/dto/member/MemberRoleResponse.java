@@ -1,4 +1,4 @@
-package com.coconet.articleservice.entity.member;
+package com.coconet.articleservice.dto.member;
 
 import com.coconet.articleservice.entity.BaseEntity;
 import lombok.AllArgsConstructor;

@@ -1,10 +1,10 @@
 package com.coconet.articleservice.repository;
 
 
+import com.coconet.articleservice.client.MemberClient;
 import com.coconet.articleservice.converter.ArticleConverter;
 import com.coconet.articleservice.dto.ArticleResponseDto;
 import com.coconet.articleservice.entity.ArticleEntity;
-import com.coconet.articleservice.entity.BookmarkEntity;
 import com.coconet.articleservice.entity.RoleEntity;
 import com.coconet.articleservice.entity.TechStackEntity;
 import com.querydsl.core.types.Predicate;
@@ -19,7 +19,6 @@ import org.springframework.data.support.PageableExecutionUtils;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import static com.coconet.articleservice.entity.QArticleEntity.articleEntity;
@@ -32,9 +31,10 @@ import static org.springframework.util.ObjectUtils.isEmpty;
 @RequiredArgsConstructor
 public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
     private final JPAQueryFactory queryFactory;
+    private final MemberClient memberClient;
 
     @Override
-    public ArticleEntity getArticle(UUID articleUUID, UUID memberUUID) {
+    public ArticleEntity getArticle(UUID articleUUID) {
 
         queryFactory.update(articleEntity)
                 .set(articleEntity.viewCount, articleEntity.viewCount.add(1))
@@ -70,7 +70,8 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
                 .fetch();
 
         List<ArticleResponseDto> contents = articles.stream()
-                .map(article -> ArticleConverter.convertToDto(article))
+                .map(article -> ArticleConverter.convertToDto(article
+                                , memberClient.clientMemberProfile(article.getMemberUUID()).getData()))
                 .toList();
 
         JPAQuery<ArticleEntity> countQuery = queryFactory
@@ -141,7 +142,8 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
                 .fetch();
 
         List<ArticleResponseDto> contents = articles.stream()
-                .map(article -> ArticleConverter.convertToDto(article))
+                .map(article -> ArticleConverter.convertToDto(article,
+                        memberClient.clientMemberProfile(article.getMemberUUID()).getData()))
                 .toList();
 
 
@@ -188,7 +190,8 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
 
 
         return suggestions.stream()
-                .map(suggestion -> ArticleConverter.convertToDto(suggestion))
+                .map(suggestion -> ArticleConverter.convertToDto(suggestion,
+                        memberClient.clientMemberProfile(suggestion.getMemberUUID()).getData()))
                 .toList();
     }
 
@@ -209,7 +212,8 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
                 .fetch();
 
         return populars.stream()
-                .map(popularPost -> ArticleConverter.convertToDto(popularPost))
+                .map(popularPost -> ArticleConverter.convertToDto(popularPost,
+                        memberClient.clientMemberProfile(popularPost.getMemberUUID()).getData()))
                 .toList();
     }
 }

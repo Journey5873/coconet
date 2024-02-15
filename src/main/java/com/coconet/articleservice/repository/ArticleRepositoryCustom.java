@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.UUID;
 
 public interface ArticleRepositoryCustom {
-    ArticleEntity getArticle(UUID articleUUID, UUID memberUUID);
+    ArticleEntity getArticle(UUID articleUUID);
 
     Page<ArticleResponseDto> getArticles(
             List<RoleEntity> roles, List<TechStackEntity> stacks, String keyword,

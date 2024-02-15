@@ -10,8 +10,8 @@ import com.coconet.articleservice.dto.client.ChatClientResponseDto;
 import com.coconet.articleservice.entity.*;
 import com.coconet.articleservice.entity.enums.ArticleType;
 import com.coconet.articleservice.entity.enums.MeetingType;
-import com.coconet.articleservice.entity.member.MemberResponse;
-import com.coconet.articleservice.entity.member.MemberRoleResponse;
+import com.coconet.articleservice.dto.member.MemberResponse;
+import com.coconet.articleservice.dto.member.MemberRoleResponse;
 import com.coconet.articleservice.repository.*;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +23,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -76,24 +75,35 @@ public class ArticleService {
         em.flush();
         em.clear();
 
-        return ArticleConverter.convertToDto(savedArticle);
+        return ArticleConverter.convertToDto(savedArticle
+                , memberClient.clientMemberAllInfo(savedArticle.getMemberUUID()).getData());
     }
 
     public ArticleResponseDto getArticle(String articleUUID, UUID memberUUID){
-        ArticleEntity article = articleRepository.getArticle(UUID.fromString(articleUUID), memberUUID);
+        ArticleEntity articleEntity = articleRepository.getArticle(UUID.fromString(articleUUID));
         boolean isBookmarked = false;
 
-        if (article == null){
+        if (articleEntity == null){
             throw new ApiException(ErrorCode.NOT_FOUND, "No Post found");
         }
 
-        Optional<BookmarkEntity> articleAndMemberUUID = bookmarkRepository.findByArticleAndMemberUUID(article, memberUUID);
+        Optional<BookmarkEntity> articleAndMemberUUID = bookmarkRepository.findByArticleAndMemberUUID(articleEntity, memberUUID);
 
         if (articleAndMemberUUID.isPresent()){
             isBookmarked = true;
         }
 
-        return ArticleConverter.convertToDto(article, isBookmarked);
+        MemberResponse memberResponse = memberClient.clientMemberProfile(articleEntity.getMemberUUID()).getData();
+
+        List<CommentResponseDto> commentResponseDtos = new ArrayList<>();
+        if (articleEntity.getComments() != null && !articleEntity.getComments().isEmpty()){
+            commentResponseDtos = articleEntity.getComments().stream()
+                    .map(commentEntity -> CommentConverter.convertToDto(commentEntity,
+                            memberClient.clientMemberAllInfo(commentEntity.getMemberUUID()).getData()))
+                    .toList();
+        }
+
+        return ArticleConverter.convertToDto(articleEntity, isBookmarked, memberResponse, commentResponseDtos);
     }
 
     public Page<ArticleResponseDto> getArticles(
@@ -126,7 +136,7 @@ public class ArticleService {
                 .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "No Post found"));
 
         if (!articleEntity.getMemberUUID().equals(memberUUID)){
-            new ApiException(ErrorCode.FORBIDDEN_ERROR, "Only author can edit this post.");
+            throw new ApiException(ErrorCode.FORBIDDEN_ERROR, "Only author can edit this post.");
         }
 
         articleEntity.updateArticle(articleRequestDto.getTitle(),
@@ -141,7 +151,18 @@ public class ArticleService {
         updateRoles(articleRequestDto.getRoles(), articleEntity);
         updateStacks(articleRequestDto.getStacks(), articleEntity);
 
-        return ArticleConverter.convertToDto(articleEntity);
+        List<CommentResponseDto> commentResponseDtos = new ArrayList<>();
+        if (articleEntity.getComments() != null && !articleEntity.getComments().isEmpty()){
+            commentResponseDtos = articleEntity.getComments().stream()
+                    .map(commentEntity -> CommentConverter.convertToDto(commentEntity,
+                            memberClient.clientMemberAllInfo(commentEntity.getMemberUUID()).getData()))
+                    .toList();
+        }
+
+        return ArticleConverter.convertToDto(articleEntity,
+                false,
+                memberClient.clientMemberProfile(articleEntity.getMemberUUID()).getData(),
+                commentResponseDtos);
     }
 
     public void updateStacks(List<String> requestedStackNames, ArticleEntity article){
@@ -308,7 +329,7 @@ public class ArticleService {
             throw new ApiException(ErrorCode.BAD_REQUEST, "You need to login in first.");
         }
 
-        MemberResponse memberResponse = memberClient.getMemberInfo(memberUUID).getData();
+        MemberResponse memberResponse = memberClient.clientMemberAllInfo(memberUUID).getData();
 
         List<String> roles = memberResponse.getRoles().stream()
                 .map(MemberRoleResponse::getName)
@@ -387,7 +408,8 @@ public class ArticleService {
 
         CommentEntity commentEntity = CommentConverter.convertToEntity(request, article, memberUUID);
 
-        return CommentConverter.convertToDto(commentRepository.save(commentEntity));
+        return CommentConverter.convertToDto(commentRepository.save(commentEntity)
+                , memberClient.clientMemberProfile(commentEntity.getMemberUUID()).getData());
     }
 
     public CommentResponseDto updateComment(CommentRequestDto commentDto, UUID memberUUID) {
@@ -402,7 +424,8 @@ public class ArticleService {
             throw new ApiException(ErrorCode.FORBIDDEN_ERROR, "Only commenter can update the Comment.");
         }
 
-        return CommentConverter.convertToDto(commentEntity);
+        return CommentConverter.convertToDto(commentEntity
+                , memberClient.clientMemberProfile(commentEntity.getMemberUUID()).getData());
     }
 
     public void deleteComment(UUID commentUUID, UUID memberUUID) {

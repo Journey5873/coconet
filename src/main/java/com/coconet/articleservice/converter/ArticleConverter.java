@@ -8,6 +8,7 @@ import com.coconet.articleservice.entity.ArticleEntity;
 import com.coconet.articleservice.entity.enums.ArticleType;
 import com.coconet.articleservice.entity.enums.EstimatedDuration;
 import com.coconet.articleservice.entity.enums.MeetingType;
+import com.coconet.articleservice.dto.member.MemberResponse;
 import lombok.Builder;
 
 import java.time.LocalTime;
@@ -18,7 +19,7 @@ import java.util.UUID;
 @Builder
 public class ArticleConverter {
 
-    public static ArticleResponseDto convertToDto (ArticleEntity articleEntity) {
+    public static ArticleResponseDto convertToDto (ArticleEntity articleEntity, MemberResponse memberResponse) {
 
         List<ArticleRoleDto> roles = new ArrayList<>();
         if (articleEntity.getArticleRoles() != null && articleEntity.getArticleType().equals(ArticleType.PROJECT.toString())){
@@ -31,13 +32,6 @@ public class ArticleConverter {
         if (articleEntity.getArticleStacks() != null && !articleEntity.getArticleStacks().isEmpty()){
             stacks = articleEntity.getArticleStacks().stream()
                     .map(stack -> stack.getTechStack().getName())
-                    .toList();
-        }
-
-        List<CommentResponseDto> comments = new ArrayList<>();
-        if (articleEntity.getComments() != null && !articleEntity.getComments().isEmpty()){
-            comments = articleEntity.getComments().stream()
-                    .map(comment -> CommentConverter.convertToDto(comment))
                     .toList();
         }
 
@@ -56,13 +50,17 @@ public class ArticleConverter {
                 .status(articleEntity.getStatus())
                 .meetingType(MeetingType.valueOf(articleEntity.getMeetingType()))
                 .memberUUID(articleEntity.getMemberUUID())
+                .writerName(memberResponse.getName())
+                .writerProfileImage(memberResponse.getProfileImage())
                 .roles(roles)
                 .stacks(stacks)
-                .comments(comments)
                 .build();
     }
 
-    public static ArticleResponseDto convertToDto (ArticleEntity articleEntity, boolean isBookmarked) {
+    public static ArticleResponseDto convertToDto (ArticleEntity articleEntity,
+                                                   boolean isBookmarked,
+                                                   MemberResponse memberResponse,
+                                                   List<CommentResponseDto> comments) {
 
         List<ArticleRoleDto> roles = new ArrayList<>();
         if (articleEntity.getArticleType().equals(ArticleType.PROJECT.toString())){
@@ -75,13 +73,6 @@ public class ArticleConverter {
         if (articleEntity.getArticleStacks() != null && !articleEntity.getArticleStacks().isEmpty()){
             stacks = articleEntity.getArticleStacks().stream()
                 .map(stack -> stack.getTechStack().getName())
-                .toList();
-        }
-
-        List<CommentResponseDto> comments = new ArrayList<>();
-        if (articleEntity.getComments() != null && !articleEntity.getComments().isEmpty()){
-            comments = articleEntity.getComments().stream()
-                .map(comment -> CommentConverter.convertToDto(comment))
                 .toList();
         }
 
@@ -103,6 +94,8 @@ public class ArticleConverter {
                 .bookmarked(isBookmarked)
                 .roles(roles)
                 .stacks(stacks)
+                .writerName(memberResponse.getName())
+                .writerProfileImage(memberResponse.getProfileImage())
                 .comments(comments)
                 .build();
     }

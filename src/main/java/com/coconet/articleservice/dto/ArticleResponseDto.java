@@ -35,6 +35,8 @@ public class ArticleResponseDto {
     private MeetingType meetingType;
     private UUID memberUUID;
     private boolean bookmarked;
+    private String writerName;
+    private String writerProfileImage;
 
     private List<ArticleRoleDto> roles = new ArrayList<>();
     private List<String> stacks = new ArrayList<>();

@@ -23,4 +23,6 @@ public class CommentResponseDto {
     private UUID commentUUID;
     private UUID memberUUID;
     private UUID articleUUID;
+    private String writerName;
+    private String writerProfileImage;
 }
