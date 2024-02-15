@@ -161,6 +161,7 @@ const SettingPage = () => {
       const result = await userService.deleteUser()
       localStorage.removeItem('accessToken')
       navigate('/')
+      storeDispatch(removeToken())
     } catch (error) {
       console.log(error)
     }
