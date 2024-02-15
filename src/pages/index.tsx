@@ -32,6 +32,8 @@ const Index = () => {
     () => searchParams.get('accessToken') || '',
     [searchParams.get('accessToken')],
   )
+  const isMember = localStorage?.getItem('accessToken')
+
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [articleList, setArticleList] = useState<Article[]>([])
   const [page, setPage] = useState(1)
@@ -146,7 +148,8 @@ const Index = () => {
         <StyledContents>
           <CustomCarousel />
           {/* 인기글 추기 */}
-          <SuggestionArticleList />
+          {!!isMember && <SuggestionArticleList />}
+
           <PopularArticleList />
           <div style={{ display: 'flex', columnGap: '1.5rem' }}>
             <MultiStackSelector

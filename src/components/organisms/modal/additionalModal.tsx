@@ -14,6 +14,7 @@ import { setToken, setUserName } from '../../../store/authSlice'
 import { useDropzone } from 'react-dropzone'
 import MultipleSelect from '../../atoms//Select/MultipleSelect'
 import { useNavigate } from 'react-router-dom'
+import MultipleSelectString from '../../atoms/Select/MultipleSelectString'
 
 export type RegisterDto = {
   memberId: string

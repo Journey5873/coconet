@@ -19,13 +19,15 @@ import CommentForm from '../../components/organisms/comment/commentForm'
 const PostDetail = () => {
   const articleService = useArticleDetailService()
   const userService = useUserService()
+  const memberId = localStorage.getItem('memberUUID')
   const [isVisible, setIsVisible] = useState(false)
   const [currentUser, setCurrentUser] = useState<User | null>(null)
 
   const { id } = useParams()
-
   const [post, setPost] = useState<Article | null>(null)
   const navigate = useNavigate()
+
+  console.log(post)
 
   const handleSupportButton = () => {
     setIsVisible(!isVisible)
@@ -130,7 +132,7 @@ const PostDetail = () => {
                   </StyledPostInfoListContent>
                   <StyledPostInfoListContent>
                     <StyledPostInfoTitle>예상 기간</StyledPostInfoTitle>
-                    <span>{post.estimatedDurationm}</span>
+                    <span>{post.estimatedDuration}</span>
                   </StyledPostInfoListContent>
                 </StyledPostInfoList>
                 <StyledPostInfoRemains>
@@ -161,9 +163,11 @@ const PostDetail = () => {
                   </StyledPostInfoListContent>
                 </StyledPostInfoRemains>
               </StyledPostInfoWrapper>
-              <StyledSupportButton onClick={() => handleSupportButton()}>
-                지원하기
-              </StyledSupportButton>
+              {post.memberUUID !== memberId && (
+                <StyledSupportButton onClick={() => handleSupportButton()}>
+                  지원하기
+                </StyledSupportButton>
+              )}
             </StyledPostHeader>
             <StyledPostContentWrapper>
               <StyledPostInfo>프로젝트 소개</StyledPostInfo>

@@ -39,7 +39,7 @@ export interface Article {
   title: string
   bookmarkCount: number
   expiredAt: string
-  estimatedDurationm: EstimatedDuration
+  estimatedDuration: EstimatedDuration
   articleType: ArticleType
   meetingType: MeetingType
   stacks: Stack[]

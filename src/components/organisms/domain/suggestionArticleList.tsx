@@ -8,12 +8,13 @@ const SuggestionArticleList = () => {
   const articleService = useArticleService()
   const [suggestionArticles, setSuggestionArticles] = useState<Article[]>([])
 
-  const fetchPopularArticle = async () => {
+  const getSuggestionArticles = async () => {
     try {
       const result = await articleService.getSuggestionArticle()
 
+      console.log(result)
       if (result.data) {
-        setSuggestionArticles(result.data!)
+        setSuggestionArticles(result.data)
       }
     } catch (error) {
       setSuggestionArticles([])
@@ -21,12 +22,12 @@ const SuggestionArticleList = () => {
   }
 
   useEffect(() => {
-    fetchPopularArticle()
+    getSuggestionArticles()
   }, [])
 
   return (
     <div>
-      <h2>[추천] 다른 모임도 둘러보세요!</h2>
+      <h2>회원님께 추천!</h2>
       <StyledScrollContainer>
         {suggestionArticles.map((article) => (
           <PopularCard item={article} />

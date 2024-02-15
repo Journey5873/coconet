@@ -13,7 +13,7 @@ import SingleSelectString from '../../components/atoms/Select/SingleSelectString
 import MultipleSelectString from '../../components/atoms/Select/MultipleSelectString'
 import { removeToken, setUserName } from '../../store/authSlice'
 import { useNavigate } from 'react-router-dom'
-import { useAppDispatch } from '../../store/RootReducer'
+import { useAppDispatch, useAppSelector } from '../../store/RootReducer'
 
 export interface SettingFormType {
   name: string
@@ -85,6 +85,7 @@ const SettingPage = () => {
   const userService = useUserService()
   const [userState, dispatch] = useReducer(userReducer, initialUserState)
   const navigate = useNavigate()
+  const storeDispatch = useAppDispatch()
 
   const updateName = (name: string) => dispatch({ type: 'UPDATE_NAME', name })
   const updateCareer = (career: number) =>

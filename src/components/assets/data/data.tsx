@@ -4,8 +4,8 @@ export interface SelectProps {
 }
 
 export const CategoryOptions = [
-  { value: '스터디', label: '스터디' },
-  { value: '프로젝트', label: '프로젝트' },
+  { value: 'STUDY', label: '스터디' },
+  { value: 'PROJECT', label: '프로젝트' },
 ]
 
 export const PositionOptions: SelectProps[] = [
@@ -49,19 +49,19 @@ export const PersonnelOptions: SelectProps[] = [
 ]
 
 export const OnOfflineOptions: SelectProps[] = [
-  { value: '온라인', label: '온라인' },
-  { value: '오프라인', label: '오프라인' },
-  { value: '온/오프라인', label: '온/오프라인' },
+  { value: 'ONLINE', label: '온라인' },
+  { value: 'OFFLINE', label: '오프라인' },
+  { value: 'ONOFFLINE', label: '온/오프라인' },
 ]
 
 export const PeriodOptions: SelectProps[] = [
-  { value: '2개월', label: '2개월' },
-  { value: '3개월', label: '3개월' },
-  { value: '4개월', label: '4개월' },
-  { value: '5개월', label: '5개월' },
-  { value: '6개월', label: '6개월' },
-  { value: '1년 미만', label: '1년 미만' },
-  { value: '1년 이상', label: '1년 이상' },
+  { value: 'TWO_MONTHS', label: '2개월' },
+  { value: 'THREE_MONTHS', label: '3개월' },
+  { value: 'FOUR_MONTHS', label: '4개월' },
+  { value: 'FIVE_MONTHS', label: '5개월' },
+  { value: 'SIX_MONTHS', label: '6개월' },
+  { value: 'ONE_YEAR', label: '1년 미만' },
+  { value: 'OVER_ONE_YEAR', label: '1년 이상' },
 ]
 
 export const StackOptions: SelectProps[] = [

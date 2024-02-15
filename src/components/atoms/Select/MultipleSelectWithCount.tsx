@@ -1,17 +1,15 @@
 import * as React from 'react'
-import { Theme, useTheme } from '@mui/material/styles'
 import Box from '@mui/material/Box'
 import OutlinedInput from '@mui/material/OutlinedInput'
 import MenuItem from '@mui/material/MenuItem'
 import FormControl from '@mui/material/FormControl'
 import Select from '@mui/material/Select'
 import Chip from '@mui/material/Chip'
-import { useSelector, useDispatch } from 'react-redux'
 import styled from 'styled-components'
-import { decrease, increase } from '../../../store/positionSlice'
-import { RootState } from '../../../store/RootReducer'
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'
 import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline'
+import { useState } from 'react'
+import { StackListProps } from '../../../pages/postNew'
 
 const ITEM_HEIGHT = 48
 const ITEM_PADDING_TOP = 8
@@ -25,55 +23,37 @@ const MenuProps = {
 }
 
 interface Props {
+  stackLists: StackListProps[]
+  increaseCount: (stackLabel: string) => void
+  decreaseCount: (stackLabel: string) => void
   label: string
   placeholder: string
 }
 
-interface StackListProps {
-  value: string
-  label: string
-  count: number
-  id: number
-}
-
-function getStyles(name: string, personName: readonly string[], theme: Theme) {
-  return {
-    fontWeight:
-      personName.indexOf(name) === -1
-        ? theme.typography.fontWeightRegular
-        : theme.typography.fontWeightMedium,
-  }
-}
-
-export default function MultipleSelectWithCount({ label, placeholder }: Props) {
-  const [stackLists, setStackLists] = React.useState<string[]>([])
-
-  const items = useSelector((state: RootState) => state.reducer.position)
-
-  const dispatch = useDispatch()
-
-  const handleChange = (label: string) => {
-    setStackLists(
-      stackLists.includes(label) ? [...stackLists] : [...stackLists, label],
-    )
-  }
-
+export default function MultipleSelectWithCount({
+  stackLists,
+  increaseCount,
+  decreaseCount,
+  label,
+  placeholder,
+}: Props) {
   return (
     <div>
       <FormControl sx={{ m: 1, width: '100%', margin: 0, gap: 1 }}>
-        <StyledInputLabel id="demo-simple-select-label">
+        <StyledInputLabel id="demo-multiple-chip-label">
           {label}
         </StyledInputLabel>
         <Select
           multiple
           placeholder={placeholder}
-          value={stackLists}
+          value={stackLists.map((stack) => stack.roleName)}
           input={<OutlinedInput id="select-multiple-chip" />}
           renderValue={(selected) => (
             <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
               {selected.map((value) => {
-                const isSelected = items.find((item) => item.value === value)
-                  ?.count
+                const isSelected = stackLists.find(
+                  (stack) => stack.roleName === value,
+                )?.participant
                 return (
                   (isSelected as number) > 0 && (
                     <Chip
@@ -81,7 +61,8 @@ export default function MultipleSelectWithCount({ label, placeholder }: Props) {
                       label={
                         value +
                         ' (' +
-                        items.find((item) => item.value === value)?.count +
+                        stackLists.find((stack) => stack.roleName === value)
+                          ?.participant +
                         ')'
                       }
                     ></Chip>
@@ -92,29 +73,27 @@ export default function MultipleSelectWithCount({ label, placeholder }: Props) {
           )}
           MenuProps={MenuProps}
         >
-          {items.map((item: StackListProps, i: number) => (
+          {stackLists.map((stack: StackListProps) => (
             <MenuItem
-              key={item.value}
-              value={item.value}
+              key={stack.roleName}
+              value={stack.roleName}
               style={{ display: 'flex', justifyContent: 'space-between' }}
             >
-              <div>{item.value}</div>
+              <div>{stack.roleName}</div>
               <StyledButtonWrapper>
                 <RemoveCircleOutlineIcon
                   onClick={(e) => {
                     e.stopPropagation()
-                    dispatch(decrease(items[i].id))
-                    handleChange(items[i].label)
+                    decreaseCount(stack.roleName)
                   }}
                 >
                   -
                 </RemoveCircleOutlineIcon>
-                {item.count}
+                {stack.participant > 0 ? stack.participant : 0}
                 <AddCircleOutlineIcon
                   onClick={(e) => {
                     e.stopPropagation()
-                    dispatch(increase(items[i].id))
-                    handleChange(items[i].label)
+                    increaseCount(stack.roleName)
                   }}
                 >
                   +

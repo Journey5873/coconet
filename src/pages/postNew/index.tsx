@@ -1,6 +1,6 @@
 import styled from 'styled-components'
 import SingleSelect from '../../components/atoms/Select/SingleSelect'
-import { useRef, useState } from 'react'
+import { ChangeEvent, useCallback, useRef, useState } from 'react'
 import { SelectValue } from '../setting'
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
@@ -8,17 +8,84 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 import MultipleSelect from '../../components/atoms/Select/MultipleSelect'
 import MultipleSelectWithCount from '../../components/atoms/Select/MultipleSelectWithCount'
-// import '@toast-ui/editor/dist/toastui-editor.css'
-// import { Editor } from '@toast-ui/react-editor'
+import { Dayjs } from 'dayjs'
+import { useArticleService } from '../../api/services/articleService'
+import { dateFormat } from '../../utils/utils'
+
+export interface StackListProps {
+  roleName: string
+  participant: number
+}
 
 export default function PostNew() {
-  // const editorRef = useRef<Editor>(null)
+  const articleService = useArticleService()
+  // 등록 날짜
+  const plannedStartAt = dateFormat(`${new Date()}`)
+
   // 모집 구분
   const [category, setCategory] = useState<SelectValue>({
     label: '',
     value: '',
   })
-  const handleCategory = (value: SelectValue) => setCategory(value)
+  const handleCategory = (value: SelectValue) => {
+    setCategory(value)
+  }
+
+  // 모집 포지션/인원
+  const [stackLists, setStackLists] = useState<StackListProps[]>([
+    { roleName: 'Backend', participant: 0 },
+    { roleName: 'Frontend', participant: 0 },
+    { roleName: 'Designer', participant: 0 },
+    { roleName: 'IOS', participant: 0 },
+    { roleName: 'Android', participant: 0 },
+    { roleName: 'PM', participant: 0 },
+    { roleName: 'QA', participant: 0 },
+    { roleName: 'GameDev', participant: 0 },
+    { roleName: 'DevOps', participant: 0 },
+  ])
+  const [positionLists, setPositionLists] = useState<StackListProps[]>([])
+
+  const increaseCount = (stackLabel: string) => {
+    setStackLists(
+      stackLists.map((stack) =>
+        stack.roleName === stackLabel
+          ? { ...stack, participant: stack.participant + 1 }
+          : stack,
+      ),
+    )
+    setPositionLists(
+      stackLists
+        .map((stack) =>
+          stack.roleName === stackLabel
+            ? { ...stack, participant: stack.participant + 1 }
+            : stack,
+        )
+        .filter((stack) => stack.participant > 0),
+    )
+  }
+
+  const decreaseCount = (stackLabel: string) => {
+    setStackLists(
+      stackLists.map((stack) =>
+        stack.roleName === stackLabel
+          ? stack.participant > 0
+            ? { ...stack, participant: stack.participant - 1 }
+            : { ...stack, participant: 0 }
+          : stack,
+      ),
+    )
+    setPositionLists(
+      stackLists
+        .map((stack) =>
+          stack.roleName === stackLabel
+            ? stack.participant > 0
+              ? { ...stack, participant: stack.participant - 1 }
+              : { ...stack, participant: 0 }
+            : stack,
+        )
+        .filter((stack) => stack.participant > 0),
+    )
+  }
 
   // 진행 방식
   const [onOffline, setOnOffline] = useState<SelectValue>({
@@ -35,18 +102,48 @@ export default function PostNew() {
   const handlePeriod = (value: SelectValue) => setPeriod(value)
 
   // 기술 스택
-  const [stack, setStack] = useState<SelectValue>({
-    label: '',
-    value: '',
-  })
-  const handleStack = (value: SelectValue) => setStack(value)
+  const [stacks, setStacks] = useState<any>([])
+  const handleStack = (option: { value: string; label: string }[]) => {
+    setStacks(option.map((item) => item.value))
+  }
 
-  // const onSave = () => {
-  //   // 입력창에 입력한 내용을 HTML 태그 형태로 취득
-  //   console.log(editorRef.current?.getInstance().getHTML())
-  //   // 입력창에 입력한 내용을 MarkDown 형태로 취득
-  //   console.log(editorRef.current?.getInstance().getMarkdown())
-  // }
+  // 날짜 선택
+  const [date, setDate] = useState<Dayjs | null>(null)
+
+  // 제목
+  const [title, setTitle] = useState('')
+  const handleTitle = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+    setTitle(e.target.value)
+  }, [])
+
+  // 내용
+  const [content, setContent] = useState('')
+  const handleContent = useCallback((e: ChangeEvent<HTMLTextAreaElement>) => {
+    setContent(e.target.value)
+  }, [])
+
+  const onRegister = async () => {
+    try {
+      const requestDto: any = {
+        title: title,
+        content: content,
+        plannedStartAt: plannedStartAt,
+        expiredAt: date,
+        estimatedDuration: period.value,
+        articleType: category.value,
+        meetingType: onOffline.value,
+        roles: positionLists,
+        stacks: [...stacks.map((stack: string) => stack)],
+      }
+
+      const result = await articleService.createNewArticle(
+        JSON.stringify(requestDto),
+      )
+      console.log(result.data)
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
   return (
     <PostRegisterWrapper>
@@ -61,13 +158,16 @@ export default function PostNew() {
           <StyledPostSelectList>
             <SingleSelect
               label="모집구분"
-              value={category}
+              value={category.label}
               onChange={handleCategory}
               placeholder="스터디/프로젝트"
             />
           </StyledPostSelectList>
           <StyledPostSelectList>
             <MultipleSelectWithCount
+              stackLists={stackLists}
+              increaseCount={increaseCount}
+              decreaseCount={decreaseCount}
               label="모집 포지션/인원"
               placeholder="프론트엔드/0명"
             />
@@ -77,7 +177,7 @@ export default function PostNew() {
           <StyledPostSelectList>
             <SingleSelect
               label="진행 방식"
-              value={onOffline}
+              value={onOffline.label}
               onChange={handleOnOffline}
               placeholder={'온라인/오프라인'}
             />
@@ -85,7 +185,7 @@ export default function PostNew() {
           <StyledPostSelectList>
             <SingleSelect
               label="진행 기간"
-              value={period}
+              value={period.label}
               onChange={handlePeriod}
               placeholder={'2개월 이하~1년 이상'}
             />
@@ -95,7 +195,7 @@ export default function PostNew() {
           <StyledPostSelectList>
             <MultipleSelect
               label="기술 스택"
-              value={stack}
+              value={stacks}
               onChange={handleStack}
               placeholder={'프로젝트 사용 스택'}
             />
@@ -107,7 +207,13 @@ export default function PostNew() {
                 components={['DatePicker']}
                 sx={{ '.MuiTextField-root': { width: '100%' } }}
               >
-                <DatePicker disablePast />
+                <DatePicker
+                  format="YYYY-MM-DD"
+                  value={date}
+                  onChange={(newDate) => {
+                    setDate(newDate)
+                  }}
+                />
               </DemoContainer>
             </LocalizationProvider>
           </StyledPostSelectList>
@@ -120,13 +226,22 @@ export default function PostNew() {
             프로젝트에 대해 소개해주세요.
           </StyledSelectSectionTitle>
         </StyledSelectSection>
-        {/* <Editor
-          ref={editorRef}
-          previewStyle="vertical"
-          height="800px"
-          initialEditType="wysiwyg"
-          initialValue="프로젝트에 대해 소개해주세요."
-        /> */}
+        <StyledInputLabel style={{ fontSize: 20 }}>제목</StyledInputLabel>
+        <StyledTitleInput
+          type="text"
+          value={title}
+          onChange={handleTitle}
+          placeholder="글 제목을 입력해주세요!"
+        />
+        <StyledContentInput
+          value={content}
+          onChange={handleContent}
+          placeholder="프로젝트에 대해 소개해주세요!"
+        ></StyledContentInput>
+        <section style={{ display: 'flex', flexDirection: 'row-reverse' }}>
+          <StyledButton onClick={onRegister}>등록</StyledButton>
+          <StyledButton>취소</StyledButton>
+        </section>
       </section>
     </PostRegisterWrapper>
   )
@@ -149,7 +264,7 @@ const PostRegisterWrapper = styled.div`
 const StyledSelectSection = styled.div`
   display: flex;
   align-items: center;
-  padding: 16px;
+  padding: 16px 0;
   margin-bottom: 36px;
   border-bottom: 3px solid #f2f2f2;
 
@@ -216,4 +331,51 @@ const StyledInputLabel = styled.label`
   font-weight: 700;
   line-height: 20px;
   letter-spacing: -0.28px;
+`
+const StyledTitleInput = styled.input`
+  margin-top: 20px;
+  margin-bottom: 20px;
+  width: 100%;
+  height: 56px;
+  min-height: 56px;
+  line-height: 44px;
+  box-shadow: none;
+  padding-left: 16px;
+  padding-right: 52px;
+  border: 1px solid #e1e3e8;
+  border-radius: 5px;
+  font-size: 16px;
+  font-weight: 500;
+  color: #333;
+  outline: none;
+  box-sizing: border-box;
+`
+
+const StyledContentInput = styled.textarea`
+  margin-bottom: 20px;
+  width: 100%;
+  min-height: 300px;
+  line-height: 44px;
+  box-shadow: none;
+  padding-left: 16px;
+  padding-right: 52px;
+  border: 1px solid #e1e3e8;
+  border-radius: 5px;
+  font-size: 16px;
+  font-weight: 500;
+  color: #333;
+  outline: none;
+  box-sizing: border-box;
+`
+const StyledButton = styled.button`
+  cursor: pointer;
+  outline: none;
+  border: none;
+  border-radius: 8px;
+  padding: 0 1.25rem;
+  height: 2rem;
+  font-size: 1rem;
+  background: rgb(110, 209, 192);
+  color: #fff;
+  margin-left: 10px;
 `

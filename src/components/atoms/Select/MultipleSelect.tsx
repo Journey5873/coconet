@@ -12,6 +12,7 @@ export default function MultipleSelect({
   label,
   onChange,
   placeholder,
+  value,
 }: LabelProps) {
   const [item, setItem] = useState<SelectProps[]>([])
 

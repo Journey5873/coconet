@@ -16,7 +16,7 @@ import { SelectValue } from '../../../pages/setting'
 export interface LabelProps {
   label: string
   onChange: (value: any) => void
-  value: SelectValue | SelectValue[]
+  value: string | SelectValue | SelectValue[]
   placeholder: string
 }
 

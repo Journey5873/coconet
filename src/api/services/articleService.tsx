@@ -55,6 +55,13 @@ export class ArticleService {
       {},
     )
   }
+
+  async createNewArticle(data: any) {
+    return this.articleRepository.create(
+      `article-service/api/article/create`,
+      data,
+    )
+  }
 }
 
 const ArticleContext = createContext(new ArticleService(new BaseRepository()))
