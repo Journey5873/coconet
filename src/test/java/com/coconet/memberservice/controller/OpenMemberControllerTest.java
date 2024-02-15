@@ -102,7 +102,7 @@ class OpenMemberControllerTest {
         stacks.add(memberStackResponse);
 
 
-        given(memberService.getMemberId(UUID.fromString("31323361-7364-0000-0000-000000000000"))).willReturn(
+        given(memberService.clientMemberAllInfo(UUID.fromString("31323361-7364-0000-0000-000000000000"))).willReturn(
                 new MemberClientDto("Email", "Name", UUID.fromString("31323361-7364-0000-0000-000000000000"),
                 "ProfilePath", roles, stacks, LocalDateTime.now(), LocalDateTime.now()
         ));
