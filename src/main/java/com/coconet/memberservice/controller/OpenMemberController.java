@@ -281,9 +281,21 @@ public class OpenMemberController {
         return "Hello world";
     }
 
-    @GetMapping("/{memberUUID}")
-    public Response<MemberClientDto> getMemberId(@PathVariable UUID memberUUID) {
-        MemberClientDto memberClientDto = memberServiceImpl.getMemberId(memberUUID);
+    @GetMapping("/clientMemberAllInfo/{memberUUID}")
+    public Response<MemberClientDto> clientMemberAllInfo(@PathVariable UUID memberUUID) {
+        MemberClientDto memberClientDto = memberServiceImpl.clientMemberAllInfo(memberUUID);
+        return Response.OK(memberClientDto);
+    }
+
+    @GetMapping("/clientMemberProfile/{memberUUID}")
+    public Response<MemberClientDto> clientMemberProfile(@PathVariable UUID memberUUID) {
+        MemberClientDto memberClientDto = memberServiceImpl.clientMemberProfile(memberUUID);
+        return Response.OK(memberClientDto);
+    }
+
+    @GetMapping("/chatClient/{memberUUID}")
+    public Response<MemberClientDto> clientMemberForChat(@PathVariable UUID memberUUID) {
+        MemberClientDto memberClientDto = memberServiceImpl.clientMemberForChat(memberUUID);
         return Response.OK(memberClientDto);
     }
 
