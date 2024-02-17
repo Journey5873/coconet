@@ -7,6 +7,7 @@ import com.coconet.articleservice.converter.ArticleConverter;
 import com.coconet.articleservice.converter.CommentConverter;
 import com.coconet.articleservice.dto.*;
 import com.coconet.articleservice.dto.client.ChatClientResponseDto;
+import com.coconet.articleservice.dto.member.MemberStackResponse;
 import com.coconet.articleservice.entity.*;
 import com.coconet.articleservice.entity.enums.ArticleType;
 import com.coconet.articleservice.entity.enums.MeetingType;
@@ -337,7 +338,7 @@ public class ArticleService {
         List<RoleEntity> memberRoles = roleRepository.getRoles(roles);
 
         List<String> stacks = memberResponse.getStacks().stream()
-                .map(Objects::toString)
+                .map(MemberStackResponse::getName)
                 .toList();
         List<TechStackEntity> memberStacks = techStackRepository.getTechStacks(stacks);
 
