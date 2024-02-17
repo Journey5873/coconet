@@ -8,6 +8,7 @@ import PostDetail from './pages/postDetail'
 import { dummyData } from './data/data'
 import PostNew from './pages/postNew'
 import ChattingPage from './pages/chat'
+import PostForm from './pages/postDetail/postForm'
 
 export const routes = [
   {
@@ -23,6 +24,11 @@ export const routes = [
       {
         path: '/post/new',
         element: <PostNew />,
+        index: true,
+      },
+      {
+        path: '/post/edit',
+        element: <PostForm />,
         index: true,
       },
       {

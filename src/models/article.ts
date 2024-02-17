@@ -42,7 +42,7 @@ export interface Article {
   estimatedDuration: EstimatedDuration
   articleType: ArticleType
   meetingType: MeetingType
-  stacks: Stack[]
+  stacks: string[]
   roles: Role[]
   comments: Comment[]
   status: number

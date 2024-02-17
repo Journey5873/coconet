@@ -133,15 +133,9 @@ export class BaseRepository<T>
     return result as ApiResponse<T>
   }
 
-  public async update<Dto>(path: string, item: Dto): Promise<ApiResponse<T>> {
+  public async update<Dto>(path: string, item?: Dto): Promise<ApiResponse<T>> {
     const instance = this.createInstance()
     const result = await instance.put(`/${path}`, item).then(transform)
-    return result as ApiResponse<T>
-  }
-
-  public async updateExceptBody(path: string): Promise<ApiResponse<T>> {
-    const instance = this.createInstance()
-    const result = await instance.put(`/${path}`).then(transform)
     return result as ApiResponse<T>
   }
 

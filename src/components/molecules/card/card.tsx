@@ -75,7 +75,7 @@ const Card = ({ item }: Props) => {
       <StyledRowWrapper>
         {stacks?.slice(0, 5).map((stack, index) => (
           <StyledTech key={index}>
-            <StyledTechImg src={imageMap[stack.stackName]} />
+            <StyledTechImg src={imageMap[stack]} />
           </StyledTech>
         ))}
       </StyledRowWrapper>

@@ -17,21 +17,12 @@ import { useUserService } from '../../api/services/userService'
 import CommentForm from '../../components/organisms/comment/commentForm'
 import { toast } from 'react-toastify'
 
-const PostDetail = () => {
-  const articleDetailService = useArticleDetailService()
-  const userService = useUserService()
-  const memberId = localStorage.getItem('memberUUID')
-  const [isVisible, setIsVisible] = useState(false)
-  const [currentUser, setCurrentUser] = useState<User | null>(null)
-
-  const { id } = useParams()
+const PostForm = () => {
   const [post, setPost] = useState<Article | null>(null)
   const navigate = useNavigate()
-
-  const handleSupportButton = () => {
-    setIsVisible(!isVisible)
-  }
-
+  const articleDetailService = useArticleDetailService()
+  const { id } = useParams()
+  console.log(id)
   const fetchPostDetail = async (id: string) => {
     try {
       const result = await articleDetailService.getDetailArticle(id)
@@ -45,72 +36,39 @@ const PostDetail = () => {
     }
   }
 
-  const fetchCurrentUser = async (memberUUID: string) => {
+  const updateMyPost = async () => {
     try {
-      const result = await userService.getUserById(memberUUID)
-
-      if (result.data) {
-        setCurrentUser(result.data)
-      } else {
-        console.log(result.errors)
+      const requestDto: any = {
+        articleUUID: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
+        title: 'string',
+        content: 'string',
+        plannedStartAt: '2024-02-15',
+        expiredAt: '2024-02-15',
+        estimatedDuration: 'TWO_MONTHS',
+        articleType: 'STUDY',
+        meetingType: 'ONLINE',
+        roles: [
+          {
+            roleName: 'string',
+            participant: 0,
+          },
+        ],
+        stacks: ['string'],
       }
+      const result = await articleDetailService.updateMyPost(
+        JSON.stringify(requestDto),
+      )
+      console.log(result.data)
     } catch (error) {
       console.log(error)
     }
   }
-
-  const savePostIdToLocalStorage = (postId: string) => {
-    if (!postId) return
-
-    const postIds = JSON.parse(localStorage.getItem('postIds') || '[]')
-
-    if (!postIds.includes(postId)) {
-      postIds.push(postId)
-      localStorage.setItem('postIds', JSON.stringify(postIds))
-    }
-  }
-
-  const deleteMyPost = async () => {
-    const confirm = window.confirm('해당 게시글을 삭제하시겠습니까?')
-
-    if (confirm) {
-      try {
-        const result = await articleDetailService.deleteMyPost(
-          `${post?.articleUUID}`,
-        )
-        if (result.succeeded) {
-          toast.success('게시글을 삭제했습니다.')
-          navigate('/')
-        } else {
-          toast.error('다시 시도해주세요.')
-        }
-      } catch (error) {
-        console.log(error)
-      }
-    }
-  }
-
-  //게시글 GET
-  useEffect(() => {
-    savePostIdToLocalStorage(id || '')
-  }, [id])
 
   useEffect(() => {
     if (id) {
       fetchPostDetail(id)
     }
   }, [id])
-
-  useEffect(() => {
-    if (post?.memberUUID) {
-      fetchCurrentUser(post.memberUUID)
-    }
-  }, [post?.memberUUID])
-
-  if (!post) {
-    return <div>게시글을 볼러오는데 에러가 발생했습니다.</div>
-  }
-
   return (
     <>
       <StyledPostDetail>
@@ -127,17 +85,14 @@ const PostDetail = () => {
                 <StyledUser>
                   <StyledUserImg color="rgb(153, 153, 153)" />
                   <StyledUserName>
-                    {currentUser?.name ?? '알 수 없는 유저'}
+                    {/* {currentUser?.name ?? '알 수 없는 유저'} */}
                   </StyledUserName>
                 </StyledUser>
                 <StyledSeperator></StyledSeperator>
                 <StlyedRegisteredDate>{`${dateFormat(
                   post.expiredAt,
                 )}`}</StlyedRegisteredDate>
-                <StyledButton onClick={() => navigate('/post/edit')}>
-                  수정
-                </StyledButton>
-                <StyledButton onClick={deleteMyPost}>삭제</StyledButton>
+                <StyledButton>확인</StyledButton>
               </StyledPostProfileBox>
               <StyledPostInfoWrapper>
                 <StyledPostInfoList>
@@ -177,23 +132,15 @@ const PostDetail = () => {
                   <StyledPostInfoListContent className="language">
                     <StyledPostInfoTitle>사용 언어</StyledPostInfoTitle>
                     <StyledLanguageListWrapper>
-                      {post.stacks.map((item, index) => {
-                        console.log(imageMap[item])
-                        return (
-                          <StyledTech key={index}>
-                            <StyledTechImg src={imageMap[item]} />
-                          </StyledTech>
-                        )
-                      })}
+                      {post.stacks.map((item, index) => (
+                        <StyledTech key={index}>
+                          <StyledTechImg src={imageMap[item]} />
+                        </StyledTech>
+                      ))}
                     </StyledLanguageListWrapper>
                   </StyledPostInfoListContent>
                 </StyledPostInfoRemains>
               </StyledPostInfoWrapper>
-              {post.memberUUID !== memberId && (
-                <StyledSupportButton onClick={() => handleSupportButton()}>
-                  지원하기
-                </StyledSupportButton>
-              )}
             </StyledPostHeader>
             <StyledPostContentWrapper>
               <StyledPostInfo>프로젝트 소개</StyledPostInfo>
@@ -218,12 +165,6 @@ const PostDetail = () => {
                 </>
               ))}
             </div>
-            {isVisible && (
-              <SupportButtonModal
-                isVisible={isVisible}
-                handleSupportButton={handleSupportButton}
-              />
-            )}
           </>
         ) : (
           <Loader />
@@ -233,7 +174,7 @@ const PostDetail = () => {
   )
 }
 
-export default PostDetail
+export default PostForm
 
 const StyledPostDetail = styled.div`
   box-sizing: border-box;

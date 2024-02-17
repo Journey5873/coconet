@@ -22,8 +22,17 @@ export class ArticleDetailService {
     )
   }
 
+  async updateMyPost(data: any) {
+    return this.articleRepository.update(
+      `
+      article-service/api/article
+    `,
+      data,
+    )
+  }
+
   async deleteMyPost(articleUUID: string) {
-    return this.articleRepository.updateExceptBody(
+    return this.articleRepository.update(
       `article-service/api/delete/${articleUUID}`,
     )
   }
