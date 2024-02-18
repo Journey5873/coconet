@@ -429,12 +429,13 @@ public class ArticleService {
                 , memberClient.clientMemberProfile(commentEntity.getMemberUUID()).getData());
     }
 
-    public void deleteComment(UUID commentUUID, UUID memberUUID) {
+    public String deleteComment(UUID commentUUID, UUID memberUUID) {
         CommentEntity commentEntity = commentRepository.findByCommentUUID(commentUUID)
                 .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "Not Found Comment"));
 
         if(commentEntity.getMemberUUID().equals(memberUUID)){
             commentRepository.delete(commentEntity);
+            return "Comment is successfully deleted";
         }else {
             throw new ApiException(ErrorCode.FORBIDDEN_ERROR, "Only commenter can delete the Comment.");
         }
