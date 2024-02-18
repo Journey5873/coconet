@@ -27,7 +27,7 @@ export const routes = [
         index: true,
       },
       {
-        path: '/post/edit',
+        path: '/post/edit/:id',
         element: <PostForm />,
         index: true,
       },

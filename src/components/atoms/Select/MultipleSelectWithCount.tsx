@@ -50,14 +50,14 @@ export default function MultipleSelectWithCount({
           input={<OutlinedInput id="select-multiple-chip" />}
           renderValue={(selected) => (
             <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-              {selected.map((value) => {
+              {selected.map((value, i) => {
                 const isSelected = stackLists.find(
                   (stack) => stack.roleName === value,
                 )?.participant
                 return (
                   (isSelected as number) > 0 && (
                     <Chip
-                      key={value}
+                      key={i}
                       label={
                         value +
                         ' (' +

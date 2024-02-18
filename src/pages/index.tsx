@@ -32,7 +32,6 @@ const Index = () => {
     () => searchParams.get('accessToken') || '',
     [searchParams.get('accessToken')],
   )
-  const isMember = localStorage?.getItem('accessToken')
 
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [articleList, setArticleList] = useState<Article[]>([])
@@ -64,6 +63,7 @@ const Index = () => {
 
     try {
       const result = await articleService.getAllArticle(arg)
+      console.log(result.data)
 
       setPageData({
         totalElements: result.totalElements,
@@ -147,11 +147,10 @@ const Index = () => {
       <div style={{ paddingTop: 125 }}>
         <StyledContents>
           <CustomCarousel />
-          {/* 인기글 추기 */}
-          {!!isMember && <SuggestionArticleList />}
+          {!!accessToken && <SuggestionArticleList />}
 
           <PopularArticleList />
-          <div style={{ display: 'flex', columnGap: '1.5rem' }}>
+          <div style={{ display: 'flex', columnGap: '1.5rem', marginTop: 50 }}>
             <MultiStackSelector
               handleSelected={hanldeSelected}
               selected={selectedStacks}
@@ -220,7 +219,7 @@ const Index = () => {
               )}
             </Tab>
           </Tabs>
-          <div style={{ width: '100%', margin: '0 auto' }}>
+          <StyledPaginationWrapper>
             <Pagination
               count={pageData.totalPages}
               page={page}
@@ -228,7 +227,7 @@ const Index = () => {
               variant="outlined"
               shape="rounded"
             />
-          </div>
+          </StyledPaginationWrapper>
         </StyledContents>
       </div>
       <AdditionalModal
@@ -243,18 +242,18 @@ const Index = () => {
 export default Index
 
 const StyledContents = styled.div`
-  width: 1220px;
+  width: 1270px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  padding-bottom: 55px;
 `
 
 const StyledItemWrpper = styled.div`
   margin-top: 1rem;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
 `
 
 const StyledLoadingWrapper = styled.div`
@@ -263,4 +262,11 @@ const StyledLoadingWrapper = styled.div`
   align-items: center;
   width: 100%;
   height: 50vh;
+`
+const StyledPaginationWrapper = styled.div`
+  width: 100%;
+  margin: 0 auto;
+  display: flex;
+  justify-content: center;
+  margin-top: 30px;
 `

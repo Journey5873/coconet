@@ -23,12 +23,7 @@ export class ArticleDetailService {
   }
 
   async updateMyPost(data: any) {
-    return this.articleRepository.update(
-      `
-      article-service/api/article
-    `,
-      data,
-    )
+    return this.articleRepository.update(`article-service/api/article`, data)
   }
 
   async deleteMyPost(articleUUID: string) {

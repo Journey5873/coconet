@@ -11,6 +11,8 @@ import MultipleSelectWithCount from '../../components/atoms/Select/MultipleSelec
 import { Dayjs } from 'dayjs'
 import { useArticleService } from '../../api/services/articleService'
 import { dateFormat } from '../../utils/utils'
+import { toast } from 'react-toastify'
+import { useNavigate } from 'react-router-dom'
 
 export interface StackListProps {
   roleName: string
@@ -19,6 +21,7 @@ export interface StackListProps {
 
 export default function PostNew() {
   const articleService = useArticleService()
+  const navigation = useNavigate()
   // 등록 날짜
   const plannedStartAt = dateFormat(`${new Date()}`)
 
@@ -139,9 +142,13 @@ export default function PostNew() {
       const result = await articleService.createNewArticle(
         JSON.stringify(requestDto),
       )
-      console.log(result.data)
+      if (result.succeeded) {
+        toast.success('새 글을 등록했습니다!')
+        navigation('/')
+      }
     } catch (error) {
       console.log(error)
+      toast.error('다시 시도해 주세요.')
     }
   }
 
@@ -210,6 +217,7 @@ export default function PostNew() {
                 <DatePicker
                   format="YYYY-MM-DD"
                   value={date}
+                  disablePast
                   onChange={(newDate) => {
                     setDate(newDate)
                   }}

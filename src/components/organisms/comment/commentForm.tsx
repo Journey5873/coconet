@@ -3,6 +3,7 @@ import { ReactComponent as CoconutIcon } from '../../../components/assets/images
 import { Article, Comment } from '../../../models/article'
 import { useArticleDetailService } from '../../../api/services/articleDetialService'
 import { useState } from 'react'
+import { toast } from 'react-toastify'
 
 interface CommentProps {
   post: Article
@@ -11,7 +12,6 @@ interface CommentProps {
 const CommentForm = ({ post }: CommentProps) => {
   const articleDetailService = useArticleDetailService()
   const [commentValue, setCommnetValue] = useState<string>('')
-  console.log(post.articleUUID)
 
   const onRegister = async () => {
     try {
@@ -23,10 +23,12 @@ const CommentForm = ({ post }: CommentProps) => {
         `${post.articleUUID}`,
         JSON.stringify(requestDto),
       )
-
-      console.log(result.data)
+      if (result.succeeded) {
+        toast.success('댓글을 등록했습니다!')
+      }
     } catch (error) {
       console.log(error)
+      toast.error('다시 시도해주세요.')
     }
   }
 

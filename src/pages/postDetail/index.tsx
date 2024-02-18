@@ -19,10 +19,10 @@ import { toast } from 'react-toastify'
 
 const PostDetail = () => {
   const articleDetailService = useArticleDetailService()
-  const userService = useUserService()
   const memberId = localStorage.getItem('memberUUID')
   const [isVisible, setIsVisible] = useState(false)
-  const [currentUser, setCurrentUser] = useState<User | null>(null)
+  const [isDeleteComment, setIsDeleteComment] = useState<boolean>(false)
+  const memberUUID = localStorage?.getItem('memberUUID')
 
   const { id } = useParams()
   const [post, setPost] = useState<Article | null>(null)
@@ -37,25 +37,10 @@ const PostDetail = () => {
       const result = await articleDetailService.getDetailArticle(id)
       if (result.data) {
         setPost(result.data)
-        console.log(result.data)
       }
     } catch (error) {
       console.log(error)
       setPost(null)
-    }
-  }
-
-  const fetchCurrentUser = async (memberUUID: string) => {
-    try {
-      const result = await userService.getUserById(memberUUID)
-
-      if (result.data) {
-        setCurrentUser(result.data)
-      } else {
-        console.log(result.errors)
-      }
-    } catch (error) {
-      console.log(error)
     }
   }
 
@@ -99,16 +84,10 @@ const PostDetail = () => {
     if (id) {
       fetchPostDetail(id)
     }
-  }, [id])
-
-  useEffect(() => {
-    if (post?.memberUUID) {
-      fetchCurrentUser(post.memberUUID)
-    }
-  }, [post?.memberUUID])
+  }, [id, isDeleteComment])
 
   if (!post) {
-    return <div>게시글을 볼러오는데 에러가 발생했습니다.</div>
+    return <Loader />
   }
 
   return (
@@ -125,19 +104,24 @@ const PostDetail = () => {
               <StyledPostTitle>{post.title}</StyledPostTitle>
               <StyledPostProfileBox>
                 <StyledUser>
-                  <StyledUserImg color="rgb(153, 153, 153)" />
-                  <StyledUserName>
-                    {currentUser?.name ?? '알 수 없는 유저'}
-                  </StyledUserName>
+                  <StyledUserImg
+                    src={post.writerProfileImage}
+                    color="rgb(153, 153, 153)"
+                  />
+                  <StyledUserName>{post.writerName}</StyledUserName>
                 </StyledUser>
                 <StyledSeperator></StyledSeperator>
                 <StlyedRegisteredDate>{`${dateFormat(
                   post.expiredAt,
                 )}`}</StlyedRegisteredDate>
-                <StyledButton onClick={() => navigate('/post/edit')}>
-                  수정
-                </StyledButton>
-                <StyledButton onClick={deleteMyPost}>삭제</StyledButton>
+                {memberUUID === post.memberUUID && (
+                  <StyledButtonWrapper>
+                    <StyledButton onClick={() => navigate(`/post/edit/${id}`)}>
+                      수정
+                    </StyledButton>
+                    <StyledButton onClick={deleteMyPost}>삭제</StyledButton>
+                  </StyledButtonWrapper>
+                )}
               </StyledPostProfileBox>
               <StyledPostInfoWrapper>
                 <StyledPostInfoList>
@@ -211,12 +195,16 @@ const PostDetail = () => {
             </StyledViewAndBookmarkCount>
             <div style={{ marginBottom: 80 }}>
               <CommentForm post={post} />
-
-              {post.comments.map((comment) => (
-                <>
-                  <CommentItem key={comment.commentUUID} comment={comment} />
-                </>
-              ))}
+              {post.comments.length > 0 &&
+                post.comments.map((comment) => (
+                  <>
+                    <CommentItem
+                      key={comment.commentUUID}
+                      comment={comment}
+                      setIsDeleteComment={setIsDeleteComment}
+                    />
+                  </>
+                ))}
             </div>
             {isVisible && (
               <SupportButtonModal
@@ -279,7 +267,7 @@ const StyledUser = styled.div`
     -webkit-transform 0.2s ease-in-out;
 `
 
-const StyledUserImg = styled(CoconutIcon)`
+const StyledUserImg = styled.img`
   cursor: pointer;
   display: block;
   height: 2.5rem;
@@ -479,4 +467,20 @@ const StyledBookmarkWrapper = styled.div`
   cursor: pointer;
 `
 
-const StyledButton = styled.button``
+const StyledButtonWrapper = styled.div`
+  margin-left: auto;
+  display: flex;
+  gap: 4px;
+`
+
+const StyledButton = styled.button`
+  outline: none;
+  border: none;
+  background: #fff;
+  text-decoration: underline;
+  cursor: pointer;
+
+  &:hover {
+    color: rgb(140, 175, 142);
+  }
+`

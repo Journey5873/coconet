@@ -32,6 +32,8 @@ export interface Comment {
   createdAt: string
   memberUUID: string
   updatedAt: string
+  writerName: string
+  writerProfileImage: string
 }
 
 export interface Article {
@@ -52,6 +54,8 @@ export interface Article {
   createdAt: string
   memberUUID: string
   plannedStartAt: string
+  writerName: string
+  writerProfileImage: string
 }
 
 export interface AricleDto {

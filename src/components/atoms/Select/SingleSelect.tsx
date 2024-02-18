@@ -18,12 +18,14 @@ export interface LabelProps {
   onChange: (value: any) => void
   value: string | SelectValue | SelectValue[]
   placeholder: string
+  defaultValue?: string
 }
 
 export default function SingleSelect({
   label,
   onChange,
   placeholder,
+  defaultValue,
 }: LabelProps) {
   const [option, setOption] = useState<SelectProps[]>([])
 
@@ -50,6 +52,7 @@ export default function SingleSelect({
         <StyledRequired>*</StyledRequired>
       </StyledInputLabel>
       <StyledSelect
+        defaultValue={defaultValue}
         inputId="aria-example-input"
         options={option}
         className="singleSelect"

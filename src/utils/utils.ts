@@ -29,6 +29,13 @@ export const typeMap = new Map([
   ['ONOFFLINE', '온오프라인'],
   ['Frontend', '프론트엔드'],
   ['Backend', '백엔드'],
+  ['Designer', '디자이너'],
+  ['IOS', 'IOS'],
+  ['Android', 'Android'],
+  ['PM', 'PM'],
+  ['QA', 'QA'],
+  ['GameDev', 'GameDev'],
+  ['DevOps', 'DevOps'],
 ])
 
 export const imageMap: Record<any, any> = {

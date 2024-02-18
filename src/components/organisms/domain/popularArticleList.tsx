@@ -25,18 +25,22 @@ const PopularArticleList = () => {
   }, [])
 
   return (
-    <div>
-      <h2>인기글</h2>
+    <StyledPopularWrapper>
+      <h2>🔥 이번주 인기글</h2>
       <StyledScrollContainer>
         {popularArticles.map((article) => (
           <PopularCard item={article} />
         ))}
       </StyledScrollContainer>
-    </div>
+    </StyledPopularWrapper>
   )
 }
 
 export default PopularArticleList
+
+const StyledPopularWrapper = styled.div`
+  margin: 40px 0;
+`
 
 const StyledScrollContainer = styled.div`
   padding: 16px 0;

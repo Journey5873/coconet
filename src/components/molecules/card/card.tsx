@@ -27,6 +27,9 @@ const Card = ({ item }: Props) => {
     meetingType,
   } = item
 
+  const substringTitle =
+    title.length > 33 ? title.substring(0, 33) + '...' : title
+
   const isPostIdInLocalStorage = (articleId: string): boolean => {
     const postIds = JSON.parse(localStorage.getItem('postIds') || '[]')
 
@@ -66,8 +69,8 @@ const Card = ({ item }: Props) => {
       <StyledCardExpired>{`마감일 | ${dateFormat(
         expiredAt,
       )}`}</StyledCardExpired>
-      <h2>{title}</h2>
-      <div style={{ display: 'flex', columnGap: '4px' }}>
+      <StyledTitle>{substringTitle}</StyledTitle>
+      <div style={{ display: 'flex', columnGap: '4px', overflow: 'hidden' }}>
         {roles?.map((role, index) => (
           <StyledRole key={index}>{typeMap.get(role.roleName)}</StyledRole>
         ))}
@@ -97,12 +100,13 @@ export default Card
 const StyledCardContainer = styled.div`
   position: relative;
   width: 300px;
-  padding: 16px 20px;
+  padding: 30px 20px;
   border: 2px solid #8caf8e;
   border-radius: 30px;
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  box-sizing: border-box;
 
   &:hover {
     scale: 1.05;
@@ -171,4 +175,7 @@ const StyledArticleType = styled(StyledRole)`
 const StyledMeetingType = styled(StyledRole)`
   border: 1px solid lightgray;
   color: black;
+`
+const StyledTitle = styled.h2`
+  font-size: 18px;
 `

@@ -52,7 +52,7 @@ export default PopularCard
 
 const StyledCardContainer = styled.div`
   position: relative;
-  width: 300px;
+  min-width: 264px;
   padding: 16px 20px;
   border: 2px solid lightgray;
   border-radius: 30px;

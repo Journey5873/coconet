@@ -29,11 +29,11 @@ export interface IBaseRepository<T> {
  * @param response
  * @returns
  */
-const transform = (response: AxiosResponse): Promise<ApiResponse<any>> => {
+const transform = (response: any): Promise<ApiResponse<any>> => {
   return new Promise((resolve, _) => {
     const result: ApiResponse<any> = {
       data: response.data,
-      succeeded: response.status === 200,
+      succeeded: response.result.resultCode === 200,
       errors: response.data.errors,
     }
     resolve(result)

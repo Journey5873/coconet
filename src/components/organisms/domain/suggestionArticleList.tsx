@@ -7,14 +7,15 @@ import PopularCard from '../../molecules/card/popularCard'
 const SuggestionArticleList = () => {
   const articleService = useArticleService()
   const [suggestionArticles, setSuggestionArticles] = useState<Article[]>([])
+  const [userName, setUserName] = useState('')
 
   const getSuggestionArticles = async () => {
     try {
       const result = await articleService.getSuggestionArticle()
 
-      console.log(result)
       if (result.data) {
         setSuggestionArticles(result.data)
+        setUserName(result.data[0].writerName)
       }
     } catch (error) {
       setSuggestionArticles([])
@@ -26,18 +27,22 @@ const SuggestionArticleList = () => {
   }, [])
 
   return (
-    <div>
-      <h2>회원님께 추천!</h2>
+    <StyledSuggestionWrapper>
+      <h2>{!!userName ? userName : '회원'}님께 추천!</h2>
       <StyledScrollContainer>
         {suggestionArticles.map((article) => (
           <PopularCard item={article} />
         ))}
       </StyledScrollContainer>
-    </div>
+    </StyledSuggestionWrapper>
   )
 }
 
 export default SuggestionArticleList
+
+const StyledSuggestionWrapper = styled.div`
+  margin: 40px 0;
+`
 
 const StyledScrollContainer = styled.div`
   padding: 16px 0;
