@@ -15,9 +15,6 @@ import com.coconet.memberservice.security.token.dto.TokenDto;
 import com.coconet.memberservice.security.token.dto.TokenResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import net.minidev.json.JSONObject;
-import net.minidev.json.parser.JSONParser;
-import net.minidev.json.parser.ParseException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,7 +22,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.Base64;
 import java.util.List;
 import java.util.UUID;
 
@@ -154,6 +150,7 @@ public class MemberServiceImpl implements MemberService {
         return memberRepository.getUserInfo(memberId);
     }
 
+
     public MemberResponseDto deleteUser(UUID memberId) {
         MemberEntity member = memberRepository.findByMemberUUID(memberId)
                 .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "No member found"));
@@ -169,7 +166,7 @@ public class MemberServiceImpl implements MemberService {
         return MemberResponseDto.toEntity(member);
     }
 
-    public MemberClientDto getMemberId(UUID memberUUID) {
+    public MemberClientDto clientMemberAllInfo(UUID memberUUID) {
         MemberEntity member = memberRepository.findByMemberUUID(memberUUID)
                 .orElseThrow(() -> new ApiException(ErrorCode.BAD_REQUEST, "No member found"));
 
@@ -189,6 +186,24 @@ public class MemberServiceImpl implements MemberService {
         return new MemberClientDto(member.getEmail(), member.getName(), member.getMemberUUID(),
                 member.getProfileImage(), roles, stacks, member.getCreatedAt(), member.getUpdatedAt()
         );
+    }
+
+    public MemberClientDto clientMemberProfile(UUID memberUUID) {
+        return memberRepository.clientMemberProfile(memberUUID);
+    }
+
+    public MemberClientDto clientMemberForChat(UUID memberUUID) {
+        MemberEntity member = memberRepository.findByMemberUUID(memberUUID)
+                .orElseThrow(() -> new ApiException(ErrorCode.BAD_REQUEST, "No member found"));
+
+        return MemberClientDto.builder()
+                .memberUUID(memberUUID)
+                .email(member.getEmail())
+                .name(member.getName())
+                .profileImage(member.getProfileImage())
+                .createdAt(member.getCreatedAt())
+                .updatedAt(member.getUpdatedAt())
+                .build();
     }
 
     public Boolean checkMemberNickName(String nickName) {

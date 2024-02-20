@@ -1,6 +1,7 @@
 package com.coconet.memberservice.repository;
 
 import com.coconet.memberservice.dto.MemberResponseDto;
+import com.coconet.memberservice.dto.client.MemberClientDto;
 import com.coconet.memberservice.entity.MemberEntity;
 
 import java.util.Optional;
@@ -12,4 +13,6 @@ public interface MemberRepositoryCustom {
     Optional<MemberEntity> findByName(String name);
 
     Optional<MemberEntity> findByEmail(String email);
+
+    MemberClientDto clientMemberProfile(UUID memberUUID);
 }

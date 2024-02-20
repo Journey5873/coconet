@@ -3,6 +3,8 @@ package com.coconet.memberservice.repository;
 import com.coconet.memberservice.common.errorcode.ErrorCode;
 import com.coconet.memberservice.common.exception.ApiException;
 import com.coconet.memberservice.dto.MemberResponseDto;
+import com.coconet.memberservice.dto.client.MemberClientDto;
+import com.coconet.memberservice.dto.client.QMemberClientDto;
 import com.coconet.memberservice.entity.MemberEntity;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -62,5 +64,21 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom{
         }
 
         return Optional.of(member);
+    }
+
+    @Override
+    public MemberClientDto clientMemberProfile(UUID memberUUID) {
+        MemberClientDto memberClientDto = queryFactory.select(
+                new QMemberClientDto(memberEntity.name, memberEntity.memberUUID, memberEntity.profileImage))
+                .from(memberEntity)
+                .where(memberEntity.memberUUID.eq(memberUUID),
+                        memberEntity.isActivated.eq((byte) 1))
+                .fetchFirst();
+
+        if (memberClientDto == null) {
+            throw new ApiException(ErrorCode.NOT_FOUND, "No member found");
+        }
+
+        return memberClientDto;
     }
 }
