@@ -50,7 +50,7 @@ class PrivateMemberControllerTest {
 
         roles.add("Backend");
         stacks.add("Java");
-        MemberResponseDto response = new MemberResponseDto("TestName", 5, "TestProfile",
+        MemberResponseDto response = new MemberResponseDto("TestName", 5, "TestProfile".getBytes(),
                 "TestBio", "TestGit", "TestBlog", "TestNotion", roles, stacks);
 
         given(memberService.getUserInfo(memberUUID)).willReturn(response);
@@ -82,7 +82,7 @@ class PrivateMemberControllerTest {
         stacks.add("Java");
         MemberRequestDto request = new MemberRequestDto("TestName", 5,
                 roles, stacks, "TestBio", "TestGit", "TestBlog", "TestNotion");
-        MemberResponseDto response = new MemberResponseDto("ChangeName", 7, "ChangeProfile",
+        MemberResponseDto response = new MemberResponseDto("ChangeName", 7, "ChangeProfile".getBytes(),
                 "ChangeBio", "ChangeGit", "ChangeBlog", "ChangeNotion", roles, stacks);
         given(memberService.updateUserInfo(any(UUID.class), any(MemberRequestDto.class), any(MultipartFile.class)))
                 .willReturn(response);
@@ -118,7 +118,7 @@ class PrivateMemberControllerTest {
         UUID memberUUID = UUID.fromString("31323361-7364-0000-0000-000000000000");
         roles.add("Backend");
         stacks.add("Java");
-        MemberResponseDto response = new MemberResponseDto("TestName", 5, "TestProfile",
+        MemberResponseDto response = new MemberResponseDto("TestName", 5, "TestProfile".getBytes(),
                 "TestBio", "TestGit", "TestBlog", "TestNotion", roles, stacks);
 
         given(memberService.deleteUser(memberUUID)).willReturn(response);
