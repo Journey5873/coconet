@@ -20,7 +20,7 @@ public class MemberClientDto {
     private String email;
     private String name;
     private UUID memberUUID;
-    private String profileImage;
+    private byte[] profileImage;
     private List<MemberRoleResponse> roles;
     private List<MemberStackResponse> stacks;
     private LocalDateTime createdAt;
@@ -30,6 +30,6 @@ public class MemberClientDto {
     public MemberClientDto(String name, UUID memberUUID, String profileImage) {
         this.name = name;
         this.memberUUID = memberUUID;
-        this.profileImage = profileImage;
+        this.profileImage = profileImage.getBytes();
     }
 }

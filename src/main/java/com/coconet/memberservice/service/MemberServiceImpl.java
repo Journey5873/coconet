@@ -2,6 +2,7 @@ package com.coconet.memberservice.service;
 
 import com.coconet.memberservice.common.errorcode.ErrorCode;
 import com.coconet.memberservice.common.exception.ApiException;
+import com.coconet.memberservice.converter.ImageConverter;
 import com.coconet.memberservice.dto.*;
 import com.coconet.memberservice.dto.client.MemberClientDto;
 import com.coconet.memberservice.dto.client.MemberRoleResponse;
@@ -184,7 +185,7 @@ public class MemberServiceImpl implements MemberService {
                 .toList();
 
         return new MemberClientDto(member.getEmail(), member.getName(), member.getMemberUUID(),
-                member.getProfileImage(), roles, stacks, member.getCreatedAt(), member.getUpdatedAt()
+                ImageConverter.toImage(member.getProfileImage()), roles, stacks, member.getCreatedAt(), member.getUpdatedAt()
         );
     }
 
@@ -200,7 +201,7 @@ public class MemberServiceImpl implements MemberService {
                 .memberUUID(memberUUID)
                 .email(member.getEmail())
                 .name(member.getName())
-                .profileImage(member.getProfileImage())
+                .profileImage(ImageConverter.toImage(member.getProfileImage()))
                 .createdAt(member.getCreatedAt())
                 .updatedAt(member.getUpdatedAt())
                 .build();

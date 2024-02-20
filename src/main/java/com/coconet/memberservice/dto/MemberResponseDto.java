@@ -2,6 +2,7 @@ package com.coconet.memberservice.dto;
 
 import com.coconet.memberservice.common.errorcode.ErrorCode;
 import com.coconet.memberservice.common.exception.ApiException;
+import com.coconet.memberservice.converter.ImageConverter;
 import com.coconet.memberservice.entity.MemberEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -40,21 +41,11 @@ public class MemberResponseDto {
     private List<String> stacks;
 
     public static MemberResponseDto toEntity(MemberEntity member) {
-        String absolutePath = new File("").getAbsolutePath() + "/";
-        String path = member.getProfileImage() == null ? "src/main/resources/memberProfilePics/basic_image.png": member.getProfileImage();
-        File imageFile = new File(absolutePath + path);
-        byte[] image;
-
-        try {
-            image = FileCopyUtils.copyToByteArray(imageFile);
-        } catch(IOException e) {
-            throw new ApiException(ErrorCode.SERVER_ERROR, "Error happened when image file had converted");
-        }
 
         return MemberResponseDto.builder()
                 .name(member.getName())
                 .career(Integer.parseInt(member.getCareer()))
-                .profileImg(image)
+                .profileImg(ImageConverter.toImage(member.getProfileImage()))
                 .roles(member.getMemberRoles().stream().map(role -> role.getRole().getName())
                         .toList())
                 .bio(member.getBio())
