@@ -35,7 +35,7 @@ const Index = () => {
 
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [articleList, setArticleList] = useState<Article[]>([])
-  const [page, setPage] = useState(1)
+  const [page, setPage] = useState(0)
   const [pageData, setPageData] = useState<{
     totalElements: number
     totalPages: number
@@ -44,12 +44,17 @@ const Index = () => {
     totalPages: 0,
   })
 
+  // const currentArticles = useMemo(() => {
+  //   const startIndex = (page - 1) * 10
+  //   return articleList.slice(startIndex, startIndex + 10)
+  // }, [page, articleList])
+
   // 필터링 관련 state
   const [selectedStacks, setSelectedStacks] = useState<string[]>([])
   const [selectedPosition, setSelectedPosition] = useState<string>('')
 
   const handleChange = (event: any, value: number) => {
-    setPage(value)
+    setPage(value - 1)
 
     // TODO 데이터 요청
   }
@@ -58,11 +63,12 @@ const Index = () => {
     roles?: string[]
     stacks?: string[]
     bookmark?: boolean
+    page?: number
   }) => {
     setIsLoading(true)
 
     try {
-      const result = await articleService.getAllArticle(arg)
+      const result = await articleService.getAllArticle(arg, arg?.page || 0)
       console.log(result.data)
 
       setPageData({
@@ -96,7 +102,6 @@ const Index = () => {
         )
         fetchAllArticle({ stacks: filteredSelected, roles: [selectedPosition] })
         setSelectedStacks(filteredSelected)
-
         return
       }
 
@@ -105,9 +110,7 @@ const Index = () => {
           stacks: [...selectedStacks, value],
           roles: [selectedPosition],
         })
-
         setSelectedStacks((prev) => [...prev, value])
-
         return
       }
 
@@ -141,6 +144,14 @@ const Index = () => {
       dispatch(setToken({ token: accessToken }))
     }
   }, [accessToken])
+
+  useEffect(() => {
+    fetchAllArticle({
+      page,
+      roles: [selectedPosition],
+      stacks: selectedStacks,
+    })
+  }, [page])
 
   return (
     <>
@@ -222,7 +233,7 @@ const Index = () => {
           <StyledPaginationWrapper>
             <Pagination
               count={pageData.totalPages}
-              page={page}
+              page={page + 1}
               onChange={handleChange} // TODO : 늘어나는 페이지에 따라 추가 요청
               variant="outlined"
               shape="rounded"

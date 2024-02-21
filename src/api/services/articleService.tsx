@@ -9,9 +9,9 @@ export class ArticleService {
     this.articleRepository = articleRepository
   }
 
-  async getAllArticle(articleDto: AricleDto) {
+  async getAllArticle(articleDto: AricleDto, page: number) {
     return this.articleRepository.getManyPagableWithBody<AricleDto>(
-      'article-service/open-api/articles',
+      `article-service/open-api/articles?page=${page}`,
       articleDto,
     )
   }
