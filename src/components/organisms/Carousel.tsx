@@ -8,7 +8,7 @@ const CustomCarousel = () => {
   const imageList = [
     {
       title: 'main1',
-      url: '',
+      url: 'https://hola-post-image.s3.ap-northeast-2.amazonaws.com/ad/hola-event_2024-01-27_02-28-34.png',
     },
   ]
   return (
@@ -30,7 +30,7 @@ const CustomCarousel = () => {
 export default CustomCarousel
 
 const StyledCarouselContainer = styled.div`
-  width: 1200px;
+  width: 100%;
 `
 
 const StyledCarouselItem = styled.div`
@@ -41,5 +41,5 @@ const StyledCarouselItem = styled.div`
 const StyledImage = styled.img`
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
 `
