@@ -74,7 +74,7 @@ export default function Header() {
           )}
           {!token && (
             <StyledPostRegister
-              onClick={() => () =>
+              onClick={() =>
                 setOpenLoginModal((openLoginModal) => !openLoginModal)
               }
             >
