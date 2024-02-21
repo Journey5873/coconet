@@ -40,23 +40,6 @@ public class MemberResponseDto {
     @Schema(type = "array", example = "[\"Java\"]")
     private List<String> stacks;
 
-    public static MemberResponseDto toEntity(MemberEntity member) {
-
-        return MemberResponseDto.builder()
-                .name(member.getName())
-                .career(Integer.parseInt(member.getCareer()))
-                .profileImg(ImageConverter.toImage(member.getProfileImage()))
-                .roles(member.getMemberRoles().stream().map(role -> role.getRole().getName())
-                        .toList())
-                .bio(member.getBio())
-                .stacks(member.getMemberStacks().stream().map(stack -> stack.getTechStack().getName())
-                        .toList())
-                .githubLink(member.getGithubLink())
-                .blogLink(member.getBlogLink())
-                .notionLink(member.getNotionLink())
-                .build();
-    }
-
     public void setUpImageFile(byte[] imageFile) {
         this.profileImg = imageFile;
     }

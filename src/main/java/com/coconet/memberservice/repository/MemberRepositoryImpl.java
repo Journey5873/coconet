@@ -3,6 +3,7 @@ package com.coconet.memberservice.repository;
 import com.coconet.memberservice.common.errorcode.ErrorCode;
 import com.coconet.memberservice.common.exception.ApiException;
 import com.coconet.memberservice.converter.ImageConverter;
+import com.coconet.memberservice.converter.MemberConverter;
 import com.coconet.memberservice.dto.MemberResponseDto;
 import com.coconet.memberservice.dto.client.MemberClientDto;
 import com.coconet.memberservice.dto.client.QMemberClientDto;
@@ -31,7 +32,7 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom{
             throw new ApiException(ErrorCode.NOT_FOUND, "No member found");
         }
 
-        return MemberResponseDto.toEntity(member);
+        return MemberConverter.toResponseDto(member);
     }
 
     @Override

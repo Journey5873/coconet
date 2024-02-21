@@ -3,6 +3,7 @@ package com.coconet.memberservice.service;
 import com.coconet.memberservice.common.errorcode.ErrorCode;
 import com.coconet.memberservice.common.exception.ApiException;
 import com.coconet.memberservice.converter.ImageConverter;
+import com.coconet.memberservice.converter.MemberConverter;
 import com.coconet.memberservice.dto.*;
 import com.coconet.memberservice.dto.client.MemberClientDto;
 import com.coconet.memberservice.dto.client.MemberRoleResponse;
@@ -164,7 +165,7 @@ public class MemberServiceImpl implements MemberService {
         memberRoleRepository.deleteAllInBatch(rolesToRemove);
         memberStackRepository.deleteAllInBatch(stacksToRemove);
 
-        return MemberResponseDto.toEntity(member);
+        return MemberConverter.toResponseDto(member);
     }
 
     public MemberClientDto clientMemberAllInfo(UUID memberUUID) {
