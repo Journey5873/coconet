@@ -9,8 +9,8 @@ const KaKaoAuth = () => {
   }
 
   return (
-    <StyledButton style={{ backgroundColor: '#fae100' }}>
-      <KakaoLogo onClick={handleLogin} />
+    <StyledButton onClick={handleLogin} style={{ backgroundColor: '#fae100' }}>
+      <KakaoLogo />
     </StyledButton>
   )
 }
