@@ -45,6 +45,16 @@ public class ArticleService {
             throw new ApiException(ErrorCode.BAD_REQUEST, "You need to login in first.");
         }
 
+        if (request.getArticleType().name().equals(ArticleType.PROJECT.name())){
+            if (request.getRoles() == null || request.getRoles().isEmpty()){
+                throw new ApiException(ErrorCode.BAD_REQUEST, "At least one role is required for the project.");
+            }
+        } else if (request.getArticleType().name().equals(ArticleType.STUDY.name())) {
+            if (request.getRoles() != null || !request.getRoles().isEmpty()){
+                throw new ApiException(ErrorCode.BAD_REQUEST, "The project post should not have any roles selected.");
+            }
+        }
+
         ArticleEntity articleEntity = ArticleConverter.converterToEntity(request, memberUUID);
         ArticleEntity savedArticle = articleRepository.save(articleEntity);
 
