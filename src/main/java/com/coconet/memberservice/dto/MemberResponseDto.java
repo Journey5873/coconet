@@ -15,6 +15,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 @Builder
 @AllArgsConstructor
@@ -39,6 +40,7 @@ public class MemberResponseDto {
     private List<String> roles;
     @Schema(type = "array", example = "[\"Java\"]")
     private List<String> stacks;
+    private UUID memberUUID;
 
     public void setUpImageFile(byte[] imageFile) {
         this.profileImg = imageFile;
