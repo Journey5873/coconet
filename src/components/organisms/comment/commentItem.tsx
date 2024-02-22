@@ -74,7 +74,7 @@ const CommentItem = ({ comment, setIsDeleteComment }: Props) => {
     <StyledCommentList>
       <StyledCommentUserInfoWrapper>
         <StyledCommentInputProfile
-          src={comment.writerProfileImage}
+          src={'data:image/;base64,' + comment.writerProfileImage ?? ''}
           className="comment_list"
         />
         <StyledCommentUserInfo>

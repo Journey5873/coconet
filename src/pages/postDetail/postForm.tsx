@@ -141,8 +141,8 @@ const PostForm = () => {
           (val) => val[1],
         )
         console.log(stackLists)
-        // console.log(originPositionObject)
-        // console.log(originPosition)
+        console.log(originPositionObject)
+        console.log(originPosition)
         console.log(result.data.roles)
         setPost(result.data)
         setArticleType({
