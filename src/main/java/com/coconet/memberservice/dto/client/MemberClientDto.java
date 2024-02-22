@@ -1,5 +1,6 @@
 package com.coconet.memberservice.dto.client;
 
+import com.coconet.memberservice.converter.ImageConverter;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.querydsl.core.annotations.QueryProjection;
 import lombok.AllArgsConstructor;
@@ -30,6 +31,6 @@ public class MemberClientDto {
     public MemberClientDto(String name, UUID memberUUID, String profileImage) {
         this.name = name;
         this.memberUUID = memberUUID;
-        this.profileImage = profileImage.getBytes();
+        this.profileImage = ImageConverter.toImage(profileImage);
     }
 }
