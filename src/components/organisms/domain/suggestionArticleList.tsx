@@ -23,6 +23,7 @@ const SuggestionArticleList = () => {
         setSuggestionArticles(result.data)
         setUserName(result.data[0].writerName)
       }
+      console.log(result.data)
     } catch (error) {
       setSuggestionArticles([])
     } finally {

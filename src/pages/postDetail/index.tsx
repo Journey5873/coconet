@@ -22,7 +22,6 @@ const PostDetail = () => {
   const memberId = localStorage.getItem('memberUUID')
   const [isVisible, setIsVisible] = useState(false)
   const [isDeleteComment, setIsDeleteComment] = useState<boolean>(false)
-  const memberUUID = localStorage?.getItem('memberUUID')
 
   const { id } = useParams()
   const [post, setPost] = useState<Article | null>(null)
@@ -37,7 +36,9 @@ const PostDetail = () => {
       const result = await articleDetailService.getDetailArticle(id)
       if (result.data) {
         setPost(result.data)
+        savePostIdToLocalStorage(id || '')
       }
+      console.log(result)
     } catch (error) {
       console.log(error)
       setPost(null)
@@ -77,10 +78,6 @@ const PostDetail = () => {
 
   //게시글 GET
   useEffect(() => {
-    savePostIdToLocalStorage(id || '')
-  }, [id])
-
-  useEffect(() => {
     if (id) {
       fetchPostDetail(id)
     }
@@ -105,7 +102,7 @@ const PostDetail = () => {
               <StyledPostProfileBox>
                 <StyledUser>
                   <StyledUserImg
-                    src={post.writerProfileImage}
+                    src={'data:image/;base64,' + post.writerProfileImage ?? ''}
                     color="rgb(153, 153, 153)"
                   />
                   <StyledUserName>{post.writerName}</StyledUserName>
@@ -114,7 +111,7 @@ const PostDetail = () => {
                 <StlyedRegisteredDate>{`${dateFormat(
                   post.expiredAt,
                 )}`}</StlyedRegisteredDate>
-                {memberUUID === post.memberUUID && (
+                {memberId === post.memberUUID && (
                   <StyledButtonWrapper>
                     <StyledButton onClick={() => navigate(`/post/edit/${id}`)}>
                       수정
