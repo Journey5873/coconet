@@ -17,7 +17,12 @@ public class ImageConverter {
         try {
             return FileCopyUtils.copyToByteArray(imageFile);
         } catch(IOException e) {
-            throw new ApiException(ErrorCode.SERVER_ERROR, "Error happened when image file had converted");
+            imageFile = new File(absolutePath + "src/main/resources/memberProfilePics/basic_image.png");
+            try {
+                return FileCopyUtils.copyToByteArray(imageFile);
+            } catch (IOException ex) {
+                throw new ApiException(ErrorCode.SERVER_ERROR, "Error happened when image file had converted");
+            }
         }
     }
 }
