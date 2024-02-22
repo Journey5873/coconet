@@ -19,10 +19,10 @@ import PopularArticleList from '../components/organisms/domain/popularArticleLis
 import SuggestionArticleList from '../components/organisms/domain/suggestionArticleList'
 
 const Index = () => {
-  const token = useAppSelector((state) => state.reducer.auth.token)
   const dispatch = useAppDispatch()
-  const articleService = useArticleService()
   const navigate = useNavigate()
+  const token = useAppSelector((state) => state.reducer.auth.token)
+  const articleService = useArticleService()
   const [searchParams] = useSearchParams()
   const memberId = useMemo(
     () => searchParams.get('memberId') || '',
@@ -44,19 +44,12 @@ const Index = () => {
     totalPages: 0,
   })
 
-  // const currentArticles = useMemo(() => {
-  //   const startIndex = (page - 1) * 10
-  //   return articleList.slice(startIndex, startIndex + 10)
-  // }, [page, articleList])
-
   // 필터링 관련 state
   const [selectedStacks, setSelectedStacks] = useState<string[]>([])
   const [selectedPosition, setSelectedPosition] = useState<string>('')
 
   const handleChange = (event: any, value: number) => {
     setPage(value - 1)
-
-    // TODO 데이터 요청
   }
 
   const fetchAllArticle = async (arg: {
@@ -69,13 +62,10 @@ const Index = () => {
 
     try {
       const result = await articleService.getAllArticle(arg, arg?.page || 0)
-      console.log(result.data)
-
       setPageData({
         totalElements: result.totalElements,
         totalPages: result.totalPages,
       })
-
       if (result.data) {
         setArticleList(result.data)
       }

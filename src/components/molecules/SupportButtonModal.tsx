@@ -77,7 +77,7 @@ export default function SupportButtonModal({
                         value={carrer}
                         placeholder={'프론트엔드, 백엔드...'}
                       />
-                      <LinkList onSubmit={() => console.log('submit')} />
+                      {/* <LinkList onSubmit={() => console.log('submit')} /> */}
                     </StyledSelectPositionWrapper>
                   </div>
                 </div>

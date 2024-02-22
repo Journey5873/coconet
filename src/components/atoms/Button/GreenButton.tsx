@@ -1,19 +1,20 @@
-import { ButtonHTMLAttributes } from 'react';
+import { ButtonHTMLAttributes } from 'react'
 
-import styled from 'styled-components';
+import styled from 'styled-components'
 
 interface Props {
-  buttonName: string;
+  buttonName: string
 }
 
 export default function GreenButton({
   buttonName,
   ...rest
 }: Props & ButtonHTMLAttributes<HTMLButtonElement>) {
-  return <StyledGreenButton {...rest}>{buttonName}</StyledGreenButton>;
+  return <StyledGreenButton {...rest}>{buttonName}</StyledGreenButton>
 }
 
 const StyledGreenButton = styled.button`
+  cursor: pointer;
   box-sizing: border-box;
   border: none;
   display: flex;
@@ -30,4 +31,4 @@ const StyledGreenButton = styled.button`
   letter-spacing: -0.51px;
   border-radius: 50px;
   background: rgb(110, 209, 192);
-`;
+`

@@ -3,6 +3,10 @@ import { useRef, useState } from 'react'
 import styled from 'styled-components'
 import CoconutIcon from '../assets/images/coconutIcon.svg'
 
+interface Props {
+  onChange: (file: any) => void
+}
+
 export default function RegisterImage() {
   const [fileURL, setFileURL] = useState<string>('')
   const [file, setFile] = useState<FileList | null>()

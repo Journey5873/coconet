@@ -8,21 +8,21 @@ import Labelnput from '../../components/molecules/Labelnput'
 import LinkList from '../../components/organisms/LinkList'
 import GreenButton from '../../components/atoms/Button/GreenButton'
 import MultipleSelect from '../../components/atoms/Select/MultipleSelect'
-
 import SingleSelectString from '../../components/atoms/Select/SingleSelectString'
 import MultipleSelectString from '../../components/atoms/Select/MultipleSelectString'
 import { removeToken, setUserName } from '../../store/authSlice'
 import { useNavigate } from 'react-router-dom'
 import { useAppDispatch, useAppSelector } from '../../store/RootReducer'
+import { toast } from 'react-toastify'
 
 export interface SettingFormType {
   name: string
   career: number
   roles: string[]
   stacks: string[]
-  githubLink?: string
-  blogLink?: string
-  notionLink?: string
+  githubLink: string
+  blogLink: string
+  notionLink: string
 }
 
 export interface SelectValue {
@@ -120,6 +120,8 @@ const SettingPage = () => {
     try {
       const result = await userService.getMyProfile()
 
+      console.log(result, 'result')
+
       if (result.data) {
         dispatch({ type: 'INIT', payload: result.data })
       } else {
@@ -140,9 +142,9 @@ const SettingPage = () => {
         roles: userState.roles,
         stacks: userState.stacks,
         bio: userState.bio,
-        githubLink: '',
-        blogLink: '',
-        notionLink: '',
+        githubLink: userState.githubLink || '',
+        blogLink: userState.blogLink || '',
+        notionLink: userState.notionLink || '',
       }
       formData.append(
         'requestDto',
@@ -150,9 +152,12 @@ const SettingPage = () => {
       )
 
       const result = await userService.updateMyProfile(formData)
+
+      toast.success('프로필이 저장되었습니다.')
       console.log(result)
     } catch (error) {
       console.log(error)
+      toast.error('error.')
     }
   }
 
@@ -165,6 +170,20 @@ const SettingPage = () => {
     } catch (error) {
       console.log(error)
     }
+  }
+
+  const handleLinks = ({
+    githubLink,
+    notionLink,
+    blogLink,
+  }: {
+    githubLink?: string
+    notionLink?: string
+    blogLink?: string
+  }) => {
+    githubLink && updateGithubLink(githubLink)
+    notionLink && updateNotionLink(notionLink)
+    blogLink && updateBlogLink(blogLink)
   }
 
   useEffect(() => {
@@ -212,7 +231,14 @@ const SettingPage = () => {
         value={userState.stacks}
         placeholder="Select.dd.."
       />
-      <LinkList onSubmit={() => console.log('submit')} />
+      <LinkList
+        links={{
+          blogLink: userState.blogLink,
+          githubLink: userState.githubLink,
+          notionLink: userState.notionLink,
+        }}
+        onSubmit={handleLinks}
+      />
       <StyledButtonWrapper>
         <GreenButton buttonName="저장" onClick={() => updateProfile()} />
         <DeleteUserButton onClick={() => deleteMyAccount()}>
