@@ -16,11 +16,9 @@ import CommentForm from '../../components/organisms/comment/commentForm'
 import { toast } from 'react-toastify'
 import { useAppSelector } from '../../store/RootReducer'
 import { useArticleService } from '../../api/services/articleService'
-import { error } from 'console'
 
 const PostDetail = () => {
   const articleDetailService = useArticleDetailService()
-  const memberId = localStorage.getItem('memberUUID')
   const [isVisible, setIsVisible] = useState(false)
   const [isDeleteComment, setIsDeleteComment] = useState<boolean>(false)
   const [isBookmarked, setIsBookmarked] = useState<boolean>(false)
@@ -36,28 +34,24 @@ const PostDetail = () => {
   }
 
   const handleClickBookmark = async () => {
-    // TODO : 로그인 했는지 확인.
     if (!token) return
-
-    if (post) {
-      const result = await articleService.bookmarkArticle(post.articleUUID)
-      console.log(result)
-      if (result.succeeded) {
+    try {
+      if (post) {
+        const result = await articleService.bookmarkArticle(post.articleUUID)
         if (result.data === null) {
           toast.success('북마크를 삭제했습니다.')
         } else toast.success('북마크 되었습니다!')
         setIsBookmarked(!isBookmarked)
-        console.log(!isBookmarked)
-      } else {
-        toast.error('다시 시도해주세요.')
       }
+    } catch (error) {
+      console.log(error)
+      toast.error('다시 시도해주세요!')
     }
   }
 
   const fetchPostDetail = async (id: string) => {
     try {
       const result = await articleDetailService.getDetailArticle(id)
-      console.log('open')
       if (result.data) {
         setPost(result.data)
         savePostIdToLocalStorage(id || '')
@@ -73,14 +67,14 @@ const PostDetail = () => {
   const fetchPrivatePostDetail = async (id: string) => {
     try {
       const result = await articleDetailService.getPrivateDetailArticle(id)
-      console.log('private')
+      console.log(result)
+
       if (result.data) {
         setPost(result.data)
         savePostIdToLocalStorage(id || '')
         setIsBookmarked(result.data.bookmarked)
         console.log(result.data.bookmarked)
       }
-      console.log(result)
     } catch (error) {
       console.log(error)
       setPost(null)

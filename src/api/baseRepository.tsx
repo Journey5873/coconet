@@ -34,7 +34,7 @@ const transform = (response: any): Promise<ApiResponse<any>> => {
     const result: ApiResponse<any> = {
       data: response.data,
       succeeded: response.result.resultCode === 200,
-      errors: response.data.errors,
+      errors: response.data,
     }
     resolve(result)
   })
