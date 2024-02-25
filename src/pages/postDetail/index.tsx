@@ -34,7 +34,9 @@ const PostDetail = () => {
   }
 
   const handleClickBookmark = async () => {
-    if (!token) return
+    if (!token) {
+      toast.error('로그인 후 이용해 주세요.')
+    }
     try {
       if (post) {
         const result = await articleService.bookmarkArticle(post.articleUUID)
