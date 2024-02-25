@@ -11,7 +11,6 @@ public class MemberConverter {
 
         return MemberResponseDto.builder()
                 .name(member.getName())
-                .memberUUID(member.getMemberUUID())
                 .career(Integer.parseInt(member.getCareer()))
                 .profileImg(ImageConverter.toImage(member.getProfileImage()))
                 .roles(member.getMemberRoles().stream().map(role -> role.getRole().getName())

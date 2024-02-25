@@ -40,7 +40,6 @@ public class MemberResponseDto {
     private List<String> roles;
     @Schema(type = "array", example = "[\"Java\"]")
     private List<String> stacks;
-    private UUID memberUUID;
 
     public void setUpImageFile(byte[] imageFile) {
         this.profileImg = imageFile;
