@@ -28,6 +28,7 @@ interface Props {
   decreaseCount: (stackLabel: string) => void
   label: string
   placeholder: string
+  disabled: boolean
 }
 
 export default function MultipleSelectWithCount({
@@ -36,10 +37,14 @@ export default function MultipleSelectWithCount({
   decreaseCount,
   label,
   placeholder,
+  disabled,
 }: Props) {
   return (
     <div>
-      <FormControl sx={{ m: 1, width: '100%', margin: 0, gap: 1 }}>
+      <FormControl
+        disabled={disabled}
+        sx={{ m: 1, width: '100%', margin: 0, gap: 1 }}
+      >
         <StyledInputLabel id="demo-multiple-chip-label">
           {label}
         </StyledInputLabel>

@@ -1,3 +1,5 @@
+import { Dayjs } from 'dayjs'
+
 export type ArticleType = 'STUDY' | 'PROJECT'
 export type EstimatedDuration =
   | 'TWO_MONTHS'
@@ -64,5 +66,17 @@ export interface AricleDto {
   meetingType?: MeetingType
   bookmark?: boolean
   roles?: string[]
+  stacks?: string[]
+}
+
+export interface ArticleRequestDto {
+  title: string
+  content: string
+  plannedStartAt: string
+  expiredAt: string | Dayjs | null
+  estimatedDuration: string
+  articleType: string
+  meetingType: string
+  roles?: Role[]
   stacks?: string[]
 }

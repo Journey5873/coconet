@@ -19,6 +19,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import MultipleSelectString from '../../components/atoms/Select/MultipleSelectString'
 import { Dayjs } from 'dayjs'
 import { StackListProps } from '../postNew'
+import { Category } from '@mui/icons-material'
 
 const PostForm = () => {
   const [post, setPost] = useState<Article | null>(null)
@@ -140,10 +141,6 @@ const PostForm = () => {
         const originPosition: any = Object.entries(originPositionObject).map(
           (val) => val[1],
         )
-        console.log(stackLists)
-        console.log(originPositionObject)
-        console.log(originPosition)
-        console.log(result.data.roles)
         setPost(result.data)
         setArticleType({
           value: result.data.articleType,
@@ -224,6 +221,7 @@ const PostForm = () => {
           </StyledPostSelectList>
           <StyledPostSelectList>
             <MultipleSelectWithCount
+              disabled={articleType.label === '스터디'}
               stackLists={stackLists}
               increaseCount={increaseCount}
               decreaseCount={decreaseCount}

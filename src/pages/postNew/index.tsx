@@ -13,6 +13,7 @@ import { useArticleService } from '../../api/services/articleService'
 import { dateFormat } from '../../utils/utils'
 import { toast } from 'react-toastify'
 import { useNavigate } from 'react-router-dom'
+import { ArticleRequestDto } from '../../models/article'
 
 export interface StackListProps {
   roleName: string
@@ -126,8 +127,19 @@ export default function PostNew() {
   }, [])
 
   const onRegister = async () => {
+    if (!title) {
+      toast.error('제목을 입력해주세요.')
+    } else if (!content) {
+      toast.error('내용을 입력해주세요')
+    } else if (!date) {
+      toast.error('날짜를 선택해주세요.')
+    } else if (!onoffline) {
+      toast.error('진행방식을 선택해주세요.')
+    } else if (!category) {
+      toast.error('모집구분을 선택해주세요.')
+    }
     try {
-      const requestDto: any = {
+      const requestDto: ArticleRequestDto = {
         title: title,
         content: content,
         plannedStartAt: plannedStartAt,
@@ -172,6 +184,7 @@ export default function PostNew() {
           </StyledPostSelectList>
           <StyledPostSelectList>
             <MultipleSelectWithCount
+              disabled={category.label === '스터디'}
               stackLists={stackLists}
               increaseCount={increaseCount}
               decreaseCount={decreaseCount}
