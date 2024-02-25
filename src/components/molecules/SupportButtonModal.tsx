@@ -21,13 +21,6 @@ export default function SupportButtonModal({
     setNextModalVisible(!nextModalVisible)
   }
 
-  const [carrer, setCarrer] = useState<SelectValue>({
-    label: '',
-    value: '',
-  })
-
-  const handleCarrer = (value: SelectValue) => setCarrer(value)
-
   useEffect(() => {
     if (isVisible) {
       setNextModalVisible(true)
@@ -49,39 +42,15 @@ export default function SupportButtonModal({
               />
             </StyledLoginModalHeader>
             <StyledContentWrapper>
-              {nextModalVisible ? (
-                <div style={{ textAlign: 'center' }}>
-                  <StyledSetSelfIntroduce>
-                    자신을 소개할 수 있는 짧은 글을 작성해 주세요!
-                  </StyledSetSelfIntroduce>
-                  <StyledTextArea name="info" id="info"></StyledTextArea>
-                  <StyledSupportButton onClick={handleNextModal}>
-                    다음
-                  </StyledSupportButton>
-                </div>
-              ) : (
-                <div>
-                  <IoIosArrowBack
-                    size={30}
-                    style={{ cursor: 'pointer' }}
-                    onClick={handleNextModal}
-                  />
-                  <div style={{ textAlign: 'center', marginTop: 20 }}>
-                    <StyledSelectPositionTitle>
-                      지원하실 포지션을 선택해주세요!
-                    </StyledSelectPositionTitle>
-                    <StyledSelectPositionWrapper>
-                      <SingleSelect
-                        label="직무"
-                        onChange={handleCarrer}
-                        value={carrer}
-                        placeholder={'프론트엔드, 백엔드...'}
-                      />
-                      {/* <LinkList onSubmit={() => console.log('submit')} /> */}
-                    </StyledSelectPositionWrapper>
-                  </div>
-                </div>
-              )}
+              <div style={{ textAlign: 'center' }}>
+                <StyledSetSelfIntroduce>
+                  보내실 첫 메세지를 입력해주세요!
+                </StyledSetSelfIntroduce>
+                <StyledTextArea name="info" id="info"></StyledTextArea>
+                <StyledSupportButton onClick={handleNextModal}>
+                  전송
+                </StyledSupportButton>
+              </div>
             </StyledContentWrapper>
           </StyledModalWrapper>
         </>

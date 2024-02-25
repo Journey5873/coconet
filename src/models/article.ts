@@ -43,6 +43,7 @@ export interface Article {
   title: string
   bookmarkCount: number
   expiredAt: string
+  bookmarked: boolean
   estimatedDuration: EstimatedDuration
   articleType: ArticleType
   meetingType: MeetingType

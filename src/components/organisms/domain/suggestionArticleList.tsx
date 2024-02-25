@@ -5,12 +5,14 @@ import { FaChevronRight, FaChevronLeft } from 'react-icons/fa6'
 import styled from 'styled-components'
 import PopularCard from '../../molecules/card/popularCard'
 import { CircularProgress } from '@mui/material'
+import { useAppSelector } from '../../../store/RootReducer'
 
 const SuggestionArticleList = () => {
   const scrollContainerRef = useRef(null)
   const articleService = useArticleService()
   const [suggestionArticles, setSuggestionArticles] = useState<Article[]>([])
   const [isLoading, setIsLoading] = useState<boolean>(false)
+  const token = useAppSelector((state) => state.reducer.auth.token)
 
   const [userName, setUserName] = useState('')
 
@@ -52,7 +54,7 @@ const SuggestionArticleList = () => {
   return (
     <StyledSuggestionWrapper>
       <StyledPopularHeader>
-        <h2>{!!userName ? userName : '회원'}님께 추천!</h2>
+        <h2>{!!token ? userName : '회원'}님께 추천!</h2>
         <StyledButtonContainer>
           <StyledButtonWrapper onClick={() => scroll('left')}>
             <FaChevronLeft />

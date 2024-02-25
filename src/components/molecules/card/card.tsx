@@ -1,20 +1,15 @@
 import styled from 'styled-components'
 import newIcon from '../../assets/images/newIcon.svg'
-import { FaRegBookmark, FaEye } from 'react-icons/fa'
+import { FaEye } from 'react-icons/fa'
 import { typeMap, imageMap, dateFormat } from '../../../utils/utils'
 import { useNavigate } from 'react-router-dom'
 import { Article } from '../../../models/article'
-import { useAppSelector } from '../../../store/RootReducer'
-import { useArticleService } from '../../../api/services/articleService'
 
 interface Props {
   item: Article
 }
 
 const Card = ({ item }: Props) => {
-  const token = useAppSelector((state) => state.reducer.auth.token)
-  const articleService = useArticleService()
-
   const navigation = useNavigate()
   const {
     articleUUID,
@@ -36,16 +31,6 @@ const Card = ({ item }: Props) => {
     return postIds.includes(articleId.toString())
   }
 
-  const handleClickBookmark = async (event: any) => {
-    event.stopPropagation()
-
-    // TODO : 로그인 했는지 확인.
-    if (!token) return
-
-    await articleService.bookmarkArticle(articleUUID)
-    alert('bookmarking!!')
-  }
-
   return (
     <StyledCardContainer onClick={() => navigation(`/post/${articleUUID}`)}>
       <StyledNewIconWrapper>
@@ -59,12 +44,6 @@ const Card = ({ item }: Props) => {
           <StyledArticleType>{typeMap.get(articleType)}</StyledArticleType>
           <StyledMeetingType>{typeMap.get(meetingType)}</StyledMeetingType>
         </StyledRowWrapper>
-        {token && (
-          <FaRegBookmark
-            style={{ fontSize: '32px', color: '#8caf8e' }}
-            onClick={handleClickBookmark}
-          />
-        )}
       </StyledRowBetweenWrapper>
       <StyledCardExpired>{`마감일 | ${dateFormat(
         expiredAt,

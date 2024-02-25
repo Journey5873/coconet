@@ -5,6 +5,7 @@ import { ReactComponent as CoconutIcon } from '../../../components/assets/images
 import { ChangeEvent, useCallback, useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
 import { useArticleDetailService } from '../../../api/services/articleDetialService'
+import { useAppSelector } from '../../../store/RootReducer'
 interface Props {
   comment: Comment
   setIsDeleteComment: React.Dispatch<React.SetStateAction<boolean>>
@@ -13,6 +14,7 @@ interface Props {
 const CommentItem = ({ comment, setIsDeleteComment }: Props) => {
   const [updateComment, setUpdateComment] = useState<string>(comment.content)
   const [isEditComment, setIsEditComment] = useState<boolean>(false)
+  const token = useAppSelector((state) => state.reducer.auth.token)
 
   const memeberId = localStorage.getItem('memberUUID')
   const articleDetailService = useArticleDetailService()
@@ -95,7 +97,7 @@ const CommentItem = ({ comment, setIsDeleteComment }: Props) => {
           <StyledCommentContent>{updateComment}</StyledCommentContent>
         )}
 
-        {comment.memberUUID === memeberId && (
+        {comment.memberUUID === token && (
           <StyledMyCommentButtonWrapper>
             {isEditComment ? (
               <>

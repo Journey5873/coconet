@@ -15,6 +15,16 @@ export class ArticleDetailService {
     )
   }
 
+  async getPrivateDetailArticle(articleUuid: string) {
+    return this.articleRepository.get(
+      `article-service/api/article/${articleUuid}`,
+    )
+  }
+
+  async getMyMemberId() {
+    return this.articleRepository.get(`member-service/api/myUUID`)
+  }
+
   async createComment(articleUUID: string, data: any) {
     return this.articleRepository.create(
       `article-service/api/comment/${articleUUID}`,

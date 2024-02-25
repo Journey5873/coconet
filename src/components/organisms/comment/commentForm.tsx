@@ -4,6 +4,7 @@ import { Article, Comment } from '../../../models/article'
 import { useArticleDetailService } from '../../../api/services/articleDetialService'
 import { useState } from 'react'
 import { toast } from 'react-toastify'
+import { useAppSelector } from '../../../store/RootReducer'
 
 interface CommentProps {
   post: Article
@@ -12,23 +13,34 @@ interface CommentProps {
 const CommentForm = ({ post }: CommentProps) => {
   const articleDetailService = useArticleDetailService()
   const [commentValue, setCommnetValue] = useState<string>('')
+  const token = useAppSelector((state) => state.reducer.auth.token)
 
   const onRegister = async () => {
-    try {
-      const requestDto: any = {
-        content: commentValue,
+    if (!token) {
+      toast.error('로그인 후 이용해 주세요.')
+      return
+    }
+    if (token) {
+      if (commentValue === '') {
+        toast.error('댓글을 입력해주세요.')
+        return
       }
+      try {
+        const requestDto: any = {
+          content: commentValue,
+        }
 
-      const result = await articleDetailService.createComment(
-        `${post.articleUUID}`,
-        JSON.stringify(requestDto),
-      )
-      if (result.succeeded) {
-        toast.success('댓글을 등록했습니다!')
+        const result = await articleDetailService.createComment(
+          `${post.articleUUID}`,
+          JSON.stringify(requestDto),
+        )
+        if (result.succeeded) {
+          toast.success('댓글을 등록했습니다!')
+        }
+      } catch (error) {
+        console.log(error)
+        toast.error('다시 시도해주세요.')
       }
-    } catch (error) {
-      console.log(error)
-      toast.error('다시 시도해주세요.')
     }
   }
 
@@ -49,7 +61,7 @@ const CommentForm = ({ post }: CommentProps) => {
             onChange={handleComment}
             value={commentValue}
           ></StyledCommentInputTextArea>
-          <StyledCommentInputButton onClick={onRegister}>
+          <StyledCommentInputButton onClick={onRegister} disabled={!token}>
             댓글등록
           </StyledCommentInputButton>
         </form>

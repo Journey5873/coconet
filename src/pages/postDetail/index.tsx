@@ -1,12 +1,10 @@
 import { useEffect, useState } from 'react'
 import Loader from '../../components/atoms/Loader'
 import { useNavigate, useParams } from 'react-router-dom'
-import { useForm } from 'react-hook-form'
 import styled from 'styled-components'
 import { ReactComponent as ArrowBack } from '../../components/assets/images/arrowBack.svg'
-import { ReactComponent as CoconutIcon } from '../../components/assets/images/coconutIcon.svg'
 import { FiEye } from 'react-icons/fi'
-import { FaRegThumbsUp } from 'react-icons/fa'
+import { FaRegBookmark, FaRegThumbsUp, FaBookmark } from 'react-icons/fa'
 import { imageMap, dateFormat } from '../../utils/utils'
 import SupportButtonModal from '../../components/molecules/SupportButtonModal'
 import { useArticleDetailService } from '../../api/services/articleDetialService'
@@ -16,27 +14,71 @@ import { User } from '../../models/user'
 import { useUserService } from '../../api/services/userService'
 import CommentForm from '../../components/organisms/comment/commentForm'
 import { toast } from 'react-toastify'
+import { useAppSelector } from '../../store/RootReducer'
+import { useArticleService } from '../../api/services/articleService'
+import { error } from 'console'
 
 const PostDetail = () => {
   const articleDetailService = useArticleDetailService()
   const memberId = localStorage.getItem('memberUUID')
   const [isVisible, setIsVisible] = useState(false)
   const [isDeleteComment, setIsDeleteComment] = useState<boolean>(false)
+  const [isBookmarked, setIsBookmarked] = useState<boolean>(false)
 
   const { id } = useParams()
   const [post, setPost] = useState<Article | null>(null)
   const navigate = useNavigate()
+  const token = useAppSelector((state) => state.reducer.auth.token)
+  const articleService = useArticleService()
 
   const handleSupportButton = () => {
     setIsVisible(!isVisible)
   }
 
+  const handleClickBookmark = async () => {
+    // TODO : 로그인 했는지 확인.
+    if (!token) return
+
+    if (post) {
+      const result = await articleService.bookmarkArticle(post.articleUUID)
+      console.log(result)
+      if (result.succeeded) {
+        if (result.data === null) {
+          toast.success('북마크를 삭제했습니다.')
+        } else toast.success('북마크 되었습니다!')
+        setIsBookmarked(!isBookmarked)
+        console.log(!isBookmarked)
+      } else {
+        toast.error('다시 시도해주세요.')
+      }
+    }
+  }
+
   const fetchPostDetail = async (id: string) => {
     try {
       const result = await articleDetailService.getDetailArticle(id)
+      console.log('open')
       if (result.data) {
         setPost(result.data)
         savePostIdToLocalStorage(id || '')
+        console.log(result.data.bookmarked)
+      }
+      console.log(result)
+    } catch (error) {
+      console.log(error)
+      setPost(null)
+    }
+  }
+
+  const fetchPrivatePostDetail = async (id: string) => {
+    try {
+      const result = await articleDetailService.getPrivateDetailArticle(id)
+      console.log('private')
+      if (result.data) {
+        setPost(result.data)
+        savePostIdToLocalStorage(id || '')
+        setIsBookmarked(result.data.bookmarked)
+        console.log(result.data.bookmarked)
       }
       console.log(result)
     } catch (error) {
@@ -79,9 +121,12 @@ const PostDetail = () => {
   //게시글 GET
   useEffect(() => {
     if (id) {
-      fetchPostDetail(id)
+      console.log('token', token)
+      if (token) {
+        fetchPrivatePostDetail(id)
+      } else fetchPostDetail(id)
     }
-  }, [id, isDeleteComment])
+  }, [id, isDeleteComment, token])
 
   if (!post) {
     return <Loader />
@@ -93,11 +138,31 @@ const PostDetail = () => {
         {post ? (
           <>
             <StyledPostHeader>
-              <ArrowBack
-                onClick={() => {
-                  navigate('/')
-                }}
-              />
+              <StyledBookmarButtonWrapper>
+                <ArrowBack
+                  onClick={() => {
+                    navigate('/')
+                  }}
+                />
+                {token ? (
+                  isBookmarked ? (
+                    <FaBookmark
+                      style={{ fontSize: '35px', color: '#8caf8e' }}
+                      onClick={handleClickBookmark}
+                    />
+                  ) : (
+                    <FaRegBookmark
+                      style={{
+                        fontSize: '35px',
+                        color: '#8caf8e',
+                      }}
+                      onClick={handleClickBookmark}
+                    />
+                  )
+                ) : (
+                  <></>
+                )}
+              </StyledBookmarButtonWrapper>
               <StyledPostTitle>{post.title}</StyledPostTitle>
               <StyledPostProfileBox>
                 <StyledUser>
@@ -111,7 +176,7 @@ const PostDetail = () => {
                 <StlyedRegisteredDate>{`${dateFormat(
                   post.expiredAt,
                 )}`}</StlyedRegisteredDate>
-                {memberId === post.memberUUID && (
+                {token === post.memberUUID && (
                   <StyledButtonWrapper>
                     <StyledButton onClick={() => navigate(`/post/edit/${id}`)}>
                       수정
@@ -159,7 +224,6 @@ const PostDetail = () => {
                     <StyledPostInfoTitle>사용 언어</StyledPostInfoTitle>
                     <StyledLanguageListWrapper>
                       {post.stacks.map((item, index) => {
-                        console.log(imageMap[item])
                         return (
                           <StyledTech key={index}>
                             <StyledTechImg src={imageMap[item]} />
@@ -170,7 +234,7 @@ const PostDetail = () => {
                   </StyledPostInfoListContent>
                 </StyledPostInfoRemains>
               </StyledPostInfoWrapper>
-              {post.memberUUID !== memberId && (
+              {post.memberUUID !== token && (
                 <StyledSupportButton onClick={() => handleSupportButton()}>
                   지원하기
                 </StyledSupportButton>
@@ -234,6 +298,11 @@ const StyledPostHeader = styled.section`
   display: flex;
   flex-direction: column;
   margin-top: 3rem;
+`
+
+const StyledBookmarButtonWrapper = styled.div`
+  display: flex;
+  justify-content: space-between;
 `
 
 const StyledPostTitle = styled.div`
@@ -397,7 +466,8 @@ const StyledTechImg = styled.img`
 
 const StyledPostInfoTitle = styled.span`
   color: #717171;
-  margin-right: 36px;
+  margin-right: 34px;
+  min-width: 90px;
 `
 
 const StyledPostContentWrapper = styled.div`

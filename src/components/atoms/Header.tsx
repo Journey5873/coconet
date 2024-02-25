@@ -5,12 +5,13 @@ import notificationIcon from '../assets/images/notificationIcon.svg'
 import coconutIcon from '../assets/images/coconutIcon.svg'
 import { ReactComponent as Polygon } from '../assets/images/polygon.svg'
 import { Link, useNavigate } from 'react-router-dom'
-import { useState, useContext } from 'react'
+import { useState, useContext, useEffect } from 'react'
 import { AlertContext } from '../organisms/modal/AlertModalContext'
 import { useAppSelector, useAppDispatch } from '../../store/RootReducer'
 import LoginModal from './LoginModal'
 import { RxHamburgerMenu } from 'react-icons/rx'
 import { removeToken } from '../../store/authSlice'
+import { useUserService } from '../../api/services/userService'
 
 export default function Header() {
   const alertContext = useContext(AlertContext)
@@ -19,6 +20,8 @@ export default function Header() {
   const navigate = useNavigate()
   const [openDropdownbar, setOpenDropdownbar] = useState(false)
   const [openLoginModal, setOpenLoginModal] = useState(false)
+  const navigation = useNavigate()
+  const userService = useUserService()
 
   const handleDropdownbar = () => {
     setOpenDropdownbar((openDropdownbar) => !openDropdownbar)
@@ -54,7 +57,23 @@ export default function Header() {
     { link: '/setting', content: '설정' },
   ]
 
-  const navigation = useNavigate()
+  const getMyProfile = async () => {
+    try {
+      const result = await userService.getMyProfile()
+      if (result.data) {
+        console.log(result.data)
+      } else {
+        console.log(result.errors)
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  useEffect(() => {
+    getMyProfile()
+  }, [])
+
   return (
     <StyledHeaderWrapper>
       <StyledHeaderInner>
@@ -95,7 +114,9 @@ export default function Header() {
                 <img src={notificationIcon} alt="notificationIcon" />
               </StyledMenuImage>
               <StyledLoginUser onClick={() => handleDropdownbar()}>
-                <StyledLoginUserImg src={coconutIcon} alt="coconutIcon" />
+                <StyledLoginUserImg
+                // src={'data:image/;base64,' + post.writerProfileImage ?? ''}
+                />
                 <RxHamburgerMenu className="mobileMenu" size={23} />
                 <StyledPolygon />
                 <StyledDropdownBar openDropdownbar={openDropdownbar}>
