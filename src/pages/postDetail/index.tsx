@@ -201,21 +201,23 @@ const PostDetail = () => {
                   </StyledPostInfoListContent>
                 </StyledPostInfoList>
                 <StyledPostInfoRemains>
-                  <StyledPostInfoListContent className="recruitment_status">
-                    <StyledPostInfoTitle>모집 현황</StyledPostInfoTitle>
-                    <ul>
-                      {post.roles.map((role, i) => (
-                        <StyledPositionList>
-                          <StyledPositionName>
-                            {role?.roleName}
-                          </StyledPositionName>
-                          <StyledPositionCount>
-                            {role.participant}
-                          </StyledPositionCount>
-                        </StyledPositionList>
-                      ))}
-                    </ul>
-                  </StyledPostInfoListContent>
+                  {post.articleType === 'PROJECT' && (
+                    <StyledPostInfoListContent className="recruitment_status">
+                      <StyledPostInfoTitle>모집 현황</StyledPostInfoTitle>
+                      <ul>
+                        {post.roles.map((role, i) => (
+                          <StyledPositionList>
+                            <StyledPositionName>
+                              {role?.roleName}
+                            </StyledPositionName>
+                            <StyledPositionCount>
+                              {role.participant}
+                            </StyledPositionCount>
+                          </StyledPositionList>
+                        ))}
+                      </ul>
+                    </StyledPostInfoListContent>
+                  )}
                   <StyledPostInfoListContent className="language">
                     <StyledPostInfoTitle>사용 언어</StyledPostInfoTitle>
                     <StyledLanguageListWrapper>
