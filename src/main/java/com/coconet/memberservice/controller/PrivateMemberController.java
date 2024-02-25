@@ -45,6 +45,11 @@ public class PrivateMemberController {
         return Response.OK(memberResponseDto);
     }
 
+    @GetMapping("/myUUID")
+    public Response<UUID> getUserUUID(@RequestHeader(value="memberUUID") UUID memberUUID) {
+        return Response.OK(memberUUID);
+    }
+
     @Operation(
             summary = "Update member info",
             responses = {
