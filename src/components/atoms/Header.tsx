@@ -12,6 +12,7 @@ import LoginModal from './LoginModal'
 import { RxHamburgerMenu } from 'react-icons/rx'
 import { removeToken } from '../../store/authSlice'
 import { useUserService } from '../../api/services/userService'
+import { User } from '../../models/user'
 
 export default function Header() {
   const alertContext = useContext(AlertContext)
@@ -22,6 +23,7 @@ export default function Header() {
   const [openLoginModal, setOpenLoginModal] = useState(false)
   const navigation = useNavigate()
   const userService = useUserService()
+  const [user, setUser] = useState<User>()
 
   const handleDropdownbar = () => {
     setOpenDropdownbar((openDropdownbar) => !openDropdownbar)
@@ -61,7 +63,7 @@ export default function Header() {
     try {
       const result = await userService.getMyProfile()
       if (result.data) {
-        console.log(result.data)
+        setUser(result.data)
       } else {
         console.log(result.errors)
       }
@@ -115,7 +117,7 @@ export default function Header() {
               </StyledMenuImage>
               <StyledLoginUser onClick={() => handleDropdownbar()}>
                 <StyledLoginUserImg
-                // src={'data:image/;base64,' + post.writerProfileImage ?? ''}
+                  src={'data:image/;base64,' + user?.profileImg}
                 />
                 <RxHamburgerMenu className="mobileMenu" size={23} />
                 <StyledPolygon />
