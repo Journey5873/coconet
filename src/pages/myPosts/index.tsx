@@ -4,12 +4,15 @@ import styled from 'styled-components'
 import { Article } from '../../models/article'
 import { useArticleService } from '../../api/services/articleService'
 import Card from '../../components/molecules/card/card'
+import { CircularProgress } from '@mui/material'
 
 const MyPosts = () => {
   const articleService = useArticleService()
+  const [isLoading, setIsLoading] = useState<boolean>(false)
   const [myArticles, setMyArticles] = useState<Article[]>([])
 
   const fetchMyArticles = async () => {
+    setIsLoading(true)
     try {
       const result = await articleService.getMyArticle()
 
@@ -19,6 +22,8 @@ const MyPosts = () => {
     } catch (error) {
       console.log(error)
       setMyArticles([])
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -40,12 +45,18 @@ const MyPosts = () => {
             </StyledMypostsCategoryItem>
           </StyledMypostsCategory>
           <StyledItemWrpper>
-            {myArticles.length <= 0 && (
-              <div style={{ fontSize: '1rem' }}>작성 목록이 없습니다.</div>
+            {isLoading ? (
+              <CircularProgress />
+            ) : (
+              <>
+                {myArticles.length <= 0 && (
+                  <div style={{ fontSize: '1rem' }}>작성 목록이 없습니다.</div>
+                )}
+                {myArticles?.map((article) => (
+                  <Card item={article} key={article.articleUUID} />
+                ))}
+              </>
             )}
-            {myArticles?.map((article) => (
-              <Card item={article} key={article.articleUUID} />
-            ))}
           </StyledItemWrpper>
         </StyledMypostsMain>
       </StyledMypostsMyLikes>

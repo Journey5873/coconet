@@ -31,6 +31,7 @@ export default function PostNew() {
     label: '',
     value: '',
   })
+
   const handleCategory = (value: SelectValue) => {
     setCategory(value)
   }
@@ -137,6 +138,11 @@ export default function PostNew() {
       toast.error('진행방식을 선택해주세요.')
     } else if (!category) {
       toast.error('모집구분을 선택해주세요.')
+    } else if (
+      category.value === 'PROJECT' &&
+      !stackLists.reduce((sum, current) => sum + current.participant, 0)
+    ) {
+      toast.error('모집인원을 선택해주세요.')
     }
     try {
       const requestDto: ArticleRequestDto = {
@@ -190,6 +196,7 @@ export default function PostNew() {
               decreaseCount={decreaseCount}
               label="모집 포지션/인원"
               placeholder="프론트엔드/0명"
+              isRequired={category.value === 'PROJECT'}
             />
           </StyledPostSelectList>
         </StyledPostSelect>

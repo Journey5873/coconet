@@ -4,6 +4,7 @@ import styled from 'styled-components'
 import Tabs from '../../components/organisms/customTabs/Tabs'
 import Tab from '../../components/organisms/customTabs/Tab'
 import { Article } from '../../models/article'
+import { FaBookmark } from 'react-icons/fa'
 import { useArticleService } from '../../api/services/articleService'
 import Card from '../../components/molecules/card/card'
 import BookmarkedCard from '../../components/molecules/card/bookmarkedCard'
@@ -67,9 +68,9 @@ const MyLikes = () => {
                 ),
               },
               {
-                name: '관심 목록',
+                name: '북마크',
                 icon: (
-                  <BiSolidHeart
+                  <FaBookmark
                     color="#8CAF8E"
                     style={{ width: 35, height: 35 }}
                   />
@@ -87,7 +88,7 @@ const MyLikes = () => {
             ]}
           >
             <Tab value="읽은 목록">읽은 목록</Tab>
-            <Tab value="관심 목록">
+            <Tab value="북마크">
               <StyledItemWrpper>
                 {bookmarkingArticles.length <= 0 && (
                   <div>관심 목록이 없습니다.</div>
