@@ -17,11 +17,22 @@ import { toast } from 'react-toastify'
 import { useAppSelector } from '../../store/RootReducer'
 import { useArticleService } from '../../api/services/articleService'
 
+export const DateLists = [
+  { value: 'TWO_MONTHS', Label: '2개월' },
+  { value: 'THREE_MONTHS', Label: '3개월' },
+  { value: 'FOUR_MONTHS', Label: '4개월' },
+  { value: 'FIVE_MONTHS', Label: '5개월' },
+  { value: 'SIX_MONTHS', Label: '6개월' },
+  { value: 'ONE_YEAR', Label: '1년 미만' },
+  { value: 'OVER_ONE_YEAR', Label: '1년 이상' },
+]
+
 const PostDetail = () => {
   const articleDetailService = useArticleDetailService()
   const [isVisible, setIsVisible] = useState(false)
   const [isDeleteComment, setIsDeleteComment] = useState<boolean>(false)
   const [isBookmarked, setIsBookmarked] = useState<boolean>(false)
+  const [estimatedDurationKR, setEstimatedDurationKR] = useState('')
 
   const { id } = useParams()
   const [post, setPost] = useState<Article | null>(null)
@@ -31,6 +42,12 @@ const PostDetail = () => {
 
   const handleSupportButton = () => {
     setIsVisible(!isVisible)
+  }
+
+  const handleEstimatedDuration = (date: string) => {
+    DateLists.forEach((val) =>
+      val.value === date ? setEstimatedDurationKR(val.Label) : val.value,
+    )
   }
 
   const handleClickBookmark = async () => {
@@ -57,7 +74,7 @@ const PostDetail = () => {
       if (result.data) {
         setPost(result.data)
         savePostIdToLocalStorage(id || '')
-        console.log(result.data.bookmarked)
+        handleEstimatedDuration(result.data.estimatedDuration)
       }
       console.log(result)
     } catch (error) {
@@ -75,7 +92,6 @@ const PostDetail = () => {
         setPost(result.data)
         savePostIdToLocalStorage(id || '')
         setIsBookmarked(result.data.bookmarked)
-        console.log(result.data.bookmarked)
       }
     } catch (error) {
       console.log(error)
@@ -120,7 +136,9 @@ const PostDetail = () => {
       console.log('token', token)
       if (token) {
         fetchPrivatePostDetail(id)
-      } else fetchPostDetail(id)
+      } else {
+        fetchPostDetail(id)
+      }
     }
   }, [id, isDeleteComment, token])
 
@@ -197,7 +215,7 @@ const PostDetail = () => {
                   </StyledPostInfoListContent>
                   <StyledPostInfoListContent>
                     <StyledPostInfoTitle>예상 기간</StyledPostInfoTitle>
-                    <span>{post.estimatedDuration}</span>
+                    <span>{estimatedDurationKR}</span>
                   </StyledPostInfoListContent>
                 </StyledPostInfoList>
                 <StyledPostInfoRemains>
