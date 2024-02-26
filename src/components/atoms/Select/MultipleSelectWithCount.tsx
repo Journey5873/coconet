@@ -29,6 +29,7 @@ interface Props {
   label: string
   placeholder: string
   disabled: boolean
+  isRequired?: boolean
 }
 
 export default function MultipleSelectWithCount({
@@ -38,6 +39,7 @@ export default function MultipleSelectWithCount({
   label,
   placeholder,
   disabled,
+  isRequired = false,
 }: Props) {
   return (
     <div>
@@ -47,6 +49,8 @@ export default function MultipleSelectWithCount({
       >
         <StyledInputLabel id="demo-multiple-chip-label">
           {label}
+
+          {isRequired && <StyledRequired>*</StyledRequired>}
         </StyledInputLabel>
         <Select
           multiple
@@ -123,4 +127,13 @@ const StyledInputLabel = styled.label`
 const StyledButtonWrapper = styled.div`
   display: flex;
   gap: 4px;
+`
+
+const StyledRequired = styled.span`
+  padding-left: 3px;
+  color: rgb(234, 114, 111);
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 20px;
+  letter-spacing: -0.28px;
 `
