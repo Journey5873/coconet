@@ -4,10 +4,11 @@ import styled from 'styled-components'
 import CoconutIcon from '../assets/images/coconutIcon.svg'
 
 interface Props {
-  onChange: (file: any) => void
+  src?: string
+  onFileChange?: (file: File) => void
 }
 
-export default function RegisterImage() {
+export default function RegisterImage({ src, onFileChange }: Props) {
   const [fileURL, setFileURL] = useState<string>('')
   const [file, setFile] = useState<FileList | null>()
   const imgUploadInput = useRef<HTMLInputElement | null>(null)
@@ -15,6 +16,10 @@ export default function RegisterImage() {
   const onImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
       setFile(event.target.files)
+
+      if (onFileChange) {
+        onFileChange(event.target.files[0])
+      }
 
       const newFileURL = URL.createObjectURL(event.target.files[0])
       setFileURL(newFileURL)
@@ -46,7 +51,7 @@ export default function RegisterImage() {
   return (
     <>
       <StyledImageWrapper>
-        <StyledImage src={fileURL ? fileURL : CoconutIcon} alt=""></StyledImage>
+        <StyledImage src={fileURL || src} alt=""></StyledImage>
         <StyledImageEdit
           src="https://holaworld.io/images/info/profile_edit.png"
           alt="profile_image_edit"

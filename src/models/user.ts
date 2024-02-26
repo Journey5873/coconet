@@ -1,7 +1,7 @@
 export interface User {
   name: string
   career: number
-  profileImg?: string
+  profileImg?: File
   bio?: string
   githubLink: string
   blogLink: string

@@ -35,7 +35,7 @@ export interface SelectValue {
 type UserAction =
   | { type: 'UPDATE_NAME'; name: string }
   | { type: 'UPDATE_CAREER'; career: number }
-  | { type: 'UPDATE_PROFILE_IMG'; profileImg: string }
+  | { type: 'UPDATE_PROFILE_IMG'; profileImg: File }
   | { type: 'UPDATE_BIO'; bio: string }
   | { type: 'UPDATE_GITHUB_LINK'; githubLink: string }
   | { type: 'UPDATE_BLOG_LINK'; blogLink: string }
@@ -80,7 +80,6 @@ const initialUserState: User = {
   blogLink: '',
   githubLink: '',
   notionLink: '',
-  profileImg: '',
 }
 
 const SettingPage = () => {
@@ -91,14 +90,18 @@ const SettingPage = () => {
   const navigate = useNavigate()
   const storeDispatch = useAppDispatch()
 
+  console.log(userState, 'userState')
+
   const updateName = (name: string) => dispatch({ type: 'UPDATE_NAME', name })
   const updateCareer = (career: number) =>
     dispatch({ type: 'UPDATE_CAREER', career })
-  const updateProfileImg = (profileImg: string) =>
+
+  const updateProfileImg = (profileImg: File) =>
     dispatch({
       type: 'UPDATE_PROFILE_IMG',
       profileImg,
     })
+
   const updateBio = (bio: string) => dispatch({ type: 'UPDATE_BIO', bio })
   const updateGithubLink = (githubLink: string) =>
     dispatch({
@@ -142,6 +145,15 @@ const SettingPage = () => {
   const updateProfile = async () => {
     const formData = new FormData()
 
+    if (
+      !userState.career ||
+      !userState.name ||
+      !userState.roles ||
+      !userState.stacks
+    ) {
+      toast.error('필수 값을 입력해주세요.')
+    }
+
     try {
       const requestDto: any = {
         career: userState.career,
@@ -153,10 +165,13 @@ const SettingPage = () => {
         blogLink: userState.blogLink || '',
         notionLink: userState.notionLink || '',
       }
+
       formData.append(
         'requestDto',
         new Blob([JSON.stringify(requestDto)], { type: 'application/json' }),
       )
+
+      formData.append('imageFile', userState.profileImg!)
 
       const result = await userService.updateMyProfile(formData)
 
@@ -217,7 +232,10 @@ const SettingPage = () => {
   return (
     <Container>
       <div style={{ margin: '0 auto' }}>
-        <RegisterImage />
+        <RegisterImage
+          onFileChange={updateProfileImg}
+          src={'data:image/;base64,' + userState?.profileImg}
+        />
       </div>
       <Labelnput
         text="닉네임"
