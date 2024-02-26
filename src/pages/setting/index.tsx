@@ -152,6 +152,7 @@ const SettingPage = () => {
       !userState.stacks
     ) {
       toast.error('필수 값을 입력해주세요.')
+      return
     }
 
     try {

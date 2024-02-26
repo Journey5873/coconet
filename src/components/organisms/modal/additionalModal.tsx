@@ -166,6 +166,10 @@ const AdditionalModal = ({ open, handleClose, memberId }: Props) => {
 
                           if (isValid.data) {
                             alert('중복된 닉네임 입니다.')
+                            setAdditionalValue((prev) => ({
+                              ...prev,
+                              nickname: '',
+                            }))
                             return
                           }
 
