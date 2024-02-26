@@ -1,4 +1,4 @@
-import React, { useEffect, useReducer, useState } from 'react'
+import React, { useContext, useEffect, useReducer, useState } from 'react'
 import { User } from '../../models/user'
 import { useUserService } from '../../api/services/userService'
 import { RegisterDto } from '../../components/organisms/modal/additionalModal'
@@ -15,6 +15,7 @@ import { useNavigate } from 'react-router-dom'
 import { useAppDispatch, useAppSelector } from '../../store/RootReducer'
 import { toast } from 'react-toastify'
 import Loader from '../../components/atoms/Loader'
+import { AlertContext } from '../../components/organisms/modal/AlertModalContext'
 
 export interface SettingFormType {
   name: string
@@ -83,6 +84,7 @@ const initialUserState: User = {
 }
 
 const SettingPage = () => {
+  const alertContext = useContext(AlertContext)
   const userService = useUserService()
   const [userState, dispatch] = useReducer(userReducer, initialUserState)
   const [isLoading, setIsLoading] = useState<boolean>(false)
@@ -168,10 +170,19 @@ const SettingPage = () => {
 
   const deleteMyAccount = async () => {
     try {
-      const result = await userService.deleteUser()
-      localStorage.removeItem('accessToken')
-      navigate('/')
-      storeDispatch(removeToken())
+      if (alertContext) {
+        alertContext.onOpen({
+          title: '회원탈퇴',
+          content: '회원탈퇴 하시겠습니까?',
+          onConfirm: async () => {
+            const result = await userService.deleteUser()
+            localStorage.removeItem('accessToken')
+            navigate('/')
+            storeDispatch(removeToken())
+            alertContext.onClose()
+          },
+        })
+      }
     } catch (error) {
       console.log(error)
     }
