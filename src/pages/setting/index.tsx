@@ -14,6 +14,7 @@ import { removeToken, setUserName } from '../../store/authSlice'
 import { useNavigate } from 'react-router-dom'
 import { useAppDispatch, useAppSelector } from '../../store/RootReducer'
 import { toast } from 'react-toastify'
+import Loader from '../../components/atoms/Loader'
 
 export interface SettingFormType {
   name: string
@@ -84,6 +85,7 @@ const initialUserState: User = {
 const SettingPage = () => {
   const userService = useUserService()
   const [userState, dispatch] = useReducer(userReducer, initialUserState)
+  const [isLoading, setIsLoading] = useState<boolean>(false)
   const navigate = useNavigate()
   const storeDispatch = useAppDispatch()
 
@@ -117,6 +119,7 @@ const SettingPage = () => {
     dispatch({ type: 'UPDATE_STACKS', stacks })
 
   const fetchMyProfile = async () => {
+    setIsLoading(true)
     try {
       const result = await userService.getMyProfile()
 
@@ -129,6 +132,8 @@ const SettingPage = () => {
       }
     } catch (error) {
       console.log(error)
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -189,6 +194,14 @@ const SettingPage = () => {
   useEffect(() => {
     fetchMyProfile()
   }, [])
+
+  if (isLoading) {
+    return (
+      <Container>
+        <Loader />
+      </Container>
+    )
+  }
 
   return (
     <Container>
