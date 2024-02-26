@@ -1,13 +1,16 @@
 package com.coconet.chatservice.service;
 
 import com.coconet.chatservice.client.ArticleClient;
+import com.coconet.chatservice.client.MemberClient;
 import com.coconet.chatservice.common.errorcode.ErrorCode;
 import com.coconet.chatservice.common.exception.ApiException;
+import com.coconet.chatservice.common.response.Response;
 import com.coconet.chatservice.converter.ChatRoomEntityConverter;
 import com.coconet.chatservice.dto.ChatRoomDeleteDto;
 import com.coconet.chatservice.dto.ChatroomRequestDto;
 import com.coconet.chatservice.dto.ChatroomResponseDto;
 import com.coconet.chatservice.dto.client.ArticleResponse;
+import com.coconet.chatservice.dto.client.MemberResponse;
 import com.coconet.chatservice.entity.ChatRoomEntity;
 import com.coconet.chatservice.repository.ChatRoomRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,15 +26,19 @@ import java.util.UUID;
 public class ChatRoomService {
     private final ChatRoomRepository chatRoomRepository;
     private final ArticleClient articleClient;
+    private final MemberClient memberClient;
     private final ChatRoomSubService chatRoomSubService;
 
-    // TODO : the applicant UUID cannot be the same as writerUUID
     public ChatroomResponseDto createRoom(ChatroomRequestDto createRequestDto, UUID memberUUID){
         if(chatRoomSubService.existChatRoom(createRequestDto.getArticleUUID(), memberUUID)) {
             throw new ApiException(ErrorCode.BAD_REQUEST, "Already exist");
         }
 
         ArticleResponse article = articleClient.sendChatClient(createRequestDto.getArticleUUID()).getData();
+
+        if (article.getWriterUUID().equals(memberUUID)){
+            throw new ApiException(ErrorCode.BAD_REQUEST, "The author is unable to apply");
+        }
 
         ChatRoomEntity chatRoom = ChatRoomEntity.builder()
                 .roomUUID(UUID.randomUUID())
@@ -43,7 +50,10 @@ public class ChatRoomService {
 
         ChatRoomEntity newChatRoom = chatRoomRepository.save(chatRoom);
 
-        return ChatRoomEntityConverter.convertToDto(newChatRoom);
+        Response<MemberResponse> writer = memberClient.getMemberInfo(article.getWriterUUID());
+        Response<MemberResponse> applicant = memberClient.getMemberInfo(memberUUID);
+
+        return ChatRoomEntityConverter.convertToDto(newChatRoom, writer.getData(), applicant.getData());
     }
 
     // Todo: Paging
@@ -51,7 +61,10 @@ public class ChatRoomService {
         List<ChatRoomEntity> chatRoomEntities = chatRoomRepository.findByAllMemberUUID(memberUUID);
 
         return chatRoomEntities.stream()
-                .map(chatRoomEntity -> ChatRoomEntityConverter.convertToDto(chatRoomEntity))
+                .map(chatRoomEntity -> ChatRoomEntityConverter.convertToDto(chatRoomEntity,
+                        memberClient.getMemberInfo(chatRoomEntity.getWriterUUID()).getData(),
+                                memberClient.getMemberInfo(memberUUID).getData())
+                )
                 .toList();
     }
 
@@ -60,11 +73,11 @@ public class ChatRoomService {
             throw new ApiException(ErrorCode.BAD_REQUEST, "Not Authorised");
 
         ChatRoomEntity roomEntity = chatRoomRepository.findByRoomUUID(roomUUID);
-        return ChatRoomEntityConverter.convertToDto(roomEntity);
+        return ChatRoomEntityConverter.convertToDto(roomEntity,
+                memberClient.getMemberInfo(roomEntity.getWriterUUID()).getData(),
+                memberClient.getMemberInfo(memberUUID).getData());
     }
 
-    // websocket => .. 어떻게 끊죠 ??
-    // 좀더 찾아보기로.
     public ChatroomResponseDto leaveRoom(UUID memberUUID, ChatRoomDeleteDto chatRoomDeleteDto) {
         if (!chatRoomRepository.isMember(memberUUID, chatRoomDeleteDto.getRoomUUID()))
             throw new ApiException(ErrorCode.BAD_REQUEST, "Not Authorised");
@@ -73,6 +86,8 @@ public class ChatRoomService {
                 .findByRoomUUID(chatRoomDeleteDto.getRoomUUID());
         roomEntity.leave(memberUUID);
         ChatRoomEntity response = chatRoomRepository.save(roomEntity);
-        return ChatRoomEntityConverter.convertToDto(response);
+        return ChatRoomEntityConverter.convertToDto(response,
+                memberClient.getMemberInfo(response.getWriterUUID()).getData(),
+                memberClient.getMemberInfo(memberUUID).getData());
     }
 }

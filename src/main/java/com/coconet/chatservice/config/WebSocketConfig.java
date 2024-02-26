@@ -1,5 +1,6 @@
 package com.coconet.chatservice.config;
 
+
 import com.coconet.chatservice.handler.CustomHandshakeInterceptor;
 import com.coconet.chatservice.handler.WebSocketChatHandler;
 import lombok.RequiredArgsConstructor;

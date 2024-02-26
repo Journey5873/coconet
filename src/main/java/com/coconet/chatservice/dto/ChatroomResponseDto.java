@@ -20,6 +20,10 @@ public class ChatroomResponseDto {
     private UUID applicantUUID;
     private UUID writerUUID;
     private String roomName;
+    private String applicantName;
+    private String writerName;
+    private String applicantImg;
+    private String writerImg;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

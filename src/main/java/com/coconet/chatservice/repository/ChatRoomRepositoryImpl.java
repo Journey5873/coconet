@@ -18,8 +18,8 @@ public class ChatRoomRepositoryImpl implements ChatRoomRepositoryCustom {
     @Override
     public List<ChatRoomEntity> findByAllMemberUUID(UUID memberUUID) {
         return queryFactory.selectFrom(chatRoomEntity)
-                    .where(chatRoomEntity.applicantUUID.eq(memberUUID).or(chatRoomEntity.writerUUID.eq(memberUUID)))
-                    .fetch();
+                .where(chatRoomEntity.applicantUUID.eq(memberUUID).or(chatRoomEntity.writerUUID.eq(memberUUID)))
+                .fetch();
     }
 
     @Override
