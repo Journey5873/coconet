@@ -1,11 +1,11 @@
-import { useEffect, useState } from 'react'
-import { SelectValue } from '../../pages/setting'
-import SingleSelect from '../atoms/Select/SingleSelect'
-import LinkList from '../organisms/LinkList'
+import { useContext, useEffect, useState } from 'react'
 import CloseIcon from '@mui/icons-material/Close'
 import { ReactComponent as CoconetLogo } from '../assets/images/Logo.svg'
-import { IoIosArrowBack } from 'react-icons/io'
 import styled from 'styled-components'
+import { AlertContext } from '../organisms/modal/AlertModalContext'
+import { useNavigate } from 'react-router-dom'
+import { useAppSelector } from '../../store/RootReducer'
+import { toast } from 'react-toastify'
 
 interface SupportButtonModalProps {
   handleSupportButton: () => void
@@ -16,18 +16,17 @@ export default function SupportButtonModal({
   handleSupportButton,
   isVisible,
 }: SupportButtonModalProps) {
-  const [nextModalVisible, setNextModalVisible] = useState(false)
+  const navigate = useNavigate()
+  const token = useAppSelector((state) => state.reducer.auth.token)
+
   const handleNextModal = () => {
-    setNextModalVisible(!nextModalVisible)
+    const confirm = window.confirm('메세지를 보내시겠습니까?')
+    if (confirm) {
+      toast.success('지원이 완료되었습니다!')
+      navigate('/chat')
+    }
   }
 
-  useEffect(() => {
-    if (isVisible) {
-      setNextModalVisible(true)
-    }
-  }, [isVisible])
-
-  console.log(isVisible)
   return (
     <>
       {isVisible && (

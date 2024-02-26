@@ -41,7 +41,13 @@ const PostDetail = () => {
   const articleService = useArticleService()
 
   const handleSupportButton = () => {
-    setIsVisible(!isVisible)
+    if (!token) {
+      toast.error('로그인 후 이용해 주세요.')
+      return
+    }
+    if (token) {
+      setIsVisible(!isVisible)
+    }
   }
 
   const handleEstimatedDuration = (date: string) => {
@@ -251,7 +257,7 @@ const PostDetail = () => {
                 </StyledPostInfoRemains>
               </StyledPostInfoWrapper>
               {post.memberUUID !== token && (
-                <StyledSupportButton onClick={() => handleSupportButton()}>
+                <StyledSupportButton onClick={handleSupportButton}>
                   지원하기
                 </StyledSupportButton>
               )}
