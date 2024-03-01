@@ -15,6 +15,12 @@ export class ChatService {
       data,
     )
   }
+
+  async getMyRooms() {
+    return this.chatRepository.getMany(
+      `chat-service/api/room/my-room/9dfb4b63-d489-4653-aeee-11846b07906d/test`,
+    )
+  }
 }
 
 const ChatContext = createContext(new ChatService(new BaseRepository()))
