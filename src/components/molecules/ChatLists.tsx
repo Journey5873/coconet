@@ -1,6 +1,28 @@
 import styled from 'styled-components'
+import { useChatService } from '../../api/services/chatService'
+import { useEffect, useState } from 'react'
+import { ChatDto } from '../../models/chat'
 
 export default function ChatList() {
+  const chatService = useChatService()
+  const [myChatLists, setMyChatLists] = useState<ChatDto[]>([])
+
+  const fetchPostDetail = async () => {
+    try {
+      const result = await chatService.getMyRooms()
+      if (result.data) {
+        setMyChatLists(result.data)
+      }
+      console.log(result)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  useEffect(() => {
+    fetchPostDetail()
+  }, [])
+
   return (
     <StyledChatLists>
       <StyledChatList>
@@ -34,7 +56,7 @@ const StyledChatLists = styled.ul`
   background-color: var(--seed-semantic-color-paper-sheet);
 `
 
-const StyledChatList = styled.a`
+const StyledChatList = styled.li`
   display: flex;
   padding: 16px;
   height: 72px;
