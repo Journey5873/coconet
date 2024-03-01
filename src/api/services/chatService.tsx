@@ -1,15 +1,15 @@
 import { PropsWithChildren, createContext, useContext } from 'react'
 import { BaseRepository } from '../baseRepository'
-import { Chat } from '../../models/chat'
+import { ChatDto } from '../../models/chat'
 
 export class ChatService {
-  private chatRepository: BaseRepository<Chat>
+  private chatRepository: BaseRepository<ChatDto>
 
-  constructor(articleRepository: BaseRepository<Chat>) {
+  constructor(articleRepository: BaseRepository<ChatDto>) {
     this.chatRepository = articleRepository
   }
 
-  async createChatRoom(data: Chat) {
+  async createChatRoom(data: any) {
     return this.chatRepository.create<any>(
       `chat-service/api/room/create/test`,
       data,
@@ -33,4 +33,4 @@ export const ChatProvider = ({ children }: PropsWithChildren) => {
   )
 }
 
-export const useArticleService = () => useContext(ChatContext)
+export const useChatService = () => useContext(ChatContext)

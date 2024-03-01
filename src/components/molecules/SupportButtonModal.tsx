@@ -6,6 +6,8 @@ import { AlertContext } from '../organisms/modal/AlertModalContext'
 import { useNavigate } from 'react-router-dom'
 import { useAppSelector } from '../../store/RootReducer'
 import { toast } from 'react-toastify'
+import { ChatService, useChatService } from '../../api/services/chatService'
+import { ChatDto } from '../../models/chat'
 
 interface SupportButtonModalProps {
   handleSupportButton: () => void
@@ -16,14 +18,31 @@ export default function SupportButtonModal({
   handleSupportButton,
   isVisible,
 }: SupportButtonModalProps) {
+  const chatService = useChatService()
   const navigate = useNavigate()
   const token = useAppSelector((state) => state.reducer.auth.token)
 
-  const handleNextModal = () => {
+  const handleNextModal = async () => {
     const confirm = window.confirm('메세지를 보내시겠습니까?')
     if (confirm) {
-      toast.success('지원이 완료되었습니다!')
-      navigate('/chat')
+      try {
+        const requestDto: ChatDto = {
+          articleUUID: '50ba8300-d1b5-4cd8-b8fc-87271aebe71b',
+          roomName: 'room1',
+          writerUUID: '6a2e74dc-beab-4d68-99fb-c15cc48dd455',
+        }
+        const result = await chatService.createChatRoom(
+          JSON.stringify(requestDto),
+        )
+
+        if (result.succeeded) {
+          toast.success('지원이 완료되었습니다!')
+          navigate('/chat')
+        }
+      } catch (error) {
+        console.log(error)
+        toast.error('다시 시도해 주세요.')
+      }
     }
   }
 
