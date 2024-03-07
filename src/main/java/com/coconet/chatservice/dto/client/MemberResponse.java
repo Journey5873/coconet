@@ -13,14 +13,15 @@ import static lombok.AccessLevel.PROTECTED;
 
 @Getter
 @Builder
-@NoArgsConstructor(access = PROTECTED)
 @AllArgsConstructor
+@NoArgsConstructor(access = PROTECTED)
 public class MemberResponse {
     private String email;
     private String name;
     private UUID memberUUID;
-    private String profileImage;
+    private byte[] profileImage;
+    private List<String> roles;
+    private List<String> stacks;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }
-

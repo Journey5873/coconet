@@ -1,5 +1,7 @@
 package com.coconet.chatservice.dto;
 
+import com.coconet.chatservice.client.ArticleDto;
+import com.coconet.chatservice.client.MemberDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,9 +18,8 @@ import static lombok.AccessLevel.PROTECTED;
 @NoArgsConstructor(access = PROTECTED)
 public class ChatroomResponseDto {
     private UUID roomUUID;
-    private UUID articleUUID;
-    private UUID applicantUUID;
-    private UUID writerUUID;
+    private ArticleDto article;
+    private MemberDto opponentMember;
     private String roomName;
     private String applicantName;
     private String writerName;
@@ -26,4 +27,8 @@ public class ChatroomResponseDto {
     private String writerImg;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+
+    public void changeName(String roomName) {
+        this.roomName = roomName;
+    }
 }

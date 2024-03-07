@@ -54,9 +54,20 @@
         });
     }
 
+    // 저희가 생각하는 채팅방의 기능
+    // A B
+    // B가 채팅방을 나가면 다시 방을 만들어서 , 재 신청을한다던지
+    // 새로운 채팅방이 만들어져야한다.
+    // 완전 밑바닥부터.
+
+    // A B
+    // B가 채팅방을 나갔어요.
+    // roomUUID 클라이언트
+
+
     function disconnect() {
         if (stompClient !== null) {
-            stompClient.disconnect();
+            stompClient.disconnect('/queue/room/'+roomId);
         }
         console.log("Disconnected");
     }
@@ -64,7 +75,7 @@
     function sendChat() {
         var msg = document.getElementById('message').value;
         if (msg !== "") {
-            stompClient.send("/app/message", {}, JSON.stringify({
+            stompClient.send("/app/chat-service/message", {}, JSON.stringify({
                 'roomUUID': roomId,
                 'senderUUID': senderUUID,
                 'message': msg

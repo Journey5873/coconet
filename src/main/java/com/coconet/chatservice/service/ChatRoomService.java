@@ -50,32 +50,47 @@ public class ChatRoomService {
 
         ChatRoomEntity newChatRoom = chatRoomRepository.save(chatRoom);
 
-        Response<MemberResponse> writer = memberClient.getMemberInfo(article.getWriterUUID());
-        Response<MemberResponse> applicant = memberClient.getMemberInfo(memberUUID);
-
-        return ChatRoomEntityConverter.convertToDto(newChatRoom, writer.getData(), applicant.getData());
+        return ChatRoomEntityConverter.convertToDto(newChatRoom, memberUUID);
     }
 
     // Todo: Paging
     public List<ChatroomResponseDto> getRooms(UUID memberUUID) {
         List<ChatRoomEntity> chatRoomEntities = chatRoomRepository.findByAllMemberUUID(memberUUID);
-
-        return chatRoomEntities.stream()
-                .map(chatRoomEntity -> ChatRoomEntityConverter.convertToDto(chatRoomEntity,
-                        memberClient.getMemberInfo(chatRoomEntity.getWriterUUID()).getData(),
-                                memberClient.getMemberInfo(memberUUID).getData())
-                )
+        List<ChatroomResponseDto> chatroomResponseDtos = chatRoomEntities.stream()
+                .map(chatRoomEntity -> ChatRoomEntityConverter.convertToDto(chatRoomEntity, memberUUID))
                 .toList();
+
+        chatroomResponseDtos.stream()
+                .forEach(chatRoomDto -> {
+                    UUID opponentUUID = chatRoomSubService.getOpponentUUID(memberUUID, chatRoomDto.getRoomUUID());
+                    String opponentName = opponentUUID != null ? memberClient.sendChatClient(opponentUUID).getData().getName() : "N/A";
+                    chatRoomDto.changeName(chatRoomDto.getRoomName() + " With " + chatRoomSubService.punctuateTitle(opponentName));
+                });
+
+
+        return chatroomResponseDtos;
     }
 
-    public ChatroomResponseDto getRoom(UUID memberUUID, UUID roomUUID){
+    public ChatroomResponseDto getRoomWithRoomUUID(UUID memberUUID, UUID roomUUID) {
         if (!chatRoomRepository.isMember(memberUUID, roomUUID))
             throw new ApiException(ErrorCode.BAD_REQUEST, "Not Authorised");
 
         ChatRoomEntity roomEntity = chatRoomRepository.findByRoomUUID(roomUUID);
-        return ChatRoomEntityConverter.convertToDto(roomEntity,
-                memberClient.getMemberInfo(roomEntity.getWriterUUID()).getData(),
-                memberClient.getMemberInfo(memberUUID).getData());
+        ChatroomResponseDto chatRoomDto = ChatRoomEntityConverter.convertToDto(roomEntity, memberUUID);
+        UUID opponentUUID = chatRoomSubService.getOpponentUUID(memberUUID, chatRoomDto.getRoomUUID());
+        String opponentName = opponentUUID != null ? memberClient.sendChatClient(opponentUUID).getData().getName() : "N/A";
+        chatRoomDto.changeName(chatRoomDto.getRoomName() + " With " + chatRoomSubService.punctuateTitle(opponentName));
+        return chatRoomDto;
+    }
+
+    public ChatroomResponseDto getRoomWithArticleUUID(UUID memberUUID, UUID articleUUId){
+        UUID roomUUID = chatRoomRepository.getRoomUUID(articleUUId, memberUUID);
+
+        if (!chatRoomRepository.isMember(memberUUID, roomUUID))
+            throw new ApiException(ErrorCode.BAD_REQUEST, "Not Authorised");
+
+        ChatRoomEntity roomEntity = chatRoomRepository.findByRoomUUID(roomUUID);
+        return ChatRoomEntityConverter.convertToDto(roomEntity, memberUUID);
     }
 
     public ChatroomResponseDto leaveRoom(UUID memberUUID, ChatRoomDeleteDto chatRoomDeleteDto) {
@@ -86,8 +101,12 @@ public class ChatRoomService {
                 .findByRoomUUID(chatRoomDeleteDto.getRoomUUID());
         roomEntity.leave(memberUUID);
         ChatRoomEntity response = chatRoomRepository.save(roomEntity);
-        return ChatRoomEntityConverter.convertToDto(response,
-                memberClient.getMemberInfo(response.getWriterUUID()).getData(),
-                memberClient.getMemberInfo(memberUUID).getData());
+
+        return ChatRoomEntityConverter.convertToDto(response, memberUUID);
     }
 }
+
+// 로그 파일을 생성하는 .. extra.
+// member => 삭제
+// article => 삭제
+// chatroom / chats => 삭제

@@ -1,5 +1,6 @@
 package com.coconet.chatservice.service;
 
+import com.coconet.chatservice.entity.ChatRoomEntity;
 import com.coconet.chatservice.repository.ChatRoomRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,5 +24,14 @@ public class ChatRoomSubService {
 
     public UUID getRoomUUID(UUID articleUUID, UUID memberUUID) {
         return chatRoomRepository.getRoomUUID(articleUUID, memberUUID);
+    }
+
+    public UUID getOpponentUUID(UUID memberUUID, UUID roomUUID) {
+        if(!chatRoomRepository.isMember(memberUUID, roomUUID))
+            return null;
+
+        ChatRoomEntity chatRoomEntity = chatRoomRepository.findByRoomUUID(roomUUID);
+        return memberUUID.equals(chatRoomEntity.getWriterUUID())
+                ? chatRoomEntity.getApplicantUUID() : chatRoomEntity.getWriterUUID();
     }
 }

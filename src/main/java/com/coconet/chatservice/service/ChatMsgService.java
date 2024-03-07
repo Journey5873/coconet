@@ -1,5 +1,6 @@
 package com.coconet.chatservice.service;
 
+import com.coconet.chatservice.client.MemberClient;
 import com.coconet.chatservice.converter.ChatMsgEntityToConverter;
 import com.coconet.chatservice.dto.ChatMsgCreateRequestDto;
 import com.coconet.chatservice.dto.ChatMsgResponseDto;
@@ -15,6 +16,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ChatMsgService {
     private final ChatMsgRepository chatMsgRepository;
+    private final MemberClient memberClient;
 
     public ChatMsgResponseDto sendChat(ChatMsgCreateRequestDto requestDto){
         ChatMsgEntity chatMsgEntity = ChatMsgEntity.builder()
@@ -24,14 +26,14 @@ public class ChatMsgService {
                 .message(requestDto.getMessage())
                 .build();
         ChatMsgEntity savedMsgEntity = chatMsgRepository.save(chatMsgEntity);
-        return ChatMsgEntityToConverter.convertToDto(savedMsgEntity);
+        return ChatMsgEntityToConverter.convertToDto(savedMsgEntity, savedMsgEntity.getSenderUUID());
     }
 
     public List<ChatMsgResponseDto> loadChats(UUID roomUUID){
         List<ChatMsgEntity> chats = chatMsgRepository.findAllByRoomUUID(roomUUID);
 
         return chats.stream()
-                .map(chatMsgEntity -> ChatMsgEntityToConverter.convertToDto(chatMsgEntity))
+                .map(chatMsgEntity -> ChatMsgEntityToConverter.convertToDto(chatMsgEntity, chatMsgEntity.getSenderUUID()))
                 .toList();
     }
 }

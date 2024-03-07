@@ -1,5 +1,7 @@
 package com.coconet.chatservice.handler;
 
+import com.coconet.chatservice.repository.ChatRoomRepository;
+import com.coconet.chatservice.service.ChatRoomSubService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.Message;
@@ -15,11 +17,14 @@ import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import java.util.Map;
+import java.util.UUID;
 
 @Component
 @Slf4j
 @RequiredArgsConstructor
 public class WebSocketChatHandler implements ChannelInterceptor {
+
+    private final ChatRoomRepository chatRoomRepository;
 
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
@@ -27,24 +32,19 @@ public class WebSocketChatHandler implements ChannelInterceptor {
 
         if (StompCommand.CONNECT.equals(headerAccessor.getCommand())) {
 
-            Map<String, Object> sessionAttributes = headerAccessor.getSessionAttributes();
-            sessionAttributes.put("memberUUID", "test");
-            headerAccessor.setSessionAttributes(sessionAttributes);
-
         } else if (StompCommand.SUBSCRIBE.equals(headerAccessor.getCommand())) {
             validateSubscriptionHeader(headerAccessor);
         }
-
         return message;
     }
 
     private void validateSubscriptionHeader(StompHeaderAccessor headerAccessor) {
-        String lineName = (String) headerAccessor.getSessionAttributes().get("memberUUID");
+        UUID memberUUID = (UUID) headerAccessor.getSessionAttributes().get("memberUUID");
         String destination = headerAccessor.getDestination();
-        String roomUUID = destination.split("/")[3];
+        UUID roomUUID = UUID.fromString(destination.split("/")[3]);
 
-        if (destination != null) {
-            throw new IllegalStateException("인증 정보가 잘못되었습니다.");
+        if (!chatRoomRepository.isMember(memberUUID, roomUUID)) {
+            throw new IllegalStateException("You cannot join the room");
         }
     }
 }

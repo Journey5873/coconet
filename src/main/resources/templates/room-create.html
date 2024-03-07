@@ -12,7 +12,7 @@
                 var roomName = $("#roomName").val();
                 $.ajax({
                     type: "POST",
-                    url: "/chat-service/api/room/create",
+                    url: "/chat-service/api/room/create/test",
                     data: JSON.stringify({articleUUID: "50ba8300-d1b5-4cd8-b8fc-87271aebe71b", roomName: roomName, writerUUID: "6a2e74dc-beab-4d68-99fb-c15cc48dd455"}),
                     contentType: "application/json",
                     success: function(data){
@@ -29,7 +29,7 @@
                 e.preventDefault();
                 $.ajax({
                     type: "GET",
-                    url: "/chat-service/api/room/my-room/9dfb4b63-d489-4653-aeee-11846b07906d",
+                    url: "/chat-service/api/room/my-room/9dfb4b63-d489-4653-aeee-11846b07906d/test",
                     success: function(data){
                         alert("방 리스트를 불러왔습니다.");
                         $("#roomList").empty();

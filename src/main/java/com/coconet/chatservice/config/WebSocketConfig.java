@@ -18,13 +18,14 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     private final WebSocketChatHandler webSocketChatHandler;
+    private final CustomHandshakeInterceptor customHandshakeInterceptor;
     @Value("${front.uri}")
     String frontUri;
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
         registry.enableSimpleBroker("/queue", "/topic");
-        registry.setApplicationDestinationPrefixes("/app");
+        registry.setApplicationDestinationPrefixes("/");
         // RequestMapping will be ignored.
     }
 
@@ -32,6 +33,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/chat-service/api/ws/chat")
                 .setAllowedOrigins(frontUri)
+                .addInterceptors(customHandshakeInterceptor)
                 .withSockJS(); // register sockJS
     }
 

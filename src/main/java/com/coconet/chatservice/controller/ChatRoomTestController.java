@@ -46,7 +46,7 @@ public class ChatRoomTestController {
     @GetMapping("/{roomUUID}/test")
     public String getRoomTest(Model theModel, @PathVariable UUID roomUUID) {
         UUID memberUUID = UUID.fromString("31323361-7364-0000-0000-000000000000");
-        ChatroomResponseDto room = chatRoomService.getRoom(memberUUID, roomUUID);
+        ChatroomResponseDto room = chatRoomService.getRoomWithRoomUUID(memberUUID, roomUUID);
         List<ChatMsgResponseDto> chats = chatMsgService.loadChats(roomUUID);
 
         theModel.addAttribute("room", room);

@@ -18,30 +18,40 @@ public class ChatRoomController {
 
     private final ChatRoomService chatRoomService;
     private final ChatMsgService chatMsgService;
+    private final ChatRoomSubService chatRoomSubService;
 
-    @PostMapping("/create")
-    public Response<ChatroomResponseDto> createRoom(@RequestBody ChatroomRequestDto chatroomRequestDto,
-                                                    @RequestHeader(value = "memberUUID") UUID memberUUID){
+    @PostMapping("/apply")
+    public Response<ChatroomResponseDto> applyJob(@RequestBody ChatroomRequestDto chatroomRequestDto,
+                                                  @RequestHeader(value = "memberUUID") UUID memberUUID){
+
+        if(chatRoomSubService.existChatRoom(chatroomRequestDto.getArticleUUID(), memberUUID)) {
+          // Load room details
+            ChatroomResponseDto response = chatRoomService.getRoomWithArticleUUID(memberUUID, chatroomRequestDto.getArticleUUID());
+            return Response.OK(response);
+        }
+        // Create a room
         ChatroomResponseDto response = chatRoomService.createRoom(chatroomRequestDto, memberUUID);
         return Response.OK(response);
     }
 
+    // Todo : paging
     @GetMapping("/my-room")
-    public Response<List<ChatroomResponseDto>> getRooms(@RequestHeader(value = "memberUUID") UUID memberUUID) {
+    public Response<List<ChatroomResponseDto>> getListOfRooms(@RequestHeader(value = "memberUUID") UUID memberUUID) {
         List<ChatroomResponseDto> response = chatRoomService.getRooms(memberUUID);
         return Response.OK(response);
     }
 
-    // Todo : paging
     @GetMapping("/{roomUUID}")
     public Response<ChatLoadResponseDto> getRoom(@PathVariable UUID roomUUID,
                                                  @RequestHeader(value = "memberUUID") UUID memberUUID) {
-        ChatroomResponseDto chatroom = chatRoomService.getRoom(memberUUID, roomUUID);
+
+        ChatroomResponseDto chatroom = chatRoomService.getRoomWithRoomUUID(memberUUID, roomUUID);
         List<ChatMsgResponseDto> chats = chatMsgService.loadChats(roomUUID);
         ChatLoadResponseDto response = new ChatLoadResponseDto(chats, chatroom);
         return Response.OK(response);
     }
 
+    // N/A
     @DeleteMapping("/leave")
     public Response<ChatroomResponseDto> leaveRoom(@RequestHeader(value = "memberUUID") UUID memberUUID,
                                                    @RequestBody ChatRoomDeleteDto chatRoomDeleteDto) {
