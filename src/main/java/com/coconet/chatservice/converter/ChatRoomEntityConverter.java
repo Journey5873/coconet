@@ -1,7 +1,9 @@
 package com.coconet.chatservice.converter;
 
 import com.coconet.chatservice.client.ArticleClient;
+import com.coconet.chatservice.client.ArticleDto;
 import com.coconet.chatservice.client.MemberClient;
+import com.coconet.chatservice.client.MemberDto;
 import com.coconet.chatservice.dto.ChatroomResponseDto;
 import com.coconet.chatservice.dto.client.ArticleResponse;
 import com.coconet.chatservice.dto.client.MemberResponse;
