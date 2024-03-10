@@ -10,7 +10,7 @@ spring:
       uri: ${MONGO_URI}
 
   datasource:
-    url: ${MTSQL_URI}
+    url: ${MYSQL_URI}
     username: ${MYSQL_USERNAME}
     password: ${MYSQL_PW}
 
@@ -46,3 +46,12 @@ front:
 
 chatroom:
   URI: ${CHATROOM_URI}
+
+# Jasypt
+jasypt:
+  encryptor:
+    bean: jasyptStringEncryptor
+    algorithm: PBEWithMD5AndDES
+    pool-size: 2
+    string-output-type: base64
+    key-obtention-iterations: 10000
