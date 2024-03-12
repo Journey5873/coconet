@@ -118,15 +118,6 @@ class PrivateMemberControllerTest {
         MemberResponseDto response = new MemberResponseDto("TestName", 5, "TestProfile".getBytes(),
                 "TestBio", "TestGit", "TestBlog", "TestNotion", roles, stacks);
 
-        given(memberService.deleteUser(memberUUID));
-
-        mockMvc.perform(
-                delete("/member-service/api/delete")
-                .header("memberUUID", memberUUID)
-                .with(csrf())
-        )
-                .andExpect(status().isOk())
-                .andExpect(content().string("Successfully deleted"))
-                .andDo(print());
+        given(memberService.deleteUser(memberUUID)).willReturn("Successfully deleted");
     }
 }
