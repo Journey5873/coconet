@@ -58,7 +58,7 @@ public class PrivateArticleController {
         return Response.OK(articleService.updateArticle(articleRequestDto, memberUUID));
     }
 
-    @PutMapping("/delete/{articleUUID}")
+    @DeleteMapping("/delete/{articleUUID}")
     public Response<String> deleteArticle(@PathVariable UUID articleUUID, @RequestHeader(value="memberUUID") UUID memberUUID){
         return Response.OK(articleService.deleteArticle(articleUUID, memberUUID));
     }

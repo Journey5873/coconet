@@ -7,6 +7,8 @@ import com.coconet.articleservice.dto.ArticleResponseDto;
 import com.coconet.articleservice.entity.ArticleEntity;
 import com.coconet.articleservice.entity.RoleEntity;
 import com.coconet.articleservice.entity.TechStackEntity;
+import com.coconet.articleservice.entity.enums.ArticleType;
+import com.coconet.articleservice.entity.enums.MeetingType;
 import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.JPAExpressions;
@@ -51,7 +53,7 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
 
     @Override
     public Page<ArticleResponseDto> getArticles(List<RoleEntity> roles, List<TechStackEntity> stacks, String keyword,
-                                            String articleType, String meetingType, boolean bookmark, UUID memberUUID, Pageable pageable) {
+                                                ArticleType articleType, MeetingType meetingType, boolean bookmark, UUID memberUUID, Pageable pageable) {
 
         Predicate condition = getCondition(roles, stacks, keyword, articleType, meetingType);
 
@@ -81,7 +83,7 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
         return PageableExecutionUtils.getPage(contents, pageable, () -> countQuery.fetchCount());
     }
 
-    private BooleanExpression getCondition(List<RoleEntity> roles, List<TechStackEntity> stacks, String keyword, String articleType, String meetingType) {
+    private BooleanExpression getCondition(List<RoleEntity> roles, List<TechStackEntity> stacks, String keyword, ArticleType articleType, MeetingType meetingType) {
         return articleEntity.status.eq((byte) 1)
                 .and(articleEntity.expiredAt.after(LocalDateTime.now()))
                 .and(containsKeyword(keyword))
@@ -111,11 +113,11 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
         return isEmpty(content) ? null : articleEntity.content.contains(content);
     }
 
-    private BooleanExpression articleTypeEquals(String type) {
+    private BooleanExpression articleTypeEquals(ArticleType type) {
         return isEmpty(type) ? null : articleEntity.articleType.eq(type);
     }
 
-    private BooleanExpression meetingTypeEquals(String type) {
+    private BooleanExpression meetingTypeEquals(MeetingType type) {
         return isEmpty(type) ? null : articleEntity.meetingType.eq(type);
     }
 

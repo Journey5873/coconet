@@ -1,6 +1,9 @@
 package com.coconet.articleservice.entity;
 
 
+import com.coconet.articleservice.entity.enums.ArticleType;
+import com.coconet.articleservice.entity.enums.EstimatedDuration;
+import com.coconet.articleservice.entity.enums.MeetingType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -8,6 +11,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -42,26 +46,29 @@ public class ArticleEntity extends BaseEntity{
     @Column(nullable = false)
     private LocalDateTime expiredAt;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String estimatedDuration;
+    private EstimatedDuration estimatedDuration;
 
     private int viewCount;
 
     private int bookmarkCount;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String articleType;
+    private ArticleType articleType;
 
     private byte status;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String meetingType;
+    private MeetingType meetingType;
 
-    @OneToMany(mappedBy = "article")
-    private List<ArticleRoleEntity> articleRoles;
+    @OneToMany(mappedBy = "article",cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ArticleRoleEntity> articleRoles = new ArrayList<>();
 
-    @OneToMany(mappedBy = "article")
-    private List<ArticleStackEntity> articleStacks;
+    @OneToMany(mappedBy = "article",cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ArticleStackEntity> articleStacks = new ArrayList<>();
 
     @OneToMany(mappedBy = "article")
     private List<BookmarkEntity> bookmarks;
@@ -74,7 +81,7 @@ public class ArticleEntity extends BaseEntity{
     private UUID memberUUID;
 
     public void updateArticle(String title, String content, LocalDateTime plannedStartAt, LocalDateTime expiredAt,
-                       String estimatedDuration, String articleType, String meetingType) {
+                       EstimatedDuration estimatedDuration, ArticleType articleType, MeetingType meetingType) {
         this.title = title;
         this.content = content;
         this.plannedStartAt = plannedStartAt;

@@ -4,6 +4,8 @@ import com.coconet.articleservice.dto.ArticleResponseDto;
 import com.coconet.articleservice.entity.ArticleEntity;
 import com.coconet.articleservice.entity.RoleEntity;
 import com.coconet.articleservice.entity.TechStackEntity;
+import com.coconet.articleservice.entity.enums.ArticleType;
+import com.coconet.articleservice.entity.enums.MeetingType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -15,7 +17,7 @@ public interface ArticleRepositoryCustom {
 
     Page<ArticleResponseDto> getArticles(
             List<RoleEntity> roles, List<TechStackEntity> stacks, String keyword,
-            String articleType, String meetingType, boolean bookmark, UUID memberUUID, Pageable pageable
+            ArticleType articleType, MeetingType meetingType, boolean bookmark, UUID memberUUID, Pageable pageable
     );
     List<ArticleResponseDto> getSuggestions(List<RoleEntity> roleEntities, List<TechStackEntity> stackEntities);
 
