@@ -24,8 +24,7 @@ import static org.mockito.BDDMockito.given;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(PrivateMemberController.class)
 @MockBean(JpaMetamodelMappingContext.class)
@@ -127,17 +126,7 @@ class PrivateMemberControllerTest {
                 .with(csrf())
         )
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.name").value("TestName"))
-                .andExpect(jsonPath("$.data.career").value(5))
-//                .andExpect(jsonPath("$.data.profileImg").value("TestProfile"))
-                .andExpect(jsonPath("$.data.bio").value("TestBio"))
-                .andExpect(jsonPath("$.data.githubLink").value("TestGit"))
-                .andExpect(jsonPath("$.data.blogLink").value("TestBlog"))
-                .andExpect(jsonPath("$.data.notionLink").value("TestNotion"))
-                .andExpect(jsonPath("$.data.roles").isArray())
-                .andExpect(jsonPath("$.data.roles").value(roles))
-                .andExpect(jsonPath("$.data.stacks").isArray())
-                .andExpect(jsonPath("$.data.stacks").value(stacks))
+                .andExpect(content().string("Successfully deleted"))
                 .andDo(print());
     }
 }
