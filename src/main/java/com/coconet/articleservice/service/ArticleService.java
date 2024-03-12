@@ -4,13 +4,13 @@ import com.coconet.articleservice.client.MemberClient;
 import com.coconet.articleservice.common.errorcode.ErrorCode;
 import com.coconet.articleservice.common.exception.ApiException;
 import com.coconet.articleservice.converter.ArticleConverter;
+import com.coconet.articleservice.converter.ArticleRoleConverter;
 import com.coconet.articleservice.converter.CommentConverter;
 import com.coconet.articleservice.dto.*;
 import com.coconet.articleservice.dto.client.ChatClientResponseDto;
 import com.coconet.articleservice.dto.member.MemberStackResponse;
 import com.coconet.articleservice.entity.*;
 import com.coconet.articleservice.entity.enums.ArticleType;
-import com.coconet.articleservice.entity.enums.MeetingType;
 import com.coconet.articleservice.dto.member.MemberResponse;
 import com.coconet.articleservice.dto.member.MemberRoleResponse;
 import com.coconet.articleservice.repository.*;
@@ -20,6 +20,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.coconet.articleservice.entity.enums.MeetingType;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -40,16 +41,16 @@ public class ArticleService {
     private final BookmarkRepository bookmarkRepository;
     private final MemberClient memberClient;
 
-    public ArticleResponseDto createArticle(ArticleCreateRequestDto request, UUID memberUUID) {
-        if (memberUUID == null){
+    public ArticleResponseDto createArticleOld(ArticleCreateRequestDto request, UUID memberUUID) {
+        if (memberUUID == null) {
             throw new ApiException(ErrorCode.BAD_REQUEST, "You need to login in first.");
         }
 
-        if (request.getArticleType().name().equals(ArticleType.PROJECT.name())){
+        if (request.getArticleType().equals(ArticleType.PROJECT)){
             if (request.getRoles() == null || request.getRoles().isEmpty()){
                 throw new ApiException(ErrorCode.BAD_REQUEST, "At least one role is required for the project.");
             }
-        } else if (request.getArticleType().name().equals(ArticleType.STUDY.name())) {
+        } else if (request.getArticleType().equals(ArticleType.STUDY)) {
             if (request.getRoles() != null || !request.getRoles().isEmpty()){
                 throw new ApiException(ErrorCode.BAD_REQUEST, "The project post should not have any roles selected.");
             }
@@ -62,7 +63,7 @@ public class ArticleService {
                 .stream()
                 .map(articleRoleDto -> {
                     ArticleRoleEntity articleRoleEntity = ArticleRoleEntity.builder()
-                            .article(savedArticle)
+                            .article(articleEntity)
                             .role(roleRepository.findByName(articleRoleDto.getRoleName()).orElseThrow(RuntimeException::new))
                             .participant(articleRoleDto.getParticipant())
                             .createdAt(LocalDateTime.now())
@@ -75,7 +76,7 @@ public class ArticleService {
                 .stream()
                 .map(articleStackDto -> {
                     ArticleStackEntity articleStackEntity = ArticleStackEntity.builder()
-                            .article(savedArticle)
+                            .article(articleEntity)
                             .techStack(techStackRepository.findByName(articleStackDto).orElseThrow(RuntimeException::new))
                             .createdAt(LocalDateTime.now())
                             .updatedAt(LocalDateTime.now())
@@ -86,14 +87,80 @@ public class ArticleService {
         em.flush();
         em.clear();
 
-        return ArticleConverter.convertToDto(savedArticle
-                , memberClient.clientMemberAllInfo(savedArticle.getMemberUUID()).getData());
+        ArticleEntity article = findByArticleUUID(savedArticle.getArticleUUID());
+
+        return ArticleConverter.convertToDto(article
+                , memberClient.clientMemberAllInfo(article.getMemberUUID()).getData());
+    }
+
+    public ArticleResponseDto createArticle(ArticleCreateRequestDto request, UUID memberUUID) {
+        validateMember(memberUUID);
+        validateRolesAndStacks(request);
+
+        ArticleEntity articleEntity = ArticleConverter.converterToEntity(request, memberUUID);
+        ArticleEntity savedArticle = articleRepository.save(articleEntity);
+
+        List<ArticleRoleDto> roles = addRoles(savedArticle, request.getRoles());
+        List<String> stacks = addStacks(savedArticle, request.getStacks());
+
+        return ArticleConverter.convertToDto(savedArticle,
+                memberClient.clientMemberAllInfo(savedArticle.getMemberUUID()).getData(),
+                roles, stacks);
+    }
+
+    public List<ArticleRoleDto> addRoles(ArticleEntity articleEntity, List<ArticleRoleDto> requestedRoles) {
+
+        Map<String, ArticleRoleDto> requestedRolesMap = new HashMap<>();
+
+        requestedRoles.forEach(articleRoleDto -> {
+            requestedRolesMap.put(articleRoleDto.getRoleName(), articleRoleDto);
+            if (articleRoleDto.getParticipant() == 0) {
+                throw new ApiException(ErrorCode.BAD_REQUEST, "Participant cannot be 0 for role: " + articleRoleDto.getRoleName());
+            }
+        });
+
+        List<String> roleNames = requestedRolesMap.keySet().stream().toList();
+        List<RoleEntity> requestedRoleEntities = roleRepository.findByNameIn(roleNames);
+
+        if (requestedRoleEntities.size() != requestedRoles.size()) {
+            throw new ApiException(ErrorCode.NOT_FOUND, "Some roles can not be found.");
+        }
+
+        List<ArticleRoleEntity> savedArticleRoles = articleRoleRepository.saveAll(
+                requestedRoleEntities.stream()
+                        .map(roleEntity -> new ArticleRoleEntity(articleEntity,
+                                roleEntity,
+                                requestedRolesMap.get(roleEntity.getName()).getParticipant()))
+                        .toList()
+        );
+
+        return savedArticleRoles.stream()
+                .map(articleRoleEntity -> ArticleRoleConverter.convertToDto(articleRoleEntity))
+                .toList();
+    }
+
+    public List<String> addStacks(ArticleEntity articleEntity, List<String> requestedStacks) {
+        List<TechStackEntity> requestedStackEntities = techStackRepository.findByNameIn(requestedStacks);
+
+        if (requestedStackEntities.size() != requestedStacks.size()) {
+            throw new ApiException(ErrorCode.NOT_FOUND, "Some tech stacks can not be found.");
+        }
+
+        List<ArticleStackEntity> savedArticleStacks = articleStackRepository.saveAll(
+                requestedStackEntities.stream()
+                        .map(stackEntity -> new ArticleStackEntity(articleEntity, stackEntity))
+                        .toList()
+        );
+
+        return savedArticleStacks.stream()
+                .map(articleStackEntity -> articleStackEntity.getTechStack().getName())
+                .toList();
     }
 
     public ArticleResponseDto getArticle(String articleUUID, UUID memberUUID){
-        ArticleEntity articleEntity = articleRepository.getArticle(UUID.fromString(articleUUID));
         boolean isBookmarked = false;
 
+        ArticleEntity articleEntity = articleRepository.getArticle(UUID.fromString(articleUUID));
         if (articleEntity == null){
             throw new ApiException(ErrorCode.NOT_FOUND, "No Post found");
         }
@@ -125,13 +192,13 @@ public class ArticleService {
         List<RoleEntity> selectedRoles = roleRepository.getRoles(condition.getRoles());
         List<TechStackEntity> selectedStacks = techStackRepository.getTechStacks(condition.getStacks());
 
-        String articleType = null;
+        ArticleType articleType = null;
         if (condition.getArticleType() != null){
-            articleType = ArticleType.valueOf(condition.getArticleType().name()).toString();
+            articleType = condition.getArticleType();
         }
-        String meetingType = null;
+        MeetingType meetingType = null;
         if (condition.getMeetingType() != null){
-            meetingType = MeetingType.valueOf(condition.getMeetingType().name()).toString();
+            meetingType = condition.getMeetingType();
         }
 
         return articleRepository.getArticles(selectedRoles, selectedStacks,
@@ -143,8 +210,7 @@ public class ArticleService {
     }
 
     public ArticleResponseDto updateArticle(ArticleRequestDto articleRequestDto, UUID memberUUID){
-        ArticleEntity articleEntity = articleRepository.findByArticleUUID(articleRequestDto.getArticleUUID())
-                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "No Post found"));
+        ArticleEntity articleEntity = findByArticleUUID(articleRequestDto.getArticleUUID());
 
         if (!articleEntity.getMemberUUID().equals(memberUUID)){
             throw new ApiException(ErrorCode.FORBIDDEN_ERROR, "Only author can edit this post.");
@@ -152,11 +218,11 @@ public class ArticleService {
 
         articleEntity.updateArticle(articleRequestDto.getTitle(),
                 articleRequestDto.getContent(),
-                articleRequestDto.getPlannedStartAt().atTime(LocalTime.MAX),
-                articleRequestDto.getExpiredAt().atTime(LocalTime.MAX),
-                articleRequestDto.getEstimatedDuration().name(),
-                articleRequestDto.getArticleType().name(),
-                articleRequestDto.getMeetingType().name()
+                articleRequestDto.getPlannedStartAt().atTime(LocalTime.of(23, 59, 59, 59)),
+                articleRequestDto.getExpiredAt().atTime(LocalTime.of(23, 59, 59, 59)),
+                articleRequestDto.getEstimatedDuration(),
+                articleRequestDto.getArticleType(),
+                articleRequestDto.getMeetingType()
                 );
 
         updateRoles(articleRequestDto.getRoles(), articleEntity);
@@ -336,9 +402,7 @@ public class ArticleService {
     }
 
     public List<ArticleResponseDto> getSuggestions(UUID memberUUID){
-        if (memberUUID == null){
-            throw new ApiException(ErrorCode.BAD_REQUEST, "You need to login in first.");
-        }
+        validateMember(memberUUID);
 
         MemberResponse memberResponse = memberClient.clientMemberAllInfo(memberUUID).getData();
 
@@ -394,18 +458,15 @@ public class ArticleService {
     }
 
     public String deleteArticle(UUID articleUUID, UUID memberUUID){
-        if (memberUUID == null){
-            throw new ApiException(ErrorCode.BAD_REQUEST, "You need to login in first.");
-        }
+        validateMember(memberUUID);
 
-        ArticleEntity article = articleRepository.findByArticleUUID(articleUUID)
-                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "Not Found Post"));
+        ArticleEntity article = findByArticleUUID(articleUUID);
 
         if (!article.getMemberUUID().equals(memberUUID)){
             throw new ApiException(ErrorCode.BAD_REQUEST, "Only the author can delete the post.");
         }
 
-        article.changeStatus((byte)0);
+        articleRepository.delete(article);
         return "Successfully deleted";
     }
 
@@ -414,8 +475,7 @@ public class ArticleService {
      */
     public CommentResponseDto writeComment(CommentRequestDto request, UUID articleUUID, UUID memberUUID) {
 
-        ArticleEntity article = articleRepository.findByArticleUUID(articleUUID)
-                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "Not Found Article"));
+        ArticleEntity article = findByArticleUUID(articleUUID);
 
         CommentEntity commentEntity = CommentConverter.convertToEntity(request, article, memberUUID);
 
@@ -425,8 +485,7 @@ public class ArticleService {
 
     public CommentResponseDto updateComment(CommentRequestDto commentDto, UUID memberUUID) {
 
-        CommentEntity commentEntity = commentRepository.findByCommentUUID(commentDto.getCommentUUID())
-                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "Not Found Comment"));
+        CommentEntity commentEntity = findByCommentUUID(commentDto.getCommentUUID());
 
         if(commentEntity.getMemberUUID().equals(memberUUID)){
             // update
@@ -440,8 +499,7 @@ public class ArticleService {
     }
 
     public String deleteComment(UUID commentUUID, UUID memberUUID) {
-        CommentEntity commentEntity = commentRepository.findByCommentUUID(commentUUID)
-                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "Not Found Comment"));
+        CommentEntity commentEntity = findByCommentUUID(commentUUID);
 
         if(commentEntity.getMemberUUID().equals(memberUUID)){
             commentRepository.delete(commentEntity);
@@ -451,10 +509,8 @@ public class ArticleService {
         }
     }
 
-
     public BookmarkResponse updateBookmark(UUID articleUUID, UUID memberUUID) {
-        ArticleEntity article = articleRepository.findByArticleUUID(articleUUID)
-                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "No Post Found"));
+        ArticleEntity article = findByArticleUUID(articleUUID);
 
         Optional<BookmarkEntity> bookmark = bookmarkRepository.findByArticleIdAndMemberUUID(article.getId(), memberUUID);
 
@@ -500,8 +556,7 @@ public class ArticleService {
     }
 
     public ChatClientResponseDto sendChatClient(UUID articleUUID) {
-        ArticleEntity article = articleRepository.findByArticleUUID(articleUUID)
-                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "No Article found"));
+        ArticleEntity article = findByArticleUUID(articleUUID);
 
         return ChatClientResponseDto.builder()
                 .roomName(article.getTitle())
@@ -513,4 +568,32 @@ public class ArticleService {
     /**
      * UTILS
      */
+
+    private void validateMember(UUID memberUUID) {
+        if (memberUUID == null) {
+            throw new ApiException(ErrorCode.BAD_REQUEST, "You need to log in first.");
+        }
+    }
+
+    private void validateRolesAndStacks(ArticleCreateRequestDto request) {
+        if (ArticleType.PROJECT.equals(request.getArticleType())){
+            if (request.getRoles() == null || request.getRoles().isEmpty()){
+                throw new ApiException(ErrorCode.BAD_REQUEST, "At least one role is required for the project.");
+            }
+        } else if (ArticleType.STUDY.equals(request.getArticleType())) {
+            if (request.getRoles() != null || !request.getRoles().isEmpty()){
+                throw new ApiException(ErrorCode.BAD_REQUEST, "The project post should not have any roles selected.");
+            }
+        }
+    }
+
+    private ArticleEntity findByArticleUUID(UUID articleUUID) {
+        return articleRepository.findByArticleUUID(articleUUID)
+                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "No Post found"));
+    }
+
+    private CommentEntity findByCommentUUID(UUID commentUUID) {
+        return commentRepository.findByCommentUUID(commentUUID)
+                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "Not Found Comment"));
+    }
 }
