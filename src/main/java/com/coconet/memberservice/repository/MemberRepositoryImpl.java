@@ -2,7 +2,6 @@ package com.coconet.memberservice.repository;
 
 import com.coconet.memberservice.common.errorcode.ErrorCode;
 import com.coconet.memberservice.common.exception.ApiException;
-import com.coconet.memberservice.converter.ImageConverter;
 import com.coconet.memberservice.converter.MemberConverter;
 import com.coconet.memberservice.dto.MemberResponseDto;
 import com.coconet.memberservice.dto.client.MemberClientDto;
@@ -14,7 +13,7 @@ import lombok.RequiredArgsConstructor;
 import java.util.Optional;
 import java.util.UUID;
 
-import static com.coconet.memberservice.entity.QMemberEntity.*;
+import static com.coconet.memberservice.entity.QMemberEntity.memberEntity;
 
 @RequiredArgsConstructor
 public class MemberRepositoryImpl implements MemberRepositoryCustom{

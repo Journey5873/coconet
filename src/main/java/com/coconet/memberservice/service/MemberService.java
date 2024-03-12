@@ -23,7 +23,7 @@ public interface MemberService {
 
     MemberResponseDto updateUserInfo(UUID memberId, MemberRequestDto requestDto, MultipartFile imageFile);
 
-    MemberResponseDto deleteUser(UUID memberId);
+    String deleteUser(UUID memberId);
 
     Boolean checkMemberNickName(String nickName);
 }

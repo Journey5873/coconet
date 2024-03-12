@@ -70,7 +70,7 @@ public class MemberRegisterService {
     public void updateRoles(MemberEntity memberEntity, List<String> requestedRoleNames) {
 
         // Get current all member's roles
-        List<MemberRoleEntity> currentRoleEntities = memberRoleRepository.getAllRoles(memberEntity);
+        List<MemberRoleEntity> currentRoleEntities = memberRoleRepository.findAllByMember(memberEntity);
 
         // Retrieve requested role entities
         List<RoleEntity> requestedRoleEntities = roleRepository.findByNameIn(requestedRoleNames);
@@ -101,7 +101,7 @@ public class MemberRegisterService {
     public void updateStacks(MemberEntity memberEntity, List<String> requestedStackNames){
 
         // Get current member's stacks
-        List<MemberStackEntity> currentStackEntities = memberStackRepository.getAllStacks(memberEntity);
+        List<MemberStackEntity> currentStackEntities = memberStackRepository.findAllByMember(memberEntity);
 
         // Retrieve requested stack entities
         List<TechStackEntity> requestedStackEntities = techStackRepository.findByNameIn(requestedStackNames);

@@ -3,13 +3,19 @@ package com.coconet.memberservice.service;
 import com.coconet.memberservice.common.errorcode.ErrorCode;
 import com.coconet.memberservice.common.exception.ApiException;
 import com.coconet.memberservice.converter.ImageConverter;
-import com.coconet.memberservice.converter.MemberConverter;
-import com.coconet.memberservice.dto.*;
+import com.coconet.memberservice.dto.MemberRegisterRequestDto;
+import com.coconet.memberservice.dto.MemberRequestDto;
+import com.coconet.memberservice.dto.MemberResponseDto;
+import com.coconet.memberservice.dto.MemberTokenDto;
 import com.coconet.memberservice.dto.client.MemberClientDto;
 import com.coconet.memberservice.dto.client.MemberRoleResponse;
 import com.coconet.memberservice.dto.client.MemberStackResponse;
-import com.coconet.memberservice.entity.*;
-import com.coconet.memberservice.repository.*;
+import com.coconet.memberservice.entity.MemberEntity;
+import com.coconet.memberservice.entity.MemberRoleEntity;
+import com.coconet.memberservice.entity.MemberStackEntity;
+import com.coconet.memberservice.repository.MemberRepository;
+import com.coconet.memberservice.repository.MemberRoleRepository;
+import com.coconet.memberservice.repository.MemberStackRepository;
 import com.coconet.memberservice.security.oauthModel.AuthProvider;
 import com.coconet.memberservice.security.token.TokenProvider;
 import com.coconet.memberservice.security.token.converter.TokenConverter;
@@ -152,20 +158,19 @@ public class MemberServiceImpl implements MemberService {
         return memberRepository.getUserInfo(memberId);
     }
 
-
-    public MemberResponseDto deleteUser(UUID memberId) {
+    public String deleteUser(UUID memberId) {
         MemberEntity member = memberRepository.findByMemberUUID(memberId)
                 .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "No member found"));
 
-        member.deleteUser();
+        memberRepository.delete(member);
 
-        List<MemberRoleEntity> rolesToRemove = memberRoleRepository.getAllRoles(member);
-        List<MemberStackEntity> stacksToRemove = memberStackRepository.getAllStacks(member);
+        List<MemberRoleEntity> rolesToRemove = memberRoleRepository.findAllByMember(member);
+        List<MemberStackEntity> stacksToRemove = memberStackRepository.findAllByMember(member);
 
         memberRoleRepository.deleteAllInBatch(rolesToRemove);
         memberStackRepository.deleteAllInBatch(stacksToRemove);
 
-        return MemberConverter.toResponseDto(member);
+        return "Successfully deleted";
     }
 
     public MemberClientDto clientMemberAllInfo(UUID memberUUID) {

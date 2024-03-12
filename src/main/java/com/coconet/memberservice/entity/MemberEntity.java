@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -58,10 +59,10 @@ public class MemberEntity extends BaseEntity{
     private String notionLink;
 
     @OneToMany(mappedBy = "member")
-    private List<MemberStackEntity> memberStacks;
+    private List<MemberStackEntity> memberStacks = new ArrayList<>();
 
     @OneToMany(mappedBy = "member")
-    private List<MemberRoleEntity> memberRoles;
+    private List<MemberRoleEntity> memberRoles = new ArrayList<>();
 
     public void register(String name, String career, String profileImage, String github, String blog, String notion, String bio) {
         this.name = name;

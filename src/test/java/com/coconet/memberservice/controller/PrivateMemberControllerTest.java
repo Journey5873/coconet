@@ -3,7 +3,6 @@ package com.coconet.memberservice.controller;
 import com.coconet.memberservice.dto.MemberRequestDto;
 import com.coconet.memberservice.dto.MemberResponseDto;
 import com.coconet.memberservice.service.MemberServiceImpl;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,13 +20,12 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.BDDMockito.given;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.mockito.BDDMockito.given;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
 @WebMvcTest(PrivateMemberController.class)
 @MockBean(JpaMetamodelMappingContext.class)
@@ -121,7 +119,7 @@ class PrivateMemberControllerTest {
         MemberResponseDto response = new MemberResponseDto("TestName", 5, "TestProfile".getBytes(),
                 "TestBio", "TestGit", "TestBlog", "TestNotion", roles, stacks);
 
-        given(memberService.deleteUser(memberUUID)).willReturn(response);
+        given(memberService.deleteUser(memberUUID));
 
         mockMvc.perform(
                 delete("/member-service/api/delete")

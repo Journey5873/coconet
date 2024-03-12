@@ -88,9 +88,9 @@ public class PrivateMemberController {
                     ),
             }
     )
+
     @DeleteMapping("/delete")
-    public Response<MemberResponseDto> deleteUser(@RequestHeader(value="memberUUID") UUID memberUUID) {
-        MemberResponseDto memberResponseDto = memberServiceImpl.deleteUser(memberUUID);
-        return Response.OK(memberResponseDto);
+    public Response<String> deleteUser(@RequestHeader(value="memberUUID") UUID memberUUID) {
+        return Response.OK(memberServiceImpl.deleteUser(memberUUID));
     }
 }
