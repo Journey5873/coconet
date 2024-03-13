@@ -46,7 +46,6 @@ public class PrivateArticleController {
         return Response.OK(articleService.getSuggestions(memberUUID));
     }
 
-
     @PostMapping("/article/create")
     public Response<ArticleResponseDto> createArticle(@RequestBody ArticleCreateRequestDto request, @RequestHeader(value="memberUUID") UUID memberUUID){
         ArticleResponseDto response = articleService.createArticle(request, memberUUID);
