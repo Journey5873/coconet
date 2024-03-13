@@ -17,7 +17,7 @@ public class PrivateApplicationController {
 
     private final ApplicationService applicationService;
 
-    @PostMapping("/chatClient/apply")
+    @PostMapping("/apply")
     public Response<ApplicationDto> apply(@RequestBody ApplicationDto applicationDto, @RequestHeader(value = "memberUUID") UUID memberUUID) {
         return Response.OK(applicationService.apply(applicationDto, memberUUID));
     }
