@@ -9,6 +9,7 @@ import com.coconet.articleservice.entity.ApplicationEntity;
 import com.coconet.articleservice.entity.ArticleEntity;
 import com.coconet.articleservice.entity.ArticleRoleEntity;
 import com.coconet.articleservice.entity.RoleEntity;
+import com.coconet.articleservice.entity.enums.ArticleType;
 import com.coconet.articleservice.repository.ApplicationRepository;
 import com.coconet.articleservice.repository.ArticleRepository;
 import lombok.RequiredArgsConstructor;
@@ -35,13 +36,15 @@ public class ApplicationService {
             throw new ApiException(ErrorCode.BAD_REQUEST, "You cannot apply to your own post.");
         }
 
-        boolean isPositionValid = retrivedArticleEntity.getArticleRoles().stream()
-                .map(ArticleRoleEntity::getRole)
-                .map(RoleEntity::getName)
-                .anyMatch(roleName -> roleName.equals(applicationDto.getApplicationPosition()));
+        if (ArticleType.PROJECT.equals(retrivedArticleEntity.getArticleType())){
+            boolean isPositionValid = retrivedArticleEntity.getArticleRoles().stream()
+                    .map(ArticleRoleEntity::getRole)
+                    .map(RoleEntity::getName)
+                    .anyMatch(roleName -> roleName.equals(applicationDto.getApplicationPosition()));
 
-        if (!isPositionValid) {
-            throw new ApiException(ErrorCode.BAD_REQUEST, "Invalid application position for this post.");
+            if (!isPositionValid) {
+                throw new ApiException(ErrorCode.BAD_REQUEST, "Invalid application position for this post.");
+            }
         }
 
         ApplicationEntity applicationEntity = ApplicationConverter.converterToEntity(applicationDto,
