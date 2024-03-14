@@ -12,6 +12,6 @@ import java.util.UUID;
 @Repository
 public interface ApplicationRepository extends JpaRepository<ApplicationEntity, Long> {
 
-    Page<ApplicationEntity> findAllByMemberUUID(UUID memberUUID, Pageable pageable);
+    Page<ApplicationEntity> findAllByApplicantUUID(UUID memberUUID, Pageable pageable);
 
 }

@@ -56,7 +56,7 @@ public class ApplicationService {
 
     public Page<ApplicationDto> getMyApplications(UUID memberUUID, Pageable pageable) {
         validateMember(memberUUID);
-        Page<ApplicationEntity> myApplications = applicationRepository.findAllByMemberUUID(memberUUID, pageable);
+        Page<ApplicationEntity> myApplications = applicationRepository.findAllByApplicantUUID(memberUUID, pageable);
         return myApplications.map(ApplicationConverter::converterToDto);
     }
 
