@@ -12,19 +12,17 @@ public class ApplicationConverter {
         return ApplicationDto.builder()
                 .applicationUUID(applicationEntity.getApplicationUUID())
                 .articleUUID(applicationEntity.getArticle().getArticleUUID())
-                .applicantUUID(applicationEntity.getArticle().getMemberUUID())
+                .applicantUUID(applicationEntity.getApplicantUUID())
                 .articleName(applicationEntity.getArticle().getTitle())
                 .applicationDate(applicationEntity.getCreatedAt())
-                .applicationPosition(applicationEntity.getApplicationPosition())
                 .build();
     }
 
-    public static ApplicationEntity converterToEntity(ApplicationDto applicationDto, UUID memberUUID, ArticleEntity article) {
+    public static ApplicationEntity converterToEntity(UUID memberUUID, ArticleEntity article) {
         return ApplicationEntity.builder()
                 .applicationUUID(UUID.randomUUID())
-                .memberUUID(memberUUID)
+                .applicantUUID(memberUUID)
                 .article(article)
-                .applicationPosition(applicationDto.getApplicationPosition())
                 .build();
     }
 }

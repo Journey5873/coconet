@@ -28,7 +28,7 @@ public class ApplicationEntity extends BaseEntity{
     private UUID applicationUUID;
 
     @Column(columnDefinition = "BINARY(16)", name = "member_uuid")
-    private UUID memberUUID;
+    private UUID applicantUUID;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "article_id")

@@ -36,20 +36,18 @@ public class ApplicationService {
             throw new ApiException(ErrorCode.BAD_REQUEST, "You cannot apply to your own post.");
         }
 
-        if (ArticleType.PROJECT.equals(retrivedArticleEntity.getArticleType())){
-            boolean isPositionValid = retrivedArticleEntity.getArticleRoles().stream()
-                    .map(ArticleRoleEntity::getRole)
-                    .map(RoleEntity::getName)
-                    .anyMatch(roleName -> roleName.equals(applicationDto.getApplicationPosition()));
+//        if (ArticleType.PROJECT.equals(retrivedArticleEntity.getArticleType())){
+//            boolean isPositionValid = retrivedArticleEntity.getArticleRoles().stream()
+//                    .map(ArticleRoleEntity::getRole)
+//                    .map(RoleEntity::getName)
+//                    .anyMatch(roleName -> roleName.equals(applicationDto.getApplicationPosition()));
+//
+//            if (!isPositionValid) {
+//                throw new ApiException(ErrorCode.BAD_REQUEST, "Invalid application position for this post.");
+//            }
+//        }
 
-            if (!isPositionValid) {
-                throw new ApiException(ErrorCode.BAD_REQUEST, "Invalid application position for this post.");
-            }
-        }
-
-        ApplicationEntity applicationEntity = ApplicationConverter.converterToEntity(applicationDto,
-                memberUUID,
-                retrivedArticleEntity);
+        ApplicationEntity applicationEntity = ApplicationConverter.converterToEntity(memberUUID, retrivedArticleEntity);
 
         ApplicationEntity savedApplication = applicationRepository.save(applicationEntity);
 
