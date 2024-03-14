@@ -15,8 +15,9 @@ import static lombok.AccessLevel.PROTECTED;
 @NoArgsConstructor(access = PROTECTED)
 @AllArgsConstructor
 public class ApplicationDto {
+    private UUID applicationUUID;
     private UUID articleUUID;
-    private UUID writerUUID;
+    private UUID applicantUUID;
     private String articleName;
     private LocalDateTime applicationDate;
     private String applicationPosition;

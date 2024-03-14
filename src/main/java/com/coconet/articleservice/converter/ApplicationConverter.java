@@ -10,8 +10,9 @@ public class ApplicationConverter {
 
     public static ApplicationDto converterToDto(ApplicationEntity applicationEntity) {
         return ApplicationDto.builder()
+                .applicationUUID(applicationEntity.getApplicationUUID())
                 .articleUUID(applicationEntity.getArticle().getArticleUUID())
-                .writerUUID(applicationEntity.getArticle().getMemberUUID())
+                .applicantUUID(applicationEntity.getArticle().getMemberUUID())
                 .articleName(applicationEntity.getArticle().getTitle())
                 .applicationDate(applicationEntity.getCreatedAt())
                 .applicationPosition(applicationEntity.getApplicationPosition())
