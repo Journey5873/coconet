@@ -14,6 +14,8 @@ import com.coconet.chatservice.dto.client.MemberResponse;
 import com.coconet.chatservice.entity.ChatRoomEntity;
 import com.coconet.chatservice.repository.ChatRoomRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -54,11 +56,11 @@ public class ChatRoomService {
     }
 
     // Todo: Paging
-    public List<ChatroomResponseDto> getRooms(UUID memberUUID) {
-        List<ChatRoomEntity> chatRoomEntities = chatRoomRepository.findByAllMemberUUID(memberUUID);
-        List<ChatroomResponseDto> chatroomResponseDtos = chatRoomEntities.stream()
-                .map(chatRoomEntity -> ChatRoomEntityConverter.convertToDto(chatRoomEntity, memberUUID))
-                .toList();
+    public Page<ChatroomResponseDto> getRooms(UUID memberUUID, Pageable pageable) {
+        Page<ChatRoomEntity> chatRoomEntities = chatRoomRepository.findByAllMemberUUID(memberUUID, pageable);
+
+        Page<ChatroomResponseDto> chatroomResponseDtos = chatRoomEntities.map(chatRoomEntity ->
+                ChatRoomEntityConverter.convertToDto(chatRoomEntity, memberUUID));
 
         chatroomResponseDtos.stream()
                 .forEach(chatRoomDto -> {
@@ -66,8 +68,6 @@ public class ChatRoomService {
                     String opponentName = opponentUUID != null ? memberClient.sendChatClient(opponentUUID).getData().getName() : "N/A";
                     chatRoomDto.changeName(chatRoomDto.getRoomName() + " With " + chatRoomSubService.punctuateTitle(opponentName));
                 });
-
-
         return chatroomResponseDtos;
     }
 
