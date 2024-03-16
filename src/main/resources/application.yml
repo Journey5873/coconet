@@ -1,5 +1,5 @@
 server:
-  port: ${GATEWAY_PORT}
+  port: 8000
 spring:
   application:
     name: gateway
@@ -9,21 +9,33 @@ spring:
         - id: Member-service
           uri: lb://MEMBER-SERVICE
           predicates:
-            - Path=${MEMBER_OPEN_URL}
+            - Path=/member-service/open-api/**
         - id: Member-service
           uri: lb://MEMBER-SERVICE
           predicates:
-            - Path=${MEMBER_PRIVATE_URL}
+            - Path=/member-service/api/**
           filters:
             - AuthorisationHeaderFilter
         - id: Article-service
           uri: lb://ARTICLE-SERVICE
           predicates:
-            - Path=${ARTICLE_OPEN_URL}
+            - Path=/article-service/open-api/**
         - id: Article-service
           uri: lb://ARTICLE-SERVICE
           predicates:
-            - Path=${ARTICLE_PRIVATE_URL}
+            - Path=/article-service/api/**
+          filters:
+            - AuthorisationHeaderFilter
+        - id: Chat-service
+          uri: lb://CHAT-SERVICE
+          predicates:
+            - Path=/chat-service/api/room/**
+          filters:
+            - AuthorisationHeaderFilter
+        - id: Chat-service
+          uri: lb://CHAT-SERVICE
+          predicates:
+            - Path=/chat-service/api/chat/**
           filters:
             - AuthorisationHeaderFilter
       default-filters:
@@ -31,7 +43,7 @@ spring:
       globalcors:
         corsConfigurations:
           '[/**]':
-            allowedOrigins: ${CLIENT_URL}
+            allowedOrigins: http://localhost:5500
             allowedMethods:
               - GET
               - POST
@@ -42,23 +54,22 @@ spring:
 eureka:
   client:
     service-url:
-      defaultZone: ${EUREKA_URL}
+      defaultZone: http://localhost:8761/eureka/
 #Token
 token:
   secret:
-    key: ${TOKEN_KEY}
+    key: ENC(y6vtpjOVBndSN8iIUkHOqaMOSN7/2D5K5HVtyJyaQtCn9Bmq2z4Yr4Gei3i9a9q8TZmPvYunGOo=)
   access-token:
-    plus-hour: ${ACCESS_TOKEN_TIME}
+    plus-hour: 1
   refresh-token:
-    plus-hour: ${REFRESH_TOKEN_TIME}
+    plus-hour: 12
 
 # Jasypt
 jasypt:
   encryptor:
     bean: jasyptStringEncryptor
-    algorithm: ${ALGORITHM}
+    algorithm: PBEWithMD5AndDES
     pool-size: 2
     string-output-type: base64
     key-obtention-iterations: 10000
-
 
