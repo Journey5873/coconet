@@ -35,8 +35,8 @@ public class OpenArticleController {
     @GetMapping("/popular")
     public Response<List<ArticleResponseDto>> getPopularPosts(){ return Response.OK(articleService.getPopularPosts()); }
 
-    @GetMapping("/chatClient")
-    public Response<ChatClientResponseDto> sendChatClient(UUID articleUUID) {
+    @GetMapping("/chatClient/{articleUUID}")
+    public Response<ChatClientResponseDto> sendChatClient(@PathVariable UUID articleUUID) {
         return Response.OK(articleService.sendChatClient(articleUUID));
     }
 }
