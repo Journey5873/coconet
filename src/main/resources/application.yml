@@ -29,6 +29,10 @@ spring:
         - id: Chat-service
           uri: lb://CHAT-SERVICE
           predicates:
+            - Path=/chat-service/api/ws/chat/**
+        - id: Chat-service
+          uri: lb://CHAT-SERVICE
+          predicates:
             - Path=/chat-service/api/**
           filters:
             - AuthorisationHeaderFilter
