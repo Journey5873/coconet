@@ -4,6 +4,7 @@ import ChatList from '../../components/molecules/ChatLists'
 import ChatForm from '../../components/atoms/ChatForm'
 import ReceiveMessage from '../../components/molecules/ReceiveMessage'
 import SendMessage from '../../components/molecules/SendMessage'
+import ChatRoom from '../../components/molecules/ChatRoom'
 
 export default function ChattingPage() {
   return (
@@ -11,10 +12,10 @@ export default function ChattingPage() {
       <StyledMainWrapper>
         <StyledChatListWrapper>
           <StyledMyProfile>코코넷</StyledMyProfile>
-          <ChatList />
+          {/* <ChatList /> */}
         </StyledChatListWrapper>
         <StyledChatSection>
-          <StyledChatSectionWrapper>
+          {/* <StyledChatSectionWrapper>
             <StyledChattingBox>
               <StyledChatHeader>
                 <StyledUserInfo>
@@ -31,7 +32,12 @@ export default function ChattingPage() {
               </StyledChatContent>
               <ChatForm />
             </StyledChattingBox>
-          </StyledChatSectionWrapper>
+          </StyledChatSectionWrapper> */}
+
+          <ChatRoom
+            userId="e965c530-9119-43b0-b3e1-779a09117e98"
+            roomId="6e3bb341-1cae-46aa-992b-8e9d07e96881"
+          />
         </StyledChatSection>
       </StyledMainWrapper>
     </div>

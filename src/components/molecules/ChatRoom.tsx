@@ -4,35 +4,39 @@ import { useAppSelector } from '../../store/RootReducer'
 import SockJS from 'sockjs-client'
 import styled from 'styled-components'
 
-const ChatRoom = ({ roomId }: any) => {
+const tempUrl = 'http://localhost:8000'
+
+const ChatRoom = ({ roomId, userId }: { roomId: string; userId: string }) => {
   const [inputMessage, setInputMessage] = useState('')
   const [messages, setMessages] = useState<any[]>([])
   const token = useAppSelector((state) => state.reducer.auth.token)
-  const name = useAppSelector((state) => state.reducer.auth.name)
+  // const name = useAppSelector((state) => state.reducer.auth.name)
   const client = useRef<CompatClient>()
 
   const connectHanlder = () => {
     client.current = Stomp.over(() => {
-      const sock = new SockJS('/ws/chat')
+      const sock = new SockJS(`${tempUrl}/chat-service/api/ws/chat`)
       return sock
     })
 
     client.current.connect(
-      {
-        Authorization: token,
-      },
+      // {
+      //   Authorization: `bearer ${token}`,
+      // },
+      {},
       () => {
         if (!client.current) return
 
         client.current.subscribe(`/queue/room/${roomId}`, (messageResponse) => {
-          getMessages(messageResponse.body)
+          console.log('Connected!!')
+          // getMessages(messageResponse.body)
         })
       },
     )
   }
 
   const getMessages = (messageResponse: any) => {
-    if (messageResponse.senderUUID === name) {
+    if (messageResponse.senderUUID === userId) {
       setMessages((prev) => [...prev, { ...messageResponse, isMine: true }])
     } else {
       setMessages((prev) => [...prev, { ...messageResponse, isMine: false }])
@@ -43,28 +47,31 @@ const ChatRoom = ({ roomId }: any) => {
     if (!client.current) return
 
     client.current.send(
-      '',
-      {},
+      `/message`,
+      {
+        Authorization: `bearer ${token}`,
+      },
       JSON.stringify({
         roomUUID: roomId,
-        senderUUID: name,
+        senderUUID: userId,
         message: inputMessage,
       }),
     )
   }
 
   const disconnectHanlder = () => {
+    debugger
     if (client.current) {
-      client.current.disconnect('/queue/room/' + roomId)
+      client.current.disconnect()
     }
   }
 
   useEffect(() => {
     connectHanlder()
 
-    return () => {
-      disconnectHanlder()
-    }
+    // return () => {
+    //   disconnectHanlder()
+    // }
   }, [])
 
   return (
