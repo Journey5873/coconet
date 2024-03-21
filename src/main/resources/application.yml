@@ -55,3 +55,7 @@ jasypt:
     pool-size: 2
     string-output-type: base64
     key-obtention-iterations: 10000
+
+token:
+  secret:
+    key: ${TOKEN_KEY}
