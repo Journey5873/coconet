@@ -6,6 +6,8 @@ import com.coconet.chatservice.service.ChatMsgService;
 import com.coconet.chatservice.service.ChatRoomService;
 import com.coconet.chatservice.service.ChatRoomSubService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -31,13 +33,14 @@ public class ChatRoomController {
         }
         // Create a room
         ChatroomResponseDto response = chatRoomService.createRoom(chatroomRequestDto, memberUUID);
+
         return Response.OK(response);
     }
 
     // Todo : paging
     @GetMapping("/my-room")
-    public Response<List<ChatroomResponseDto>> getListOfRooms(@RequestHeader(value = "memberUUID") UUID memberUUID) {
-        List<ChatroomResponseDto> response = chatRoomService.getRooms(memberUUID);
+    public Response<Page<ChatroomResponseDto>> getListOfRooms(@RequestHeader(value = "memberUUID") UUID memberUUID, Pageable pageable) {
+        Page<ChatroomResponseDto> response = chatRoomService.getRooms(memberUUID, pageable);
         return Response.OK(response);
     }
 

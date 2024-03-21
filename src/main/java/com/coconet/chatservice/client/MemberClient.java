@@ -5,6 +5,7 @@ import com.coconet.chatservice.dto.client.MemberResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+
 import java.util.UUID;
 
 @FeignClient(name = "member-service")

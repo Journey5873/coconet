@@ -6,6 +6,8 @@ import com.coconet.chatservice.dto.ChatroomResponseDto;
 import com.coconet.chatservice.service.ChatMsgService;
 import com.coconet.chatservice.service.ChatRoomService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -35,9 +37,9 @@ public class ChatRoomTestController {
 
     //for testing
     @GetMapping("/my-room/{memberUUID}/test")
-    public String getMyRoomsTest(Model theModel, @PathVariable UUID memberUUID) {
+    public String getMyRoomsTest(Model theModel, @PathVariable UUID memberUUID, Pageable pageable) {
         memberUUID = UUID.fromString("9dfb4b63-d489-4653-aeee-11846b07906d");
-        List<ChatroomResponseDto> myRooms = chatRoomService.getRooms(memberUUID);
+        Page<ChatroomResponseDto> myRooms = chatRoomService.getRooms(memberUUID, pageable);
 
         theModel.addAttribute("myRooms", myRooms);
         return "/room-list";

@@ -2,8 +2,12 @@ package com.coconet.chatservice.repository;
 
 
 import com.coconet.chatservice.entity.ChatRoomEntity;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.support.PageableExecutionUtils;
 
 import java.util.List;
 import java.util.UUID;
@@ -16,10 +20,15 @@ public class ChatRoomRepositoryImpl implements ChatRoomRepositoryCustom {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public List<ChatRoomEntity> findByAllMemberUUID(UUID memberUUID) {
-        return queryFactory.selectFrom(chatRoomEntity)
+    public Page<ChatRoomEntity> findByAllMemberUUID(UUID memberUUID, Pageable pageable) {
+        List<ChatRoomEntity> contents = queryFactory.selectFrom(chatRoomEntity)
                 .where(chatRoomEntity.applicantUUID.eq(memberUUID).or(chatRoomEntity.writerUUID.eq(memberUUID)))
                 .fetch();
+
+        JPAQuery<ChatRoomEntity> countQuery = queryFactory.selectFrom(chatRoomEntity)
+                .where(chatRoomEntity.applicantUUID.eq(memberUUID).or(chatRoomEntity.writerUUID.eq(memberUUID)));
+
+        return PageableExecutionUtils.getPage(contents, pageable, () -> countQuery.fetchCount());
     }
 
     @Override
