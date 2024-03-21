@@ -42,10 +42,9 @@ public class ChatRoomEntity extends BaseEntity{
     private String roomName;
 
     public void leave(UUID memberUUID) {
-        if(applicantUUID.equals(memberUUID))
+        if (applicantUUID.equals(memberUUID))
             applicantUUID = null;
-        else
-            writerUUID = null;
+        else writerUUID = null;
     }
 
 }

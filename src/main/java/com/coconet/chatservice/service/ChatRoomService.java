@@ -30,6 +30,7 @@ public class ChatRoomService {
     private final ArticleClient articleClient;
     private final MemberClient memberClient;
     private final ChatRoomSubService chatRoomSubService;
+    private final ChatMsgService chatMsgService;
 
     public ChatroomResponseDto createRoom(ChatroomRequestDto createRequestDto, UUID memberUUID){
         if(chatRoomSubService.existChatRoom(createRequestDto.getArticleUUID(), memberUUID)) {
@@ -93,14 +94,25 @@ public class ChatRoomService {
         return ChatRoomEntityConverter.convertToDto(roomEntity, memberUUID);
     }
 
-    public ChatroomResponseDto leaveRoom(UUID memberUUID, ChatRoomDeleteDto chatRoomDeleteDto) {
-        if (!chatRoomRepository.isMember(memberUUID, chatRoomDeleteDto.getRoomUUID()))
+    public ChatroomResponseDto leaveRoom(UUID memberUUID, UUID roomUUID) {
+        // Add message that "oo left the chat room"
+        // remove him in the group chat, change it to null
+        if (!chatRoomRepository.isMember(memberUUID, roomUUID))
             throw new ApiException(ErrorCode.BAD_REQUEST, "Not Authorised");
 
+
         ChatRoomEntity roomEntity = chatRoomRepository
-                .findByRoomUUID(chatRoomDeleteDto.getRoomUUID());
+                .findByRoomUUID(roomUUID);
         roomEntity.leave(memberUUID);
-        ChatRoomEntity response = chatRoomRepository.save(roomEntity);
+        ChatRoomEntity response = roomEntity;
+        if(roomEntity.getApplicantUUID() == null && roomEntity.getWriterUUID() == null) {
+            chatRoomRepository.delete(roomEntity);
+            chatMsgService.deleteChatsByRoomID(roomUUID);
+        }
+
+        else {
+            response = chatRoomRepository.save(roomEntity);
+        }
 
         return ChatRoomEntityConverter.convertToDto(response, memberUUID);
     }

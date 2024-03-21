@@ -10,4 +10,6 @@ import java.util.UUID;
 @Repository
 public interface ChatMsgRepository extends MongoRepository<ChatMsgEntity, String> {
     List<ChatMsgEntity> findAllByRoomUUID(UUID roomUUID);
+
+    void deleteAllByRoomUUID(UUID roomUUID);
 }

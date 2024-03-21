@@ -42,6 +42,16 @@ public class ChatMsgController {
         return response;
     }
 
+    @MessageMapping("/leave")
+    public ChatMsgResponseDto sendLeaveChat(ChatMsgCreateRequestDto requestDto) {
+        ChatMsgResponseDto response = chatMsgService.sendLeaveChat(requestDto);
+        chatRoomService.leaveRoom(requestDto.getSenderUUID(), requestDto.getRoomUUID());
+        sendingOperations.convertAndSend(roomURI + requestDto.getRoomUUID()
+                ,response);
+
+        return response;
+    }
+
     @GetMapping("/health")
     public String healthCheck(){
         return "health check";

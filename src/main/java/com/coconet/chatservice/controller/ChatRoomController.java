@@ -53,12 +53,4 @@ public class ChatRoomController {
         ChatLoadResponseDto response = new ChatLoadResponseDto(chats, chatroom);
         return Response.OK(response);
     }
-
-    // N/A
-    @DeleteMapping("/leave")
-    public Response<ChatroomResponseDto> leaveRoom(@RequestHeader(value = "memberUUID") UUID memberUUID,
-                                                   @RequestBody ChatRoomDeleteDto chatRoomDeleteDto) {
-        ChatroomResponseDto response = chatRoomService.leaveRoom(memberUUID, chatRoomDeleteDto);
-        return Response.OK(response);
-    }
 }

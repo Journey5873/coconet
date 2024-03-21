@@ -1,9 +1,11 @@
 package com.coconet.chatservice.service;
 
 import com.coconet.chatservice.client.MemberClient;
+import com.coconet.chatservice.client.MemberDto;
 import com.coconet.chatservice.converter.ChatMsgEntityToConverter;
 import com.coconet.chatservice.dto.ChatMsgCreateRequestDto;
 import com.coconet.chatservice.dto.ChatMsgResponseDto;
+import com.coconet.chatservice.dto.client.MemberResponse;
 import com.coconet.chatservice.entity.ChatMsgEntity;
 import com.coconet.chatservice.mongo.ChatMsgRepository;
 import lombok.RequiredArgsConstructor;
@@ -29,11 +31,28 @@ public class ChatMsgService {
         return ChatMsgEntityToConverter.convertToDto(savedMsgEntity, savedMsgEntity.getSenderUUID());
     }
 
+    public ChatMsgResponseDto sendLeaveChat(ChatMsgCreateRequestDto requestDto){
+        MemberResponse memberResponse = memberClient.sendChatClient(requestDto.getSenderUUID()).getData();
+
+        ChatMsgEntity chatMsgEntity = ChatMsgEntity.builder()
+                .chatUUID(UUID.randomUUID())
+                .senderUUID(requestDto.getSenderUUID())
+                .roomUUID(requestDto.getRoomUUID())
+                .message(memberResponse.getName() + " left the chat")
+                .build();
+        ChatMsgEntity savedMsgEntity = chatMsgRepository.save(chatMsgEntity);
+        return ChatMsgEntityToConverter.convertToDto(savedMsgEntity, savedMsgEntity.getSenderUUID());
+    }
+
     public List<ChatMsgResponseDto> loadChats(UUID roomUUID){
         List<ChatMsgEntity> chats = chatMsgRepository.findAllByRoomUUID(roomUUID);
 
         return chats.stream()
                 .map(chatMsgEntity -> ChatMsgEntityToConverter.convertToDto(chatMsgEntity, chatMsgEntity.getSenderUUID()))
                 .toList();
+    }
+
+    public void deleteChatsByRoomID(UUID roomUUID) {
+        chatMsgRepository.deleteAllByRoomUUID(roomUUID);
     }
 }
