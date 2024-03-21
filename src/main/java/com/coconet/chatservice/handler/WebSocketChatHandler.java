@@ -1,6 +1,8 @@
 package com.coconet.chatservice.handler;
 
+import com.coconet.chatservice.filter.TokenValidator;
 import com.coconet.chatservice.repository.ChatRoomRepository;
+import com.coconet.chatservice.service.ChatRoomService;
 import com.coconet.chatservice.service.ChatRoomSubService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,21 +27,21 @@ import java.util.UUID;
 public class WebSocketChatHandler implements ChannelInterceptor {
 
     private final ChatRoomRepository chatRoomRepository;
+    private final TokenValidator tokenValidator;
 
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
         StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(message);
 
-        if (StompCommand.CONNECT.equals(headerAccessor.getCommand())) {
-
-        } else if (StompCommand.SUBSCRIBE.equals(headerAccessor.getCommand())) {
+        if (StompCommand.SUBSCRIBE.equals(headerAccessor.getCommand())) {
             validateSubscriptionHeader(headerAccessor);
         }
         return message;
     }
 
     private void validateSubscriptionHeader(StompHeaderAccessor headerAccessor) {
-        UUID memberUUID = (UUID) headerAccessor.getSessionAttributes().get("memberUUID");
+        String token = headerAccessor.getNativeHeader("test").get(0);
+        UUID memberUUID = UUID.fromString(tokenValidator.validationTokenWithThrow(token));
         String destination = headerAccessor.getDestination();
         UUID roomUUID = UUID.fromString(destination.split("/")[3]);
 

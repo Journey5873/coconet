@@ -1,7 +1,6 @@
 package com.coconet.chatservice.config;
 
 
-import com.coconet.chatservice.handler.CustomHandshakeInterceptor;
 import com.coconet.chatservice.handler.WebSocketChatHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,7 +17,6 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     private final WebSocketChatHandler webSocketChatHandler;
-    private final CustomHandshakeInterceptor customHandshakeInterceptor;
     @Value("${front.uri}")
     String frontUri;
 
@@ -26,14 +24,12 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     public void configureMessageBroker(MessageBrokerRegistry registry) {
         registry.enableSimpleBroker("/queue", "/topic");
         registry.setApplicationDestinationPrefixes("/");
-        // RequestMapping will be ignored.
     }
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/chat-service/api/ws/chat")
                 .setAllowedOrigins(frontUri)
-                .addInterceptors(customHandshakeInterceptor)
                 .withSockJS(); // register sockJS
     }
 
